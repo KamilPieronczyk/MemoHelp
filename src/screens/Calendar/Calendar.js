@@ -23,8 +23,8 @@ export function Calendar(){
             calendarStartingDate.setDate(calendarStartingDate.getDate() + 1);
             row.push(
             <Grid item xs auto alignContent = 'space-around'>
-               <div style = {{backgroundColor: 'red', height: 100, margin: 1}}>
-                   <p style = {{textAlign: "center" ,color: "white"}}>
+               <div style = {{backgroundColor: 'white', height: 100, margin: 1, border: 'black',}}>
+                   <p style = {{textAlign: "center" ,color: "black"}}>
                    {monthDays[i]}
                    </p>
                 </div>
