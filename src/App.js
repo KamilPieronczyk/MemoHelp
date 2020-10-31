@@ -6,6 +6,7 @@ import {
 } from "react-router-dom"
 import styled from 'styled-components'
 import {NavBar} from './components'
+import {Home} from './screens'
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
             Calendar
           </Route>
           <Route path="/">
-            Home
+            <Home />
           </Route>
         </Switch>
       </Router>
@@ -30,11 +31,12 @@ function App() {
 
 const Body = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 100vmin;
   padding: 0 120px 0 120px;
   box-sizing: border-box;
   background-image: url("./assets/background.png");
   background-size: cover;
 `
+
 
 export default App;
