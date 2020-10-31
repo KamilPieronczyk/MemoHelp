@@ -18,6 +18,7 @@ export function NotificationsList() {
   )
 }
 
+
 const Container = styled.div`
   grid-area: 1 / span 1;
   grid-row: 1 / span 4;
@@ -56,11 +57,10 @@ const List = styled.div`
   &::-webkit-scrollbar {
     width: 10px;
   }
- 
+
   &::-webkit-scrollbar-track {
     box-shadow: inset 0 0 0px #9C9083;
   }
-  
   &::-webkit-scrollbar-thumb {
     background-color: #9C9083;
     border-radius: 5px;

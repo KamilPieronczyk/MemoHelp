@@ -2,15 +2,14 @@ import React from 'react'
 import styled from 'styled-components'
 
 import {NotificationsList} from './NotificationsList/NotificationsList'
-import {StickyNote} from './StickyNote'
+import {StickyNotes} from './StickyNotes/StickyNotes'
 
 export default function Home() {
   return (
     <Container>
       <WidgetContainer>
         <NotificationsList />
-        <StickyNote index={1}/>
-        <StickyNote index={2}/>
+        <StickyNotes />
       </WidgetContainer>
     </Container>
   )
