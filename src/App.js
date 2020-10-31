@@ -6,6 +6,7 @@ import {
 } from "react-router-dom"
 import styled from 'styled-components'
 import {NavBar} from './components'
+import {Calendar} from './screens/Calendar/Calendar'
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
             Login
           </Route>
           <Route path="/calendar">
-            Calendar
+            <Calendar></Calendar>
           </Route>
           <Route path="/">
             Home
