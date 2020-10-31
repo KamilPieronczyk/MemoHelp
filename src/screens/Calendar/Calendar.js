@@ -1,7 +1,11 @@
+
+import { Grid, Paper } from "@material-ui/core";
 import React from "react"
 import styled from 'styled-components'
 
 export function Calendar(){
+
+
 
     var monthDays = new Array(7*6);
     var now = new Date();
@@ -11,15 +15,41 @@ export function Calendar(){
     console.log("StartingNumber: " + calendarStartingDate);
     
     const days = [];
-    for(var i = 1; i<=7*6; i++){
-        monthDays[i] = calendarStartingDate.getDate();
-        calendarStartingDate.setDate(calendarStartingDate.getDate() + 1);
-        days.push(<li>{monthDays[i]}</li>);
+    var i = 0;
+    for(var x = 1; x<=6; x++){
+        const row = [];
+        for(var y = 1; y<=7; y++){
+            monthDays[i] = calendarStartingDate.getDate();
+            calendarStartingDate.setDate(calendarStartingDate.getDate() + 1);
+            row.push(
+            <Grid item xs auto alignContent = 'space-around'>
+               <div style = {{backgroundColor: 'red', height: 100, margin: 1}}>
+                   <p style = {{textAlign: "center" ,color: "white"}}>
+                   {monthDays[i]}
+                   </p>
+                </div>
+            </Grid>
+            );
+            i++;
+        }
+        days.push(
+            <Grid container item 
+            alignItems = 'stretch'
+            alignContent = 'space-around'
+            spacing = {0}
+            >
+                    {row}
+            </Grid>
+        )
     }
+    
 
-    return(
-        <div>
+    return( 
+        <Grid container spacing ={0}
+        alignContent = 'space-around'
+        style = {{backgroundColor:'white'}}>
             {days}
-        </div>
+        </Grid>
     )
+
 }
