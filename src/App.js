@@ -6,9 +6,11 @@ import {
 } from "react-router-dom"
 import styled from 'styled-components'
 import {NavBar} from './components'
+import Settings from "./screens/Settings/Settings";
 
 function App() {
-  return (
+  /*return (
+    
     <Body>
       <Router>
         <NavBar />
@@ -19,12 +21,16 @@ function App() {
           <Route path="/calendar">
             Calendar
           </Route>
-          <Route path="/">
+          <Route path="/S">
             Home
           </Route>
         </Switch>
       </Router>
     </Body>
+  );
+  */
+  return (
+    <Settings />
   );
 }
 
