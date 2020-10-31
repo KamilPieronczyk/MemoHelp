@@ -6,6 +6,7 @@ import {
 } from "react-router-dom"
 import styled from 'styled-components'
 import {NavBar} from './components'
+import Login from './screens/Login/login'
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <NavBar />
         <Switch>
           <Route path="/login">
-            Login
+            <Login></Login>
           </Route>
           <Route path="/calendar">
             Calendar
