@@ -13,11 +13,6 @@ export function NotificationsList() {
         <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
         <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
         <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
       </List>
     </Container>
   )
@@ -25,7 +20,7 @@ export function NotificationsList() {
 
 const Container = styled.div`
   grid-area: 1 / span 1;
-  grid-row: 1 / span 1;
+  grid-row: 1 / span 4;
   border: #73909C solid 2px;
   border-radius: 12px;
   box-sizing: border-box;
