@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import {NotificationsList} from './NotificationsList/NotificationsList'
 import {StickyNotes} from './StickyNotes/StickyNotes'
+import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <WidgetContainer>
         <NotificationsList />
         <StickyNotes />
+        <NewNotificationForm />
       </WidgetContainer>
     </Container>
   )
