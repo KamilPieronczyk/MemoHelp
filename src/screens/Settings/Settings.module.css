@@ -1,0 +1,104 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+}
+
+.header > div {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+}
+
+.header > div > label {
+  margin-bottom: 25px;
+  user-select: none;
+  cursor: pointer;
+  color: white;
+}
+
+.header > span {
+  display: flex;
+  align-items: center;
+  padding: 0 75px 0 75px;
+  justify-content: center;
+}
+
+.settings {
+  margin: 50px 0 0 0;
+}
+
+.settingsContentBox {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+
+.settingsOption {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  margin: 8px 0 0 0;
+}
+
+.settingsOption > div > input {
+  padding:8px;
+  display:block;
+  border: none;
+  border: 2px solid #73909C;
+  border-radius: 15px;
+  width: 65%;
+  background: transparent;
+}
+
+.settingsOption > div > select {
+  padding:8px;
+  display:block;
+  border: none;
+  border: 2px solid #73909C;
+  border-radius: 15px;
+  width: 70%;
+  background: transparent;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF0000;
+  font-size: 14px;
+}
+
+.warning > span {
+  padding: 8px 0 8px 0;
+  margin-left: 25%;
+  width: 75%;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+  padding: 15px 0 15px 0;
+  justify-content: space-between;
+}
+
+.htmlType {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 75%;
+}
+
+
+  
