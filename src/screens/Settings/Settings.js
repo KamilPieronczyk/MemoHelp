@@ -114,8 +114,31 @@ function Settings() {
                 </div>
             </div>
             <div className={styles.buttons}>
-                <Button text={"Zamknij konto"} width={'30%'} callback={closeAccount} />
-                <Button text={"Zamknij konto"} width={'60%'} callback={applySettings} />
+                <Button text={"Zamknij konto"} callback={closeAccount} 
+                css={{
+                    width: '30%',
+                    color: 'black',
+                    hover: {
+                        backgroundColor: 'gray',
+                    },
+                    active: {
+                        backgroundColor: 'green',
+                    }
+                }}
+                />
+                <Button text={"Zamknij konto"} callback={applySettings} 
+                css={{
+                    width: '60%',
+                    color: 'black',
+                    hover: {
+                        backgroundColor: 'gray',
+                    },
+                    active: {
+                        backgroundColor: 'green',
+                        color: 'white'
+                    }
+                }}
+                />
             </div>
         </div>
     </div>

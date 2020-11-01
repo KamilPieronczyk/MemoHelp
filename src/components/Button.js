@@ -1,9 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 
+/**
+ * 
+ * @param {css} props
+ * css: {
+ *  width,
+ *  color,
+ *  hover: {
+ *      backgroundColor,
+ *      color
+ *  }
+ *  active: {
+ *      backgroundColor,
+ *      color
+ *  }
+ * }
+ */
 function Button(props) {
     return (
-        <Container width={props.width} onClick={props.callback}>
+        <Container {...props.css} onClick={props.callback}>
             <Text>{props.text}</Text>
         </Container>
     );
@@ -13,12 +29,15 @@ const Container = styled.div`
     cursor: pointer;
     border: 2px solid #73909C;
     border-radius: 15px;
-    width: ${props=>props.width};
+    width: ${p=>p.width};
+    color: ${p=>p.color};
     &:hover {
-        background-color: red;
+        background-color: ${p=>p.hover.backgroundColor};
+        color: ${p=>p.hover.color};
     };
     &:active {
-        background-color: blue;
+        background-color: ${p=>p.active.backgroundColor};
+        color: ${p=>p.active.color};
     }
 `;
 

@@ -3,8 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  color: white;
+  color: black;
 }
 
 .header {
@@ -25,6 +24,7 @@
   margin-bottom: 25px;
   user-select: none;
   cursor: pointer;
+  color: white;
 }
 
 .header > span {
@@ -58,6 +58,7 @@
   border: 2px solid #73909C;
   border-radius: 15px;
   width: 65%;
+  background: transparent;
 }
 
 .settingsOption > div > select {
@@ -67,6 +68,7 @@
   border: 2px solid #73909C;
   border-radius: 15px;
   width: 70%;
+  background: transparent;
 }
 
 .warning {
