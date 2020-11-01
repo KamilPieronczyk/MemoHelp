@@ -1,28 +1,34 @@
 import React from 'react';
+import styled from 'styled-components';
 
 function Button(props) {
-    const container = {
-        border: '2px solid #73909C',
-        borderRadius: '15px',
-        width: props.width,
-        cursor: 'pointer'
-    };
-    
-    const text = {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '10px',
-        khtmlUserSelect:'none',
-        msUserSelect: 'none',
-        userSelect:'none',
-    };
-  
     return (
-        <div style={container} onClick={props.callback}>
-            <span style={text}>{props.text}</span>
-        </div>
+        <Container width={props.width} onClick={props.callback}>
+            <Text>{props.text}</Text>
+        </Container>
     );
 }
 
+const Container = styled.div`
+    cursor: pointer;
+    border: 2px solid #73909C;
+    border-radius: 15px;
+    width: ${props=>props.width};
+    &:hover {
+        background-color: red;
+    };
+    &:active {
+        background-color: blue;
+    }
+`;
+
+const Text = styled.span`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    khtml-user-select: none;
+    ms-user-select: none;
+    user-select: none;
+`;
 export default  Button;

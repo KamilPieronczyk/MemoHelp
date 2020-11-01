@@ -31,8 +31,8 @@ function Settings() {
     const notify = {
         name: 'Ogólne',
         elements: [
-            {id: 'push', name: "push", state: state.notifyPush},
-            {id: 'email', name: "email", state: state.notifyEmail}
+            {id: 'push', name: "Push", state: state.notifyPush},
+            {id: 'email', name: "Email", state: state.notifyEmail}
         ]
     };
 
@@ -99,6 +99,7 @@ function Settings() {
                                     </div>
                                     <div className={styles.generalUserValue}>
                                         <Switch
+                                            id={item.id}
                                             checked={item.state}
                                             onChange={notifySwitch}
                                             color="primary"
@@ -121,7 +122,8 @@ function Settings() {
     );
 
     function notifySwitch(event) {
-        setState({ ...state, [event.target.name]: event.target.checked });
+        console.log(`${event.target.id} ${event.target.checked}`);
+        setState({ ...state, [event.target.id]: event.target.checked });
     };
 
     function changeAvatar(event) {
