@@ -114,29 +114,20 @@ function Settings() {
                 </div>
             </div>
             <div className={styles.buttons}>
-                <Button text={"Zamknij konto"} callback={closeAccount} 
+                <Button text={"Zamknij konto"} onClick={closeAccount} 
+                type='outlined'
                 css={{
-                    width: '30%',
-                    color: 'black',
-                    hover: {
-                        backgroundColor: 'gray',
-                    },
-                    active: {
-                        backgroundColor: 'green',
-                    }
+                    width: '35%',
+                    color: '73909C',
+                    primary: '73909C'
                 }}
                 />
-                <Button text={"Zamknij konto"} callback={applySettings} 
+                <Button text={"Zamknij konto"} onClick={applySettings} 
+                type='contained'
                 css={{
                     width: '60%',
-                    color: 'black',
-                    hover: {
-                        backgroundColor: 'gray',
-                    },
-                    active: {
-                        backgroundColor: 'green',
-                        color: 'white'
-                    }
+                    color: 'FFFAF5',
+                    primary: '73909C'
                 }}
                 />
             </div>
