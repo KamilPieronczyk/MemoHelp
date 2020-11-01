@@ -21,6 +21,7 @@ function Btn(props) {
           width: props.css.width,
           color: `#${props.css.color}`,
           borderRadius: '15px',
+          height: '48px'
         },
     }));
 

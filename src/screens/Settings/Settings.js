@@ -29,7 +29,7 @@ function Settings() {
     };
 
     const notify = {
-        name: 'Ogólne',
+        name: 'Powiadomienia',
         elements: [
             {id: 'push', name: "Push", state: state.notifyPush},
             {id: 'email', name: "Email", state: state.notifyEmail}
@@ -122,7 +122,7 @@ function Settings() {
                     primary: '73909C'
                 }}
                 />
-                <Button text={"Zamknij konto"} onClick={applySettings} 
+                <Button text={"Zatwierdź zmiany"} onClick={applySettings} 
                 type='contained'
                 css={{
                     width: '60%',

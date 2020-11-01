@@ -21,11 +21,11 @@ function App() {
           <Route path="/calendar">
             Calendar
           </Route>
-          <Route path="/">
-            <Home />
-          </Route>
           <Route path="/settings">
             <Settings />
+          </Route>
+          <Route path="/">
+            <Home />
           </Route>
         </Switch>
       </Router>
