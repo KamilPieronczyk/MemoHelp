@@ -116,18 +116,18 @@ function Settings() {
             <div className={styles.buttons}>
                 <Button text={"Zamknij konto"} onClick={closeAccount} 
                 type='outlined'
-                css={{
+                color="#73909C"
+                style={{
                     width: '35%',
-                    color: '73909C',
-                    primary: '73909C'
+                    color: '#73909C',
                 }}
                 />
                 <Button text={"Zatwierdź zmiany"} onClick={applySettings} 
                 type='contained'
-                css={{
+                color="#73909C"
+                style={{
                     width: '60%',
-                    color: 'FFFAF5',
-                    primary: '73909C'
+                    color: '#FFF',
                 }}
                 />
             </div>

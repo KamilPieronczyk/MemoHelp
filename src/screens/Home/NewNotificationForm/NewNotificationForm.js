@@ -5,6 +5,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { TimePicker, DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Timer from '@material-ui/icons/Timer';
 import Timelapse from '@material-ui/icons/Timelapse';
+import { Button } from '../../../components';
 
 export function NewNotificationForm() {
 	const [ selectedDate, handleDateChange ] = useState(new Date());
@@ -24,24 +25,17 @@ export function NewNotificationForm() {
 					<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 						<Timer style={{ marginRight: 5 }} />
 						<MuiPickersUtilsProvider utils={DateFnsUtils}>
-							<DateTimePicker
-								value={selectedDate}
-								onChange={handleDateChange}
-								showTodayButton
-								disablePast
-								ampm={false}
-								color="primary"
-							/>
+							<DateTimePicker value={selectedDate} onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
 						</MuiPickersUtilsProvider>
 					</span>
 					<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }}>
 						<Timelapse style={{ marginRight: 5 }} />
-            <span style={{ marginRight: 5 }}>za</span>
+						<span style={{ marginRight: 5 }}>za</span>
 						<MuiPickersUtilsProvider utils={DateFnsUtils}>
 							<TimePicker
 								ampm={false}
 								openTo="minutes"
-								views={[ 'hours','minutes']}
+								views={[ 'hours', 'minutes' ]}
 								format="hh:mm"
 								value={selectedTime}
 								onChange={handleTimeChange}
@@ -51,8 +45,23 @@ export function NewNotificationForm() {
 				</TimePickersContainer>
 			</Container>
 			<ButtonsContainer>
-				<button>Wyczyść</button>
-				<button>Zapisz</button>
+				<Button
+          color="#73909C"
+					type="outlined"
+					text="Wyczyść"
+					style={{ marginRight: 10,width   : '100%',
+          color   : '#73909C',
+         }}
+				/>
+				<Button
+          color="#73909C"
+					type="contained"
+					style={{
+						width   : '100%',
+						color   : '#fff',
+					}}
+					text="Zapisz"
+				/>
 			</ButtonsContainer>
 		</FormContainer>
 	);
@@ -91,7 +100,7 @@ const ContentInput = styled.textarea`
 	margin-top: 10px;
 	resize: none;
 	font-family: 'Roboto';
-  background-color: #fffaf5;
+	background-color: #fffaf5;
 `;
 
 const TimePickersContainer = styled(ButtonsContainer)`
