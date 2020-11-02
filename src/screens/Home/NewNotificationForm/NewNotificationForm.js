@@ -6,15 +6,22 @@ import { TimePicker, DateTimePicker, MuiPickersUtilsProvider } from '@material-u
 import Timer from '@material-ui/icons/Timer';
 import Timelapse from '@material-ui/icons/Timelapse';
 import { Button } from '../../../components';
+import { Collapse } from '@material-ui/core';
+import RadioForm from './RadioForm'
 
 export function NewNotificationForm() {
-	const [ selectedDate, handleDateChange ] = useState(new Date());
-	const [ selectedTime, handleTimeChange ] = useState(new Date());
+	const [selectedDate, handleDateChange] = useState(new Date());
+	const [selectedTime, handleTimeChange] = useState(new Date());
+	const [showMoreSettings, setShowMoreSettings] = useState(true);
 
 	const autoGrowContentInput = (element) => {
 		element.target.style.height = '30px';
 		element.target.style.height = element.target.scrollHeight + 'px';
 	};
+
+	const toggleMoreSettings = () => {
+		setShowMoreSettings(state => !state);
+	}
 
 	return (
 		<FormContainer>
@@ -35,7 +42,7 @@ export function NewNotificationForm() {
 							<TimePicker
 								ampm={false}
 								openTo="minutes"
-								views={[ 'hours', 'minutes' ]}
+								views={['hours', 'minutes']}
 								format="hh:mm"
 								value={selectedTime}
 								onChange={handleTimeChange}
@@ -43,22 +50,30 @@ export function NewNotificationForm() {
 						</MuiPickersUtilsProvider>
 					</span>
 				</TimePickersContainer>
+				<Collapse in={showMoreSettings} timeout={"auto"}>
+					<Typography variant={"subtitle2"} style={{ marginTop: 20 }}>
+						Powtarzaj
+					</Typography>
+					<RadioForm />
+				</Collapse>
 			</Container>
 			<ButtonsContainer>
 				<Button
-          color="#73909C"
+					color="#73909C"
 					type="outlined"
 					text="Wyczyść"
-					style={{ marginRight: 10,width   : '100%',
-          color   : '#73909C',
-         }}
+					style={{
+						marginRight: 10, width: '100%',
+						color: '#73909C',
+					}}
+					onClick={toggleMoreSettings}
 				/>
 				<Button
-          color="#73909C"
+					color="#73909C"
 					type="contained"
 					style={{
-						width   : '100%',
-						color   : '#fff',
+						width: '100%',
+						color: '#fff',
 					}}
 					text="Zapisz"
 				/>
