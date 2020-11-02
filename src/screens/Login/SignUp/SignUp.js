@@ -60,18 +60,15 @@ export function Register() {
                 />
             </EmptyBox>
             <Buttonscontainer>
-            <Button text={"Zarejestruj się"}  
-                type='contained'
-                css={{
-                    height: "48px",
-                    width: "50%",
-                    color: 'FFFAF5',
-                    primary: '73909C'
-                }}
-                style={{
-                    height:"48px"
-                }}
-                />
+            <Button
+					color="#73909C"
+					type="contained"
+					style={{
+						width: '60%',
+						color: '#fff',
+					}}
+					text="Zarejestruj się"
+				/>
             </Buttonscontainer>
         </LoginContainer>
     )

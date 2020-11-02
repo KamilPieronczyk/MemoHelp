@@ -59,14 +59,15 @@ export function LoginForm() {
                     <ImgG src="/assets/1004px-Google__G__Logo.svg.webp"></ImgG>
                     <span style={{ paddingTop: 16, paddingBottom: 16, paddingLeft: 20 }}>Zaloguj się</span>
                 </Google>
-                <Button text={"Zaloguj się"}  
-                type='contained'
-                css={{
-                    width: "48%",
-                    color: 'FFFAF5',
-                    primary: '73909C'
-                }}
-                />
+                <Button
+					color="#73909C"
+					type="contained"
+					style={{
+						width: '48%',
+						color: '#fff',
+					}}
+					text="Zaloguj się"
+				/>
             </Buttonscontainer>
            
             <MyLink to="/login/reg">Jeśli nie masz konta, stwórz je</MyLink>
@@ -127,7 +128,7 @@ const Zaloguj = styled.div`
 `
 const Google = styled.div`
     //width: 200px;
-    //height: 50px;
+    height: 48px;
     //border: 2px solid #FFFFFF;
     flex-direction:row;
     display:flex;
@@ -135,7 +136,7 @@ const Google = styled.div`
     //color: #FFFFFF;
     text-align: center;
     font-size: 16px;
-    border-radius: 10px;
+    border-radius: 12px;
     color: black;
     //padding: 16px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
