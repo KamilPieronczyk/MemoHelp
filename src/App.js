@@ -7,6 +7,7 @@ import {
 import styled from 'styled-components'
 import {NavBar} from './components'
 import {Calendar} from './screens/Calendar/Calendar'
+import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 
 function App() {
@@ -24,6 +25,9 @@ function App() {
           <Route path="/settings">
             <Settings />
           </Route>
+          <Route path="/">
+            <Home />
+          </Route>
         </Switch>
       </Router>
     </Body>
@@ -40,5 +44,6 @@ const Body = styled.div`
   background-position: center;
   background-repeat: no-repeat;
 `
+
 
 export default App;
