@@ -7,6 +7,7 @@ import {
 import styled from 'styled-components'
 import {NavBar} from './components'
 import Login from './screens/Login/login'
+import Settings from './screens/Settings/Settings'
 
 function App() {
   return (
@@ -20,8 +21,8 @@ function App() {
           <Route path="/calendar">
             Calendar
           </Route>
-          <Route path="/">
-            Home
+          <Route path="/settings">
+            <Settings />
           </Route>
         </Switch>
       </Router>
@@ -30,12 +31,14 @@ function App() {
 }
 
 const Body = styled.div`
-  width: 100vw;
-  height: 100vh;
+  min-width: 95vw;
+  min-height: 100vh;
   padding: 0 120px 0 120px;
   box-sizing: border-box;
   background-image: url("./assets/background.png");
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 `
 
 export default App;
