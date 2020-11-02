@@ -13,7 +13,7 @@ import {
     Route,
     Link
   } from "react-router-dom";
-
+import {Button} from '../../../components';
 const GreenCheckbox = withStyles({
     root: {
         color: green[400],
@@ -60,9 +60,18 @@ export function Register() {
                 />
             </EmptyBox>
             <Buttonscontainer>
-                <Zarejestruj>
-                    Zarejestruj się
-                </Zarejestruj>
+            <Button text={"Zarejestruj się"}  
+                type='contained'
+                css={{
+                    height: "48px",
+                    width: "50%",
+                    color: 'FFFAF5',
+                    primary: '73909C'
+                }}
+                style={{
+                    height:"48px"
+                }}
+                />
             </Buttonscontainer>
         </LoginContainer>
     )
@@ -100,7 +109,7 @@ const MyInput = styled.input`
 `
 const EmptyBox = styled.div`
     //min-height:50px;
-    min-width:417px;
+    //min-width:417px;
     margin: 10px;
     display: flex;
     flex-direction: row;

@@ -13,6 +13,7 @@ import {
     Route,
     Link
   } from "react-router-dom";
+import {Button} from '../../../components'
 
 const GreenCheckbox = withStyles({
     root: {
@@ -58,9 +59,14 @@ export function LoginForm() {
                     <ImgG src="/assets/1004px-Google__G__Logo.svg.webp"></ImgG>
                     <span style={{ paddingTop: 16, paddingBottom: 16, paddingLeft: 20 }}>Zaloguj się</span>
                 </Google>
-                <Zaloguj>
-                    Zaloguj się
-                            </Zaloguj>
+                <Button text={"Zaloguj się"}  
+                type='contained'
+                css={{
+                    width: "48%",
+                    color: 'FFFAF5',
+                    primary: '73909C'
+                }}
+                />
             </Buttonscontainer>
            
             <MyLink to="/login/reg">Jeśli nie masz konta, stwórz je</MyLink>
@@ -98,8 +104,8 @@ const MyInput = styled.input`
     }
 `
 const EmptyBox = styled.div`
-    min-height:50px;
-    min-width:417px;
+    //min-height:50px;
+    //min-width:417px;
     margin: 10px;
     display: flex;
     flex-direction: row;
@@ -144,6 +150,7 @@ const Buttonscontainer = styled(EmptyBox)`
     //display:flex;
     //margin: 10px;
     justify-content: space-evenly;
+    flex-grow: 0;
 `
 
 const ImgG = styled.img`
