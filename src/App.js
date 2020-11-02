@@ -14,7 +14,7 @@ function App() {
       <Router>
         <NavBar />
         <Switch>
-          <Route path="/login">
+          <Route path="/login/:path?">
             <Login></Login>
           </Route>
           <Route path="/calendar">
