@@ -8,6 +8,7 @@ import Timelapse from '@material-ui/icons/Timelapse';
 import { Button } from '../../../components';
 import { Collapse } from '@material-ui/core';
 import RadioForm from './RadioForm'
+import {CheckBoxButton} from './CheckBoxButton'
 
 export function NewNotificationForm() {
 	const [selectedDate, handleDateChange] = useState(new Date());
@@ -55,6 +56,7 @@ export function NewNotificationForm() {
 						Powtarzaj
 					</Typography>
 					<RadioForm />
+					<CheckBoxButton />
 				</Collapse>
 			</Container>
 			<ButtonsContainer>
