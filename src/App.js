@@ -43,6 +43,8 @@ const Body = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
 `
 
 

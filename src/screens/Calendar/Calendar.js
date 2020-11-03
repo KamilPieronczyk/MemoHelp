@@ -19,9 +19,12 @@ var remindersList = [
 ]
 
 export function Calendar() {
+    startingDate = new Date(now.setDate(1));
+    calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
+    
     return (
-        <div>
-            <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold', marginTop: -30 }}>
+        <div style= {{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
+            <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold'}}>
                 {monthNames[now.getMonth()]} {now.getFullYear()}
             </p>
             <GridContainer>
@@ -86,20 +89,23 @@ function CalendarDay(props) {
 
 const GridContainer = styled.div`
     display: grid;
-    grid-auto-rows: repeat(6, 1fr);
-    height:100%;
+    margin-bottom: 15px;
+    align-content: stretch;
+    grid-template-rows: repeat(6, 1fr);
     grid-template-columns: repeat(7, 1fr);
     border-right: #9C9083 solid 1px;
     border-bottom: #9C9083 solid 1px;
     border-radius: 12px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    flex-grow: 1;
+    flex-shrink: 1;
 `
 
 const GridItem = styled.div`
     display: flex;
     flex-direction: column;
+    align-self: stretch;
     background-color: white;
-    padding: 0px;
     border-left: #9C9083 solid 1px;
     border-top: #9C9083 solid 1px;
 
