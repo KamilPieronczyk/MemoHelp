@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import {NotificationsList} from './NotificationsList/NotificationsList'
+import {ListContainer} from './List/List'
 import {StickyNotes} from './StickyNotes/StickyNotes'
 import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
 
@@ -12,6 +13,7 @@ export default function Home() {
         <NotificationsList />
         <StickyNotes />
         <NewNotificationForm />
+        <ListContainer />
       </WidgetContainer>
     </Container>
   )
