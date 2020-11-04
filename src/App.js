@@ -7,6 +7,7 @@ import {
 import styled from 'styled-components'
 import {NavBar} from './components'
 import {Calendar} from './screens/Calendar/Calendar'
+import Login from './screens/Login/login'
 import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 
@@ -16,8 +17,8 @@ function App() {
       <Router>
         <NavBar />
         <Switch>
-          <Route path="/login">
-            Login
+          <Route path="/login/:path?">
+            <Login></Login>
           </Route>
           <Route path="/calendar">
             <Calendar></Calendar>
