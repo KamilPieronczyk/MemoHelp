@@ -31,10 +31,11 @@ export function Calendar() {
 
     useEffect(()=>{
         document.addEventListener("wheel", function (e) {
-            var value = e.deltaY/Math.abs(e.deltaY);
+            var value = (e.deltaY/Math.abs(e.deltaY));
             now.setDate(1);
             now.setMonth(now.getMonth() + value);
             setMonth(now.getMonth());
+            now.setDate(1);
             return false;
         }, true);
     },[]);
