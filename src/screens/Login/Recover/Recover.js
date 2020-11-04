@@ -102,9 +102,6 @@ const MyInput = styled.input`
     }
 `
 const EmptyBox = styled.div`
-    //min-height:50px;
-    //min-width:417px;
-    //margin: 10px;
     display: flex;
     flex-direction: row;
     //text-align:center;
