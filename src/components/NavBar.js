@@ -19,11 +19,11 @@ export default function NavBar() {
   let OnClick=(newURL)=>{setURL(newURL)}
   return (
     <Container>
-              <MyLink to="/"    active={URL == ""?true:false} onClick={()=>OnClick("")}><HomeIcon style={{paddingRight: 5}}/>Home </MyLink>
-              <MyLink to="/Calendar"  active={URL == "/Calendar"?true:false}onClick={()=>OnClick("/Calendar")}><CalendarToday style={{paddingRight: 5}}/>Kalendarz</MyLink> 
-              <MyLink to="/Groups"    active={URL == "/Groups"?true:false}onClick={()=>OnClick("/Groups")}><PeopleAlt style={{paddingRight: 5}}/>Zarządzaj grupami </MyLink>
-              <MyLink to="/settings"   active={URL == "/Profile"?true:false}onClick={()=>OnClick("/Profile")}><Person style={{paddingRight: 5}}/>Jan Kowalski </MyLink>
-              <MyLink to="/LogOut"    active={URL == "/LogOut"?true:false}onClick={()=>OnClick("/LogOut")}><ExitToApp style={{paddingRight: 5}}/>Wyloguj</MyLink>
+      <MyLink to="/"          active={URL == ""?true:false}         onClick={()=>OnClick("")}>          <HomeIcon style={{paddingRight: 5}}     />Home </MyLink>
+      <MyLink to="/Calendar"  active={URL == "/Calendar"?true:false}onClick={()=>OnClick("/Calendar")}> <CalendarToday style={{paddingRight: 5}}/>Kalendarz</MyLink> 
+      <MyLink to="/Groups"    active={URL == "/Groups"?true:false}  onClick={()=>OnClick("/Groups")}>   <PeopleAlt style={{paddingRight: 5}}    />Zarządzaj grupami </MyLink>
+      <MyLink to="/settings"   active={URL == "/settings"?true:false} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
+      <MyLink to="/LogOut"    active={URL == "/LogOut"?true:false}  onClick={()=>OnClick("/LogOut")}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
     </Container>
   )
 }

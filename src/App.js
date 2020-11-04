@@ -10,6 +10,7 @@ import {Calendar} from './screens/Calendar/Calendar'
 import Login from './screens/Login/login'
 import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
+import Groups from './screens/Groups/Groups'
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
           </Route>
           <Route path="/settings">
             <Settings />
+          </Route>
+          <Route path="/Groups">
+            <Groups />
           </Route>
           <Route path="/">
             <Home />
