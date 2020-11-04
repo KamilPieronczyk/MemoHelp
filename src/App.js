@@ -7,6 +7,7 @@ import {
 import styled from 'styled-components'
 import {NavBar} from './components'
 import Settings from './screens/Settings/Settings'
+import Groups from './screens/Groups/Groups'
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
           </Route>
           <Route path="/settings">
             <Settings />
+          </Route>
+          <Route path="/Groups">
+            <Groups />
           </Route>
         </Switch>
       </Router>
