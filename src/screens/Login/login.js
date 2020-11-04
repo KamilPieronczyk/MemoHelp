@@ -13,7 +13,8 @@ import {
     Switch,
     Route
   } from "react-router-dom";
-  import {Register} from './SignUp/SignUp';
+import {Register} from './SignUp/SignUp';
+import {Recover} from './Recover/Recover';
 
 export default function Login() {
 
@@ -38,9 +39,13 @@ export default function Login() {
                             <Route exact path="/login/reg">
                                 <Register />
                             </Route>
+                            <Route exact path="/login/recover">
+                                <Recover />
+                            </Route>
                             <Route path="/login">
                                 <LoginForm />
                             </Route>
+                            
                         </Switch>
                     
                 </FlexboxItem>

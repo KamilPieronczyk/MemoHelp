@@ -41,6 +41,7 @@ export function LoginForm() {
             </MyInput>
             <MyInput type="password" id="pname" name="pname" placeholder="hasło">
             </MyInput>
+            <MyLink2 to="/login/recover">Odzyskiwanie hasła</MyLink2>
             <EmptyBox>
                 <FormControlLabel
                     control={
@@ -185,4 +186,21 @@ align-items: center;
 margin: 10px;
 justify-content:center;
 //width:100%;
+`
+const MyLink2 = styled(Link)`
+text-decoration: none;
+color:#738F9C; 
+display: flex;
+flex-direction: row;
+//align-content: center;
+//padding-left: 15px;
+&:hover{color: #9C9083};
+font-weight: medium;
+font-size: 14px;
+//text-align:center;
+//align-items: center;
+//margin: 10px;
+justify-content:flex-end;
+//width:100%;
+margin-right:12px;
 `

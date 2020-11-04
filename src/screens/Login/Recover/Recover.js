@@ -14,60 +14,57 @@ import {
     Link
   } from "react-router-dom";
 import {Button} from '../../../components';
-const GreenCheckbox = withStyles({
-    root: {
-        color: green[400],
-        '&$checked': {
-            color: green[600],
-        },
-    },
-    checked: {},
-})((props) => <Checkbox color="default" {...props} />);
 
-export function Register() {
-    const [state, setState] = useState({
-        checkedA: true,
-        checkedB: true,
-        checkedF: true,
-        checkedG: true,
-    });
-    const handleChange = (event) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
-    };
+export function Recover() {
+    const [state, setState] = useState(false);
+    
+    if(state)
+    {
+        return (
+            <LoginContainer>
+                <Nag>
+                <EmptyBox></EmptyBox><MyLink to="/login">Powrót</MyLink>
+                </Nag>
+                <EmptyBox>
+                    Wiadomość z linkiem przekierowującym została wysłana.
+                </EmptyBox>
+                <Buttonscontainer>
+                <Button
+                        color="#73909C"
+                        type="contained"
+                        style={{
+                            width: '75%',
+                            color: '#fff',
+                        }}
+                        text="Wyślij wiadomość ponownie"
+                        onClick={()=>setState(true)}
+                    />
+                </Buttonscontainer>
+            </LoginContainer>
+        )
+    }
     return (
         <LoginContainer>
             <Nag>
-            <MyText>Rejestracja:</MyText>
+            <MyText>Odzyskiwanie hasła:</MyText>
             <MyLink to="/login">Powrót</MyLink>
             </Nag>
             <MyInput type="email" id="fname" name="fname" placeholder="e-mail">
             </MyInput>
-            <MyInput type="password" id="pname" name="pname" placeholder="hasło">
-            </MyInput>
-            <MyInput type="password" id="pname2" name="pname2" placeholder="powtórz hasło">
-            </MyInput>
-            <EmptyBox>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={state.checkedB}
-                            onChange={handleChange}
-                            name="checkedB"
-                            color="#73909C"
-                        />
-                    }
-                    label="Akceptuję regulamin serwisu"
-                />
-            </EmptyBox>
+            <WrongMail>
+                Niepoprawny adres e-mail
+            </WrongMail>
+            
             <Buttonscontainer>
             <Button
-					color="#73909C"
+                    color="#73909C"
 					type="contained"
 					style={{
 						width: '60%',
 						color: '#fff',
 					}}
-					text="Zarejestruj się"
+                    text="Wyślij wiadomość"
+                    onClick={()=>setState(true)}
 				/>
             </Buttonscontainer>
         </LoginContainer>
@@ -107,11 +104,14 @@ const MyInput = styled.input`
 const EmptyBox = styled.div`
     //min-height:50px;
     //min-width:417px;
-    margin: 10px;
+    //margin: 10px;
     display: flex;
     flex-direction: row;
     //text-align:center;
     color: #73909C;
+    font-weight: medium;
+    margin-top:10px;
+    margin-bottom:10px;
 `
 const Zarejestruj = styled.div`
     //width: 200px;
@@ -173,4 +173,10 @@ margin: 10px;
 justify-content:center;
 //width:100%;
 margin-right:12px;
+`
+const WrongMail=styled.div`
+color:red;
+font-size:14px;
+margin-left:12px;
+min-height:20px;
 `
