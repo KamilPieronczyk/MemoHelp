@@ -22,7 +22,7 @@ export default function NavBar() {
       <MyLink to="/"          active={URL == ""?true:false}         onClick={()=>OnClick("")}>          <HomeIcon style={{paddingRight: 5}}     />Home </MyLink>
       <MyLink to="/Calendar"  active={URL == "/Calendar"?true:false}onClick={()=>OnClick("/Calendar")}> <CalendarToday style={{paddingRight: 5}}/>Kalendarz</MyLink> 
       <MyLink to="/Groups"    active={URL == "/Groups"?true:false}  onClick={()=>OnClick("/Groups")}>   <PeopleAlt style={{paddingRight: 5}}    />Zarządzaj grupami </MyLink>
-      <MyLink to="/settings"   active={URL == "/settings"?true:false} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
+      <MyLink to="/settings"  active={URL == "/settings"?true:false} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
       <MyLink to="/LogOut"    active={URL == "/LogOut"?true:false}  onClick={()=>OnClick("/LogOut")}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
     </Container>
   )
@@ -30,7 +30,7 @@ export default function NavBar() {
 
 const MyLink = styled(Link)`
 color: ${props=>props.active?"#738F9C":"black"} ;
-text-decoration: none; 
+text-decoration: none;
 display: flex;
 flex-direction: row;
 align-content: center;
