@@ -6,6 +6,7 @@ import {
 } from "react-router-dom"
 import styled from 'styled-components'
 import {NavBar} from './components'
+import {Calendar} from './screens/Calendar/Calendar'
 import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 
@@ -19,7 +20,7 @@ function App() {
             Login
           </Route>
           <Route path="/calendar">
-            Calendar
+            <Calendar></Calendar>
           </Route>
           <Route path="/settings">
             <Settings />
@@ -42,6 +43,8 @@ const Body = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
 `
 
 
