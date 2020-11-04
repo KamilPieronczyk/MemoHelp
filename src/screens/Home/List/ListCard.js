@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import Checkbox from '@material-ui/core/Checkbox';
+import { Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 function ListCardBtn(props) {
@@ -57,16 +58,17 @@ export function ListCard(props) {
           </ExpandMoreIconContainer>
         }
       </Header>
-      { state.isOpen === true &&
-      <MoreContent>
-        
-        {/* TODO: MAP  */}
-        
-        <ListCardBtn text="BTN 1" name="btn1" />
-        <ListCardBtn text="BTN 2" name="btn2" />
+      
+      <Collapse in={state.isOpen} timeout={"auto"} style={{minWidth: '100%', margin: 0, padding: 0}}>
+          <MoreContent>
 
-      </MoreContent>
-      }
+            {/* TODO: MAP  */}
+
+            <ListCardBtn text="BTN 1" name="btn1" />
+            <ListCardBtn text="BTN 2" name="btn2" />
+
+          </MoreContent>
+      </Collapse>
     </Container>
   )
 }
@@ -116,7 +118,6 @@ const MoreContent = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
 `;
 
 const Container = styled.div`

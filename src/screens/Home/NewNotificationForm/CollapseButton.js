@@ -7,12 +7,19 @@ const useStyles = makeStyles((theme) => ({
   root: {
     cursor: 'pointer'
   },
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingTop: 5,
+  }
 }));
 
-export default function CollapseButton() {
+export function CollapseButton(props) {
+  const styles = useStyles();
   return (
-    <div>
-      
+    <div onClick={props.onClick} className={styles.container}>
+      {props.expanded == false ? <ExpandMore className={styles.root} /> : <ExpandLess className={styles.root} />}
     </div>
   )
 }

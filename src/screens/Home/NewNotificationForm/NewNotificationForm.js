@@ -9,6 +9,7 @@ import { Button } from '../../../components';
 import { Collapse } from '@material-ui/core';
 import RadioForm from './RadioForm'
 import {CheckBoxButton} from './CheckBoxButton'
+import {CollapseButton} from './CollapseButton'
 
 export function NewNotificationForm() {
 	const [selectedDate, handleDateChange] = useState(new Date());
@@ -58,6 +59,7 @@ export function NewNotificationForm() {
 					<RadioForm />
 					<CheckBoxButton />
 				</Collapse>
+				<CollapseButton expanded={showMoreSettings} onClick={toggleMoreSettings} />
 			</Container>
 			<ButtonsContainer>
 				<Button
