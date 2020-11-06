@@ -14,6 +14,7 @@ export default function Home() {
         <StickyNotes />
         <NewNotificationForm />
         <ListContainer />
+        <div style={{gridArea: '4 / 5', gridRow: '1 / span 4'}}></div>
       </WidgetContainer>
     </Container>
   )

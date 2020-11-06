@@ -32,7 +32,7 @@ export function ListContainer() {
 
 
 const Container = styled.div`
-  grid-area: 1 / span 1;
+  grid-Column: 3 / 4;
   grid-row: 1 / span 4;
   border: #73909C solid 2px;
   border-radius: 12px;
