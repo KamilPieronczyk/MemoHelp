@@ -10,8 +10,29 @@ import { Collapse } from '@material-ui/core';
 import RadioForm from './RadioForm'
 import {CheckBoxButton} from './CheckBoxButton'
 import {CollapseButton} from './CollapseButton'
+import {makeStyles} from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+		openedContainer: {
+			gridColumn: '2 / 4'
+		},
+		noOpenedContainer: {
+			gridColumn: '2 / 3'
+		},
+		firstColumn: {
+			flex: 1
+		},
+		collapsedSecondColumn: {
+			flex: 0
+		},
+		noCollapsedSecondColumn: {
+			flex: 1
+		}
+
+}));
 
 export function NewNotificationForm() {
+	const styles = useStyles();
 	const [selectedDate, handleDateChange] = useState(new Date());
 	const [selectedTime, handleTimeChange] = useState(new Date());
 	const [showMoreSettings, setShowMoreSettings] = useState(true);
@@ -23,75 +44,89 @@ export function NewNotificationForm() {
 
 	const toggleMoreSettings = () => {
 		setShowMoreSettings(state => !state);
+
 	}
 
 	return (
-		<FormContainer>
+		<FormContainer className={showMoreSettings ? styles.openedContainer : styles.noOpenedContainer}>
 			<Container>
-				<Typography variant="subtitle2">Utwórz przypomnienie</Typography>
-				<ContentInput type="text" placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} />
-				<TimePickersContainer>
-					<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-						<Timer style={{ marginRight: 5 }} />
-						<MuiPickersUtilsProvider utils={DateFnsUtils}>
-							<DateTimePicker value={selectedDate} onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
-						</MuiPickersUtilsProvider>
-					</span>
-					<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }}>
-						<Timelapse style={{ marginRight: 5 }} />
-						<span style={{ marginRight: 5 }}>za</span>
-						<MuiPickersUtilsProvider utils={DateFnsUtils}>
-							<TimePicker
-								ampm={false}
-								openTo="minutes"
-								views={['hours', 'minutes']}
-								format="hh:mm"
-								value={selectedTime}
-								onChange={handleTimeChange}
-							/>
-						</MuiPickersUtilsProvider>
-					</span>
-				</TimePickersContainer>
-				<Collapse in={showMoreSettings} timeout={"auto"}>
-					<Typography variant={"subtitle2"} style={{ marginTop: 20 }}>
-						Powtarzaj
-					</Typography>
-					<RadioForm />
-					<CheckBoxButton />
-				</Collapse>
-				<CollapseButton expanded={showMoreSettings} onClick={toggleMoreSettings} />
+				<div className={styles.firstColumn}>
+					<Typography variant="subtitle2">Utwórz przypomnienie</Typography>
+					<ContentInput type="text" placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} />
+					<TimePickersContainer>
+						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+							<Timer style={{ marginRight: 5 }} />
+							<MuiPickersUtilsProvider utils={DateFnsUtils}>
+								<DateTimePicker value={selectedDate} onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
+							</MuiPickersUtilsProvider>
+						</span>
+						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }}>
+							<Timelapse style={{ marginRight: 5 }} />
+							<span style={{ marginRight: 5 }}>za</span>
+							<MuiPickersUtilsProvider utils={DateFnsUtils}>
+								<TimePicker
+									ampm={false}
+									openTo="minutes"
+									views={['hours', 'minutes']}
+									format="hh:mm"
+									value={selectedTime}
+									onChange={handleTimeChange}
+								/>
+							</MuiPickersUtilsProvider>
+						</span>
+					</TimePickersContainer>
+
+					<Collapse in={showMoreSettings} timeout={"auto"}>
+						<Typography variant={"subtitle2"} style={{ marginTop: 20 }}>
+							Powtarzaj
+						</Typography>
+						<RadioForm />
+						<CheckBoxButton />
+					</Collapse>
+					<CollapseButton expanded={showMoreSettings} onClick={toggleMoreSettings} />
+
+				</div>
+				<div className={showMoreSettings ? styles.noCollapsedSecondColumn : styles.collapsedSecondColumn}>
+					<Collapse in={showMoreSettings} timeout={"auto"}>
+						elo
+					</Collapse>
+				</div>
+
 			</Container>
 			<ButtonsContainer>
-				<Button
-					color="#73909C"
-					type="outlined"
-					text="Wyczyść"
-					style={{
-						marginRight: 10, width: '100%',
-						color: '#73909C',
-					}}
-					onClick={toggleMoreSettings}
-				/>
-				<Button
-					color="#73909C"
-					type="contained"
-					style={{
-						width: '100%',
-						color: '#fff',
-					}}
-					text="Zapisz"
-				/>
+				<div className={styles.firstColumn} style={{display: 'flex', flexDirection: 'row'}}>
+					<Button
+						color="#73909C"
+						type="outlined"
+						text="Wyczyść"
+						style={{
+							marginRight: 10, width: '100%',
+							color: '#73909C',
+						}}
+						onClick={toggleMoreSettings}
+					/>
+					<Button
+						color="#73909C"
+						type="contained"
+						style={{
+							width: '100%',
+							color: '#fff',
+						}}
+						text="Zapisz"
+					/>
+				</div>
+				<div className={showMoreSettings ? styles.noCollapsedSecondColumn : styles.collapsedSecondColumn}></div>
 			</ButtonsContainer>
 		</FormContainer>
 	);
 }
 
 const FormContainer = styled.div`
-	grid-column: 2 / span 1;
 	grid-row: 1 / span 4;
 	display: flex;
 	flex-direction: column;
 	align-self: stretch;
+	z-index: 1;
 `;
 
 const Container = styled.div`
@@ -102,6 +137,7 @@ const Container = styled.div`
 	font-size: 14px;
 	color: rgba(0, 0, 0, .83);
 	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+	display: flex;
 `;
 
 const ButtonsContainer = styled.div`
