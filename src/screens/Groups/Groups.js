@@ -10,6 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { Button } from '../../components/index';
 import Close from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
+import firebase from 'firebase'
 
 const GreenCheckbox = withStyles({
 	root    : {
@@ -21,16 +22,159 @@ const GreenCheckbox = withStyles({
 	checked : {}
 })((props) => <Checkbox color="default" {...props} />);
 
+function AdminMembersView(props) {
+
+	const remove = e => {
+		console.log(`user remove`);
+		console.group(e);
+	}
+
+	return(
+		<div>
+			{props.users.map(person => {
+				return(
+				<FlexboxItem key={person.id}>
+					<RightButton id={person.id}>
+						{person.name} {person.surname}<Close 
+							onClick={() => remove(person.id)}
+						/>
+					</RightButton>
+				</FlexboxItem>
+				)
+			})}
+		</div>
+	)
+}
+
+function BelongsMembersView(props) {
+	return(
+		<div>
+			{props.users.map(person => {
+				return(
+					<FlexboxItem key={`${person.id}`}>
+						<RightButton>{person.name} {person.surname}</RightButton>
+					</FlexboxItem>
+				)
+			})}
+		</div>
+	)
+}
+
 export default function Groups() {
+
+	let firebaseData = {
+		isAdmin: [
+			{
+				id: "G0",
+				name: "Grupa0", 
+				users: [
+					{id: "P0",name: "Radek",surname: "Mo"},
+					{id: "P2",name: "Kamil",surname: "Duda"}
+				]
+			},
+			{
+				id: "G1",
+				name: "Grupa1", 
+				users: [
+					{id: "P1",name: "Jan",surname: "Morawiecki"},
+					{id: "P2",name: "Kamil",surname: "Duda"}
+				]
+			}
+		],
+		belong: [
+			{
+				id: "G2",
+				name: "Grupa2", 
+				users: [
+					{id: "P1",name: "Andrzej",surname: "Morawiecki"},
+					{id: "P2",name: "Donald",surname: "Bieden"},
+				]
+			},
+			{
+				id: "G3",
+				name: "Grupa3", 
+				users: [
+					{id: "P1",name: "Ja",surname: "Mo"},
+					{id: "P2",name: "Ru",surname: "Sto"},
+				]
+			}
+		]
+	}
+
 	const [ state, setState ] = useState({
 		checkedA : true,
 		checkedB : true,
 		checkedF : true,
-		checkedG : true
+		checkedG : true,
+		AdminMembersArr: firebaseData.isAdmin[0].users,
+		BelongsMembersArr: firebaseData.belong[0].users
 	});
-	const handleChange = (event) => {
-		setState({ ...state, [event.target.name]: event.target.checked });
+
+	const adminGroupClick = id => {
+		for(let i = 0; i < firebaseData.isAdmin.length; i++) {
+			if(firebaseData.isAdmin[i].id == id) {
+				setState({ ...state, AdminMembersArr: firebaseData.isAdmin[i].users});
+				break;
+			}
+		}
 	};
+
+	const belongGroupClick = id => {
+		for(let i = 0; i < firebaseData.belong.length; i++) {
+			if(firebaseData.belong[i].id == id) {
+				setState({ ...state, BelongsMembersArr: firebaseData.belong[i].users});
+				break;
+			}
+		}
+	};
+
+	const addNewGroup = e => {
+		if (e.key === 'Enter') {
+			firebaseData.isAdmin.push(
+				{
+					id: e.target.value,
+					name: e.target.value,
+					users: []
+				}
+			)
+			console.log(firebaseData.isAdmin);
+		}
+	};
+
+	const addNewMember = (e, groupId, name) => {
+		if (e.key === 'Enter') {
+			console.log("addNewMember");	
+		}
+	};
+
+	const adminGroupEdit = id => {
+		console.log(`adminGroupEdit`);
+		console.log(id);
+	};
+
+	const undoAdminChange = (e) => {
+		console.log(`undoAdminChange`);
+		console.log(e.target);
+	}
+
+	const submitAdminChange = (e) => {
+		console.log(`submitAdminChange`);
+		console.log(e.target);
+	}
+
+	const undoGroupsBelongsChange = (e) => {
+		console.log(`undoGroupsBelongsChange`);
+		console.log(e.target);
+	}
+
+	const submitGroupsBelongsChange = (e) => {
+		console.log(`submitGroupsBelongsChange`);
+		console.log(e.target);
+	}
+
+	// const handleChange = (event) => {
+		// 	setState({ ...state, [event.target.name]: event.target.checked });
+	// };
 
 	return (
 		<FlexboxContainerContainer>
@@ -41,49 +185,43 @@ export default function Groups() {
 					<CreateGroups>
 						<CreateGroupsLeft>
 							<div>Zarządzaj swoimi grupami</div>
-							<FlexboxItem>
+							
+							{/* <FlexboxItem>
 								<LeftButtonZnajomi>
 									Znajomi<CreateIcon />
 								</LeftButtonZnajomi>
-							</FlexboxItem>
+							</FlexboxItem> */}
+
+							{firebaseData.isAdmin.map(item => {
+								return(
+									<FlexboxItem key={item.id} 
+										onClick={() => adminGroupClick(item.id)}
+									>
+										<LeftButton>
+											{item.name}<CreateIcon onClick={() => adminGroupEdit(item.id)}/>
+										</LeftButton>
+									</FlexboxItem>
+								)
+							})}
 
 							<FlexboxItem>
-								<LeftButton>
-									Grupa1<CreateIcon />
-								</LeftButton>
-							</FlexboxItem>
-							<FlexboxItem>
 								<AddButton>
-									{' '}
-									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" />{' '}
+									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" 
+										onKeyDown={addNewGroup}
+									/>{' '}
 								</AddButton>
 							</FlexboxItem>
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
 							<FlexboxItem>
-								<RightButton>Podaj email</RightButton>
-							</FlexboxItem>
-							<FlexboxItem>
 								<RightButton>
-									Osoba1<Close />
+									<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" />{' '}
 								</RightButton>
 							</FlexboxItem>
-							<FlexboxItem>
-								<RightButton>
-									Osoba2<Close />
-								</RightButton>
-							</FlexboxItem>
-							<FlexboxItem>
-								<RightButton>
-									Osoba3<Close />
-								</RightButton>
-							</FlexboxItem>
-							<FlexboxItem>
-								<RightButton>
-									Osoba4<Close />
-								</RightButton>
-							</FlexboxItem>
+
+						<AdminMembersView users={state.AdminMembersArr} />
+
 						</CreateGroupsRight>
 					</CreateGroups>
 					<CreateGroupsBottomRow>
@@ -96,6 +234,7 @@ export default function Groups() {
 									style={{
 										color : '#73909C'
 									}}
+									onClick={undoAdminChange}
 								/>
 							</BottomRowBack>
 						</FlexboxItem>
@@ -108,6 +247,7 @@ export default function Groups() {
 									style={{
 										color : '#fff'
 									}}
+									onClick={submitAdminChange}
 								/>
 							</BottomRowSetChanges>
 						</FlexboxItem>
@@ -118,32 +258,32 @@ export default function Groups() {
 					<CreateGroups>
 						<CreateGroupsLeft>
 							<div>Twoje grupy</div>
-							<FlexboxItem>
+							{/* <FlexboxItem>
 								<LeftButtonZnajomi>
 									Znajomi<Close />
 								</LeftButtonZnajomi>
-							</FlexboxItem>
-							<FlexboxItem>
-								<LeftButton>
-									Grupa1<Close />
-								</LeftButton>
-							</FlexboxItem>
+							</FlexboxItem> */}
+
+
+							{firebaseData.belong.map(item => {
+								return(
+									<FlexboxItem key={item.id}
+										onClick={() => belongGroupClick(item.id)} 
+									>
+										<LeftButton>
+											{item.name}<Close />
+										</LeftButton>
+									</FlexboxItem> 
+								)
+							})}
+
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
-							{/* <FlexboxItem><RightButton>Podaj email</RightButton></FlexboxItem> */}
-							<FlexboxItem>
-								<RightButton>Osoba1</RightButton>
-							</FlexboxItem>
-							<FlexboxItem>
-								<RightButton>Osoba2</RightButton>
-							</FlexboxItem>
-							<FlexboxItem>
-								<RightButton>Osoba3</RightButton>
-							</FlexboxItem>
-							<FlexboxItem>
-								<RightButton>Osoba4</RightButton>
-							</FlexboxItem>
+							<FlexboxItem><RightButton>Podaj email</RightButton></FlexboxItem>
+							
+							<BelongsMembersView users={state.BelongsMembersArr}/>
+
 						</CreateGroupsRight>
 					</CreateGroups>
 					<CreateGroupsBottomRow>
@@ -156,6 +296,7 @@ export default function Groups() {
 									style={{
 										color : '#73909C'
 									}}
+									onClick={undoGroupsBelongsChange}
 								/>
 							</BottomRowBack>
 						</FlexboxItem>
@@ -168,6 +309,7 @@ export default function Groups() {
 									style={{
 										color : '#fff'
 									}}
+									onClick={submitGroupsBelongsChange}
 								/>
 							</BottomRowSetChanges>
 						</FlexboxItem>
