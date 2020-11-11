@@ -5,6 +5,8 @@ import CalendarToday from '@material-ui/icons/CalendarToday';
 import PeopleAlt from '@material-ui/icons/PeopleAlt';
 import Person from '@material-ui/icons/Person';
 import ExitToApp from '@material-ui/icons/ExitToApp';
+import {IsAuthorized} from '../utils/index';
+import {IsLoggedIn} from '../utils/index';
 
 
 import {
@@ -15,8 +17,10 @@ import {
 } from "react-router-dom";
 
 export default function NavBar() {
+  IsAuthorized();
   const [URL,setURL]=useState(window.location.pathname);
   let OnClick=(newURL)=>{setURL(newURL)}
+  if(window.location.pathname!="/Login"&&IsLoggedIn())
   return (
     <Container>
       <MyLink to="/"          active={URL == ""?true:false}         onClick={()=>OnClick("")}>          <HomeIcon style={{paddingRight: 5}}     />Home </MyLink>
@@ -24,6 +28,11 @@ export default function NavBar() {
       <MyLink to="/Groups"    active={URL == "/Groups"?true:false}  onClick={()=>OnClick("/Groups")}>   <PeopleAlt style={{paddingRight: 5}}    />Zarządzaj grupami </MyLink>
       <MyLink to="/settings"  active={URL == "/settings"?true:false} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
       <MyLink to="/LogOut"    active={URL == "/LogOut"?true:false}  onClick={()=>OnClick("/LogOut")}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
+    </Container>
+  )
+  else
+  return(
+    <Container>  
     </Container>
   )
 }

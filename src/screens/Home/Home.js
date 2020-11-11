@@ -5,8 +5,10 @@ import {NotificationsList} from './NotificationsList/NotificationsList'
 import {ListContainer} from './List/List'
 import {StickyNotes} from './StickyNotes/StickyNotes'
 import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
+import {IsAuthorized} from '../../utils';
 
 export default function Home() {
+  IsAuthorized();
   return (
     <Container>
       <WidgetContainer>
