@@ -1,5 +1,7 @@
 import React,{useEffect, useRef, useState} from "react"
 import styled from 'styled-components'
+import {IsAuthorized} from '../../utils';
+import {IsLoggedIn} from '../../utils';
 
 const dayNames = ['pon', 'wto', 'śro', 'czw', 'pią', 'sob', 'nie'];
 const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
@@ -26,6 +28,7 @@ var remindersList = [
 ]
 
 export function Calendar() {
+    IsAuthorized();
     const calendarDivRef = useRef();
     const [month, setMonth] = useState(now.getMonth());
 
@@ -42,7 +45,7 @@ export function Calendar() {
 
     startingDate = new Date(now.setDate(1));
     calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
-
+    if(IsLoggedIn())
     return (
         <CalendarDiv ref={calendarDivRef}>
             <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold'}}>
@@ -55,6 +58,10 @@ export function Calendar() {
             </Wrapper>
             
         </CalendarDiv>
+    )
+    else
+    return(
+        <div/>
     )
 }
 

@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import styles from './Settings.module.css';
 import {Button} from '../../components/index';
 import Switch from '@material-ui/core/Switch';
+import {IsAuthorized} from '../../utils';
+import {IsLoggedIn} from '../../utils';
 
 function Settings() {
+    IsAuthorized();
     const user = {
         name: 'Jan',
         surname: 'Kowalski',
@@ -35,7 +38,7 @@ function Settings() {
             {id: 'email', name: "Email", state: state.notifyEmail}
         ]
     };
-
+    if(IsLoggedIn())
     return (
     <div className={styles.container}>
         <div className={styles.content}>
@@ -133,7 +136,11 @@ function Settings() {
             </div>
         </div>
     </div>
-    );
+    )
+    else
+    return(
+        <div/>
+    )
 
     function notifySwitch(event) {
         console.log(`${event.target.id} ${event.target.checked}`);
