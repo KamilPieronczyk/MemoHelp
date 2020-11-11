@@ -11,6 +11,8 @@ import RadioForm from './RadioForm'
 import {CheckBoxButton} from './CheckBoxButton'
 import {CollapseButton} from './CollapseButton'
 import {makeStyles} from '@material-ui/core';
+import {useRecoilState, useRecoilValue} from 'recoil'
+import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState } from '../../../utils/FirebaseReminders'
 
 const useStyles = makeStyles((theme) => ({
 		openedContainer: {
@@ -33,8 +35,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function NewNotificationForm() {
 	const styles = useStyles();
-	const [selectedDate, handleDateChange] = useState(new Date());
-	const [selectedTime, handleTimeChange] = useState(new Date());
+	const [selectedDate, handleDateChange] = useRecoilState(dateState);
+	const [selectedTime, handleTimeChange] = useRecoilState(timeState);
+	const [textConent, handleTextChange] = useRecoilState(textContentState);
 	const [showMoreSettings, setShowMoreSettings] = useState(true);
 
 	const autoGrowContentInput = (element) => {
@@ -47,12 +50,23 @@ export function NewNotificationForm() {
 
 	}
 
+	var reminder = new Reminder();
+		reminder.textConent = useRecoilValue(textContentState);
+		reminder.date = useRecoilValue(dateState);
+		reminder.time = useRecoilValue(timeState);
+		reminder.frequency = useRecoilValue(frequencyState)
+		reminder.weekDays = useRecoilValue(weekDaysState);
+
+	const pushToFirestore = () => {
+		reminder.SendReminderToUserCollection();
+	}
+
 	return (
 		<FormContainer className={showMoreSettings ? styles.openedContainer : styles.noOpenedContainer}>
 			<Container>
 				<div className={styles.firstColumn}>
 					<Typography variant="subtitle2">Utwórz przypomnienie</Typography>
-					<ContentInput type="text" placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} />
+					<ContentInput type="text" placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} onChange={e => handleTextChange(e.target.value)} />
 					<TimePickersContainer>
 						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 							<Timer style={{ marginRight: 5 }} />
@@ -113,6 +127,7 @@ export function NewNotificationForm() {
 							color: '#fff',
 						}}
 						text="Zapisz"
+						onClick={pushToFirestore}
 					/>
 				</div>
 				<div className={showMoreSettings ? styles.noCollapsedSecondColumn : styles.collapsedSecondColumn}></div>

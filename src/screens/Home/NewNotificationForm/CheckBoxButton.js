@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import {useRecoilState} from 'recoil'
+import { weekDaysState } from '../../../utils/FirebaseReminders'
 
 const useStyles = makeStyles((theme) => ({
   outlined: {
@@ -38,6 +40,8 @@ const weekDays = [
 export function CheckBoxButton() {
   const classes = useStyles();
   const [state, setState] = useState(new Set())
+  const [weekDaysArr, setWeekDaysState] = useRecoilState(weekDaysState);
+  
 
   let getVariant = (weekDay) => {
     return state.has(weekDay) ? 'contained' : 'outlined';
@@ -49,6 +53,7 @@ export function CheckBoxButton() {
     else
       state.add(weekDay)
     setState(new Set(state))
+    setWeekDaysState(Array.from(state))
   }
   return (
     <div>
