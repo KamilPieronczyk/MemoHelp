@@ -3,27 +3,30 @@
 import styled from 'styled-components'
 //import Checkbox from '@material-ui/core/Checkbox';
 import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
+//import { withStyles } from '@material-ui/core/styles';
+//import { green } from '@material-ui/core/colors';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import validator from 'validator';
+import firebase from 'firebase';
+import history from '../../../history';
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
+    //BrowserRouter as Router,
+    //Switch,
+    //Route,
     Link
   } from "react-router-dom";
 import {Button} from '../../../components'
 
-const GreenCheckbox = withStyles({
-    root: {
-        color: green[400],
-        '&$checked': {
-            color: green[600],
-        },
-    },
-    checked: {},
-})((props) => <Checkbox color="default" {...props} />);
+// const GreenCheckbox = withStyles({
+//     root: {
+//         color: green[400],
+//         '&$checked': {
+//             color: green[600],
+//         },
+//     },
+//     checked: {},
+// })((props) => <Checkbox color="default" {...props} />);
 
 export function LoginForm() {
     const [state, setState] = useState({
@@ -35,11 +38,39 @@ export function LoginForm() {
     const handleChange = (event) => {
         setState({ ...state, [event.target.name]: event.target.checked });
     };
+    const [mail, setMail] = useState("");
+    const [password, setPassword]=useState("");
+    const validateForm = () => {
+        if(!validator.isEmail(mail))
+            return false;
+        if (!validator.isLength(password,{min:6, max:30}))
+            return false;
+        return true;
+    };
+    const login = () => {
+        if (!validateForm())
+        {
+            console.log("Błąd walidacji");
+            return false;
+        }
+        firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
+            history.push("/");
+            window.location.reload();
+            console.log("zalogowano");
+        }).catch(function(error) {
+            // Handle Errors here.
+            //var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log("firebase auth:",errorMessage);
+            // ...
+          });
+        
+    }
     return (
         <LoginContainer>
-            <MyInput type="email" id="fname" name="fname" placeholder="e-mail">
+            <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
             </MyInput>
-            <MyInput type="password" id="pname" name="pname" placeholder="hasło">
+            <MyInput type="password" id="pname" name="pname" placeholder="hasło" onChange={p=>setPassword(p.target.value)}>
             </MyInput>
             <MyLink2 to="/login/recover">Odzyskiwanie hasła</MyLink2>
             <EmptyBox>
@@ -67,7 +98,8 @@ export function LoginForm() {
 						width: '48%',
 						color: '#fff',
 					}}
-					text="Zaloguj się"
+                    text="Zaloguj się"
+                    onClick={login}
 				/>
             </Buttonscontainer>
            
@@ -114,19 +146,19 @@ const EmptyBox = styled.div`
     //text-align:center;
     color: #73909C;
 `
-const Zaloguj = styled.div`
-    //width: 200px;
-    //height: 50px;
-    //border: 2px solid #73909C;
-    background-color: #73909C;
-    color: #FFFFFF;
-    text-align: center;
-    font-size: 16px;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    //width:100%;
-`
+// const Zaloguj = styled.div`
+//     //width: 200px;
+//     //height: 50px;
+//     //border: 2px solid #73909C;
+//     background-color: #73909C;
+//     color: #FFFFFF;
+//     text-align: center;
+//     font-size: 16px;
+//     border-radius: 10px;
+//     padding: 16px;
+//     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+//     //width:100%;
+// `
 const Google = styled.div`
     //width: 200px;
     height: 48px;
@@ -160,17 +192,17 @@ const ImgG = styled.img`
     height:34px;
     width:34px;
 `
-const EmptyBox2 = styled.div`
-    //min-height:50px;
-    //min-width:417px;
-    margin: 10px;
-    flex-direction: row;
-    text-align:center;
-    font-weight: bold;
-    font-size: 14px;
-    align-content:center;
-    align-items:center;
-`
+// const EmptyBox2 = styled.div`
+//     //min-height:50px;
+//     //min-width:417px;
+//     margin: 10px;
+//     flex-direction: row;
+//     text-align:center;
+//     font-weight: bold;
+//     font-size: 14px;
+//     align-content:center;
+//     align-items:center;
+// `
 const MyLink = styled(Link)`
 color: ${props=>props.active?"#738F9C":"black"} ;
 text-decoration: none; 
