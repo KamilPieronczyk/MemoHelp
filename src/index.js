@@ -3,6 +3,20 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import firebase from 'firebase/app'
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJ380bCZ3ukDzkf8dV09B0BqMQPPaN3u4",
+  authDomain: "memohelp.firebaseapp.com",
+  databaseURL: "https://memohelp.firebaseio.com",
+  projectId: "memohelp",
+  storageBucket: "memohelp.appspot.com",
+  messagingSenderId: "882484536209",
+  appId: "1:882484536209:web:49acd2ff387b98c97c7030",
+  measurementId: "G-LDVD4K1EZJ"
+};
+
+firebase.initializeApp(firebaseConfig);
 
 ReactDOM.render(
   <React.StrictMode>
