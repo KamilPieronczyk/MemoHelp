@@ -2,8 +2,17 @@ import firebase from 'firebase';
 import {atom} from 'recoil'
 
 export class Reminder {
+    textContent;
+    date;
+    time;
+    frequency;
+    weekDays;
+    usersGroup;
+
     SendReminderToUserCollection(){
-    firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid)
+    //firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid)
+    console.log(this.textContent);
+    firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2')
     .collection('Reminders').add({
             text: this.textContent,
             date: this.date,
@@ -38,7 +47,7 @@ export const dateState = atom({
 
 export const weekDaysState = atom({
     key: 'weekDays',
-    default: null    
+    default: []   
 })
 
 export const timeState = atom({

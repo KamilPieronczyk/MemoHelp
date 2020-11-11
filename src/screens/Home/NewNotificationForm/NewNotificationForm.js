@@ -37,10 +37,12 @@ export function NewNotificationForm() {
 	const styles = useStyles();
 	const [selectedDate, handleDateChange] = useRecoilState(dateState);
 	const [selectedTime, handleTimeChange] = useRecoilState(timeState);
-	const [textConent, handleTextChange] = useRecoilState(textContentState);
+	const [textContent, handleTextChange] = useRecoilState(textContentState);
 	const [showMoreSettings, setShowMoreSettings] = useState(true);
 
 	const autoGrowContentInput = (element) => {
+		console.log(textContent);
+		handleTextChange(element.target.value);
 		element.target.style.height = '30px';
 		element.target.style.height = element.target.scrollHeight + 'px';
 	};
@@ -51,11 +53,12 @@ export function NewNotificationForm() {
 	}
 
 	var reminder = new Reminder();
-		reminder.textConent = useRecoilValue(textContentState);
+		reminder.textContent = textContent;
 		reminder.date = useRecoilValue(dateState);
 		reminder.time = useRecoilValue(timeState);
-		reminder.frequency = useRecoilValue(frequencyState)
-		reminder.weekDays = useRecoilValue(weekDaysState);
+		reminder.frequency = useRecoilValue(frequencyState);
+		const days = useRecoilValue(weekDaysState);
+		reminder.weekDays = days;
 
 	const pushToFirestore = () => {
 		reminder.SendReminderToUserCollection();
