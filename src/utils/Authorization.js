@@ -2,7 +2,7 @@ import React from 'react';
 import firebase from 'firebase';
 
 
-export default function IsAuthorized() {
+export function IsAuthorized() {
 
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -13,5 +13,10 @@ export default function IsAuthorized() {
             window.location.pathname="/Login"; 
         }
       });
-
+}
+export function IsLoggedIn() {
+    console.log(firebase.auth().currentUser);
+    if(firebase.auth().currentUser==null)
+    return false;
+    else return true;
 }

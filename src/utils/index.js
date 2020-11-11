@@ -1,5 +1,5 @@
-import IsAuthorized from './Authorization'
-import IsLoggedIn from './Authorization'
+import {IsAuthorized} from './Authorization'
+import {IsLoggedIn} from './Authorization'
 
 
 export {

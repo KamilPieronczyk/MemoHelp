@@ -6,9 +6,11 @@ import {ListContainer} from './List/List'
 import {StickyNotes} from './StickyNotes/StickyNotes'
 import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
 import {IsAuthorized} from '../../utils';
+import {IsLoggedIn} from '../../utils';
 
 export default function Home() {
   IsAuthorized();
+  if(IsLoggedIn())
   return (
     <Container>
       <WidgetContainer>
@@ -19,6 +21,10 @@ export default function Home() {
         <div style={{gridArea: '4 / 5', gridRow: '1 / span 4'}}></div>
       </WidgetContainer>
     </Container>
+  )
+  else
+  return (
+    <div/>
   )
 }
 
