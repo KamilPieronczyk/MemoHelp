@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import firebase from 'firebase/app'
+import {SnackbarProvider} from 'notistack'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCJ380bCZ3ukDzkf8dV09B0BqMQPPaN3u4",
@@ -20,8 +21,10 @@ firebase.initializeApp(firebaseConfig);
 
 ReactDOM.render(
   <React.StrictMode>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <App />
+    <SnackbarProvider>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+      <App />
+    </SnackbarProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
