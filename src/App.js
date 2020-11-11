@@ -11,11 +11,12 @@ import Login from './screens/Login/login'
 import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 import Groups from './screens/Groups/Groups'
+import history from './history';
 
 function App() {
   return (
     <Body>
-      <Router>
+      <Router history={history}>
         <NavBar />
         <Switch>
           <Route path="/login/:path?">

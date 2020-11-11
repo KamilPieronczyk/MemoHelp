@@ -3,54 +3,84 @@
 import styled from 'styled-components'
 //import Checkbox from '@material-ui/core/Checkbox';
 import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
+// import { withStyles } from '@material-ui/core/styles';
+// import { green } from '@material-ui/core/colors';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import validator from 'validator';
+import firebase from 'firebase';
+import history from '../../../history';
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
+    // BrowserRouter as Router,
+    // Switch,
+    // Route,
     Link
   } from "react-router-dom";
 import {Button} from '../../../components';
-const GreenCheckbox = withStyles({
-    root: {
-        color: green[400],
-        '&$checked': {
-            color: green[600],
-        },
-    },
-    checked: {},
-})((props) => <Checkbox color="default" {...props} />);
+// const GreenCheckbox = withStyles({
+//     root: {
+//         color: green[400],
+//         '&$checked': {
+//             color: green[600],
+//         },
+//     },
+//     checked: {},
+// })((props) => <Checkbox color="default" {...props} />);
 
-export function Register() {
-    const [state, setState] = useState({
-        checkedA: true,
-        checkedB: true,
-        checkedF: true,
-        checkedG: true,
-    });
+export function Register(props) {
+    const [mail, setMail] = useState("");
+    const [password, setPassword]=useState("");
+    const [password2,setPassword2]=useState("");
+    const [state, setState] = useState(false);
     const handleChange = (event) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
+        setState(!state);
     };
+    const validateForm = () => {
+        if(!validator.isEmail(mail))
+            return false;
+        if(password!==password2)
+            return false;
+        if (!validator.isLength(password,{min:6, max:30}))
+            return false;
+        if (!state)
+            return false;
+        return true;
+    }
+    const reg = () => {
+        if (!validateForm())
+        {
+            console.log("Błąd walidacji");
+            return false;
+        }
+        firebase.auth().createUserWithEmailAndPassword(mail, password).then(()=>{
+            history.push("/");
+            window.location.reload();
+        }).catch(function(error) {
+            // Handle Errors here.
+            //var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log("firebase auth:",errorMessage);
+            // ...
+          });
+        
+    }
     return (
         <LoginContainer>
             <Nag>
             <MyText>Rejestracja:</MyText>
             <MyLink to="/login">Powrót</MyLink>
             </Nag>
-            <MyInput type="email" id="fname" name="fname" placeholder="e-mail">
+            <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
             </MyInput>
-            <MyInput type="password" id="pname" name="pname" placeholder="hasło">
+            <MyInput type="password" id="pname" name="pname" placeholder="hasło" onChange={p=>setPassword(p.target.value)}>
             </MyInput>
-            <MyInput type="password" id="pname2" name="pname2" placeholder="powtórz hasło">
+            <MyInput type="password" id="pname2" name="pname2" placeholder="powtórz hasło" onChange={p2=>setPassword2(p2.target.value)}>
             </MyInput>
             <EmptyBox>
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={state.checkedB}
+                            checked={state}
                             onChange={handleChange}
                             name="checkedB"
                             color="#73909C"
@@ -67,7 +97,8 @@ export function Register() {
 						width: '60%',
 						color: '#fff',
 					}}
-					text="Zarejestruj się"
+                    text="Zarejestruj się"
+                    onClick={reg}
 				/>
             </Buttonscontainer>
         </LoginContainer>
@@ -113,21 +144,21 @@ const EmptyBox = styled.div`
     //text-align:center;
     color: #73909C;
 `
-const Zarejestruj = styled.div`
-    //width: 200px;
-    //height: 50px;
-    //border: 2px solid #73909C;
-    background-color: #73909C;
-    color: #FFFFFF;
-    text-align: center;
-    font-size: 16px;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    padding-right:40px;
-    padding-left:40px;
-    //width:100%;
-`
+// const Zarejestruj = styled.div`
+//     //width: 200px;
+//     //height: 50px;
+//     //border: 2px solid #73909C;
+//     background-color: #73909C;
+//     color: #FFFFFF;
+//     text-align: center;
+//     font-size: 16px;
+//     border-radius: 10px;
+//     padding: 16px;
+//     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+//     padding-right:40px;
+//     padding-left:40px;
+//     //width:100%;
+// `
 
 const Buttonscontainer = styled(EmptyBox)`
     flex-direction:row;
@@ -137,15 +168,15 @@ const Buttonscontainer = styled(EmptyBox)`
 `
 
 
-const EmptyBox2 = styled.div`
-    //min-height:50px;
-    min-width:417px;
-    margin: 10px;
-    flex-direction: row;
-    text-align:center;
-    font-weight: bold;
-    font-size: 14px;
-`
+// const EmptyBox2 = styled.div`
+//     //min-height:50px;
+//     min-width:417px;
+//     margin: 10px;
+//     flex-direction: row;
+//     text-align:center;
+//     font-weight: bold;
+//     font-size: 14px;
+// `
 const MyText=styled.div`
     margin: 10px;
     font-family: 'Roboto', sans-serif;
