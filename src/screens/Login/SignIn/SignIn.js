@@ -66,6 +66,31 @@ export function LoginForm() {
           });
         
     }
+    var provider = new firebase.auth.GoogleAuthProvider();
+    const gLogin = () => {
+        provider.setCustomParameters({
+            'login_hint': 'user@example.com'
+          });
+          firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+            // ...
+            history.push("/");
+            window.location.reload();
+            console.log("zalogowano gmail (chyba)");
+          }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+          });
+    }
     return (
         <LoginContainer>
             <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
@@ -87,10 +112,19 @@ export function LoginForm() {
                 />
             </EmptyBox>
             <Buttonscontainer>
-                <Google>
+                {/* <Google>
                     <ImgG src="/assets/1004px-Google__G__Logo.svg.webp"></ImgG>
                     <span style={{ paddingTop: 16, paddingBottom: 16, paddingLeft: 20 }}>Zaloguj się</span>
-                </Google>
+                </Google> */}
+                <Button
+					type="contained"
+					style={{
+						width: '48%',
+						color: 'black',
+					}}
+                    text="Zaloguj się g"
+                    onClick={gLogin}
+				/>
                 <Button
 					color="#73909C"
 					type="contained"
