@@ -31,7 +31,9 @@ export function Calendar() {
 
     useEffect(()=>{
         document.addEventListener("wheel", function (e) {
-            var value = (e.deltaY/Math.abs(e.deltaY));
+
+            var value = (e.deltaY>0) ? 1 : -1;
+            console.log(value);
             now.setDate(1);
             now.setMonth(now.getMonth() + value);
             setMonth(now.getMonth());
