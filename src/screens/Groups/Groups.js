@@ -22,10 +22,10 @@ const GreenCheckbox = withStyles({
 	checked : {}
 })((props) => <Checkbox color="default" {...props} />);
 
-function AdminMembersView(props) {
+function AdminGroupsView(props) {
 
-	const remove = e => {
-		console.log(`user remove`);
+	const removeUserFromGroupTemp = e => {
+		console.log(`removeUserFromGroupTemp`);
 		console.group(e);
 	}
 
@@ -36,7 +36,7 @@ function AdminMembersView(props) {
 				<FlexboxItem key={person.id}>
 					<RightButton id={person.id}>
 						{person.name} {person.surname}<Close 
-							onClick={() => remove(person.id)}
+							onClick={() => removeUserFromGroupTemp(person.id)}
 						/>
 					</RightButton>
 				</FlexboxItem>
@@ -46,7 +46,7 @@ function AdminMembersView(props) {
 	)
 }
 
-function BelongsMembersView(props) {
+function OnlyMembersView(props) {
 	return(
 		<div>
 			{props.users.map(person => {
@@ -62,8 +62,8 @@ function BelongsMembersView(props) {
 
 export default function Groups() {
 
-	let firebaseData = {
-		isAdmin: [
+	let dataFromFirebase = {
+		adminGroups: [
 			{
 				id: "G0",
 				name: "Grupa0", 
@@ -81,7 +81,7 @@ export default function Groups() {
 				]
 			}
 		],
-		belong: [
+		onlyMember: [
 			{
 				id: "G2",
 				name: "Grupa2", 
@@ -106,75 +106,74 @@ export default function Groups() {
 		checkedB : true,
 		checkedF : true,
 		checkedG : true,
-		AdminMembersArr: firebaseData.isAdmin[0].users,
-		BelongsMembersArr: firebaseData.belong[0].users
+		AdminMembersArr: dataFromFirebase.adminGroups[0].users,
+		BelongsMembersArr: dataFromFirebase.onlyMember[0].users
 	});
 
-	const adminGroupClick = id => {
-		for(let i = 0; i < firebaseData.isAdmin.length; i++) {
-			if(firebaseData.isAdmin[i].id == id) {
-				setState({ ...state, AdminMembersArr: firebaseData.isAdmin[i].users});
+	const btnAdminGroupsViewClick = id => {
+		console.log(`btnAdminGroupsViewClick: ${id}`);
+		for(let i = 0; i < dataFromFirebase.adminGroups.length; i++) {
+			if(dataFromFirebase.adminGroups[i].id == id) {
+				setState({ ...state, AdminMembersArr: dataFromFirebase.adminGroups[i].users});
 				break;
 			}
 		}
 	};
 
-	const belongGroupClick = id => {
-		for(let i = 0; i < firebaseData.belong.length; i++) {
-			if(firebaseData.belong[i].id == id) {
-				setState({ ...state, BelongsMembersArr: firebaseData.belong[i].users});
+	const btnOnlyMemberViewClick = id => {
+		for(let i = 0; i < dataFromFirebase.onlyMember.length; i++) {
+			if(dataFromFirebase.onlyMember[i].id == id) {
+				setState({ ...state, BelongsMembersArr: dataFromFirebase.onlyMember[i].users});
 				break;
 			}
 		}
 	};
 
-	const addNewGroup = e => {
+	const addNewGroupToTemp = e => {
 		if (e.key === 'Enter') {
-			firebaseData.isAdmin.push(
+			dataFromFirebase.adminGroups.push(
 				{
 					id: e.target.value,
 					name: e.target.value,
 					users: []
 				}
 			)
-			console.log(firebaseData.isAdmin);
+			console.log(dataFromFirebase.adminGroups);
 		}
 	};
 
-	const addNewMember = (e, groupId, name) => {
+	const addNewMemberToTemp = (e, groupId, name) => {
 		if (e.key === 'Enter') {
-			console.log("addNewMember");	
+			console.log("addNewMemberToTemp");	
+			console.log(groupId, name);
 		}
 	};
 
-	const adminGroupEdit = id => {
-		console.log(`adminGroupEdit`);
+	const leftFromGroupTemp = id => {
+		console.log(`leftFromGroupTemp`);
+		console.log(id);
+	}
+
+	const editGroupTemp = id => {
+		console.log(`editGroupTemp`);
 		console.log(id);
 	};
 
-	const undoAdminChange = (e) => {
-		console.log(`undoAdminChange`);
-		console.log(e.target);
+	const undoAdminViewChange = () => {
+		console.log(`undoAdminViewChange`);
 	}
 
-	const submitAdminChange = (e) => {
-		console.log(`submitAdminChange`);
-		console.log(e.target);
+	const submitAdminViewChange = () => {
+		console.log(`submitAdminViewChange`);
 	}
 
-	const undoGroupsBelongsChange = (e) => {
-		console.log(`undoGroupsBelongsChange`);
-		console.log(e.target);
+	const undoOnlyMemberChange = () => {
+		console.log(`undoOnlyMemberChange`);
 	}
 
-	const submitGroupsBelongsChange = (e) => {
-		console.log(`submitGroupsBelongsChange`);
-		console.log(e.target);
+	const submitOnlyMemberViewChange = () => {
+		console.log(`submitOnlyMemberViewChange`);
 	}
-
-	// const handleChange = (event) => {
-		// 	setState({ ...state, [event.target.name]: event.target.checked });
-	// };
 
 	return (
 		<FlexboxContainerContainer>
@@ -192,13 +191,13 @@ export default function Groups() {
 								</LeftButtonZnajomi>
 							</FlexboxItem> */}
 
-							{firebaseData.isAdmin.map(item => {
+							{dataFromFirebase.adminGroups.map(item => {
 								return(
 									<FlexboxItem key={item.id} 
-										onClick={() => adminGroupClick(item.id)}
+										onClick={() => btnAdminGroupsViewClick(item.id)}
 									>
 										<LeftButton>
-											{item.name}<CreateIcon onClick={() => adminGroupEdit(item.id)}/>
+											{item.name}<CreateIcon onClick={() => editGroupTemp(item.id)}/>
 										</LeftButton>
 									</FlexboxItem>
 								)
@@ -207,7 +206,7 @@ export default function Groups() {
 							<FlexboxItem>
 								<AddButton>
 									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" 
-										onKeyDown={addNewGroup}
+										onKeyDown={addNewGroupToTemp}
 									/>{' '}
 								</AddButton>
 							</FlexboxItem>
@@ -216,11 +215,13 @@ export default function Groups() {
 						<CreateGroupsRight>
 							<FlexboxItem>
 								<RightButton>
-									<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" />{' '}
+									<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" 
+										onKeyDown={addNewMemberToTemp}
+									/>{' '}
 								</RightButton>
 							</FlexboxItem>
 
-						<AdminMembersView users={state.AdminMembersArr} />
+						<AdminGroupsView users={state.AdminMembersArr} />
 
 						</CreateGroupsRight>
 					</CreateGroups>
@@ -234,7 +235,7 @@ export default function Groups() {
 									style={{
 										color : '#73909C'
 									}}
-									onClick={undoAdminChange}
+									onClick={undoAdminViewChange}
 								/>
 							</BottomRowBack>
 						</FlexboxItem>
@@ -247,7 +248,7 @@ export default function Groups() {
 									style={{
 										color : '#fff'
 									}}
-									onClick={submitAdminChange}
+									onClick={submitAdminViewChange}
 								/>
 							</BottomRowSetChanges>
 						</FlexboxItem>
@@ -265,13 +266,13 @@ export default function Groups() {
 							</FlexboxItem> */}
 
 
-							{firebaseData.belong.map(item => {
+							{dataFromFirebase.onlyMember.map(item => {
 								return(
 									<FlexboxItem key={item.id}
-										onClick={() => belongGroupClick(item.id)} 
+										onClick={() => btnOnlyMemberViewClick(item.id)} 
 									>
 										<LeftButton>
-											{item.name}<Close />
+											{item.name}<Close onClick={() => leftFromGroupTemp(item.id)}/>
 										</LeftButton>
 									</FlexboxItem> 
 								)
@@ -280,9 +281,8 @@ export default function Groups() {
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
-							<FlexboxItem><RightButton>Podaj email</RightButton></FlexboxItem>
 							
-							<BelongsMembersView users={state.BelongsMembersArr}/>
+							<OnlyMembersView users={state.BelongsMembersArr}/>
 
 						</CreateGroupsRight>
 					</CreateGroups>
@@ -296,7 +296,7 @@ export default function Groups() {
 									style={{
 										color : '#73909C'
 									}}
-									onClick={undoGroupsBelongsChange}
+									onClick={undoOnlyMemberChange}
 								/>
 							</BottomRowBack>
 						</FlexboxItem>
@@ -309,7 +309,7 @@ export default function Groups() {
 									style={{
 										color : '#fff'
 									}}
-									onClick={submitGroupsBelongsChange}
+									onClick={submitOnlyMemberViewChange}
 								/>
 							</BottomRowSetChanges>
 						</FlexboxItem>
