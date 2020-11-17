@@ -107,7 +107,8 @@ export default function Groups() {
 		checkedF : true,
 		checkedG : true,
 		currAdminGroupsView: dataFromFirebase.adminGroups[0],
-		currOnlyMemberView: dataFromFirebase.onlyMember[0]
+		currOnlyMemberView: dataFromFirebase.onlyMember[0],
+		newGroupsTmp: []
 	});
 
 	const btnAdminGroupsViewClick = id => {
@@ -130,24 +131,27 @@ export default function Groups() {
 	};
 
 	const addNewGroupToTemp = e => {
-		if (e.key === 'Enter') {
-			dataFromFirebase.adminGroups.push(
+		if (e.key === 'Enter' && e.target.value != "") {
+			state.newGroupsTmp.push(
 				{
-					id: e.target.value,
+					id: Math.random(),
 					name: e.target.value,
 					users: []
 				}
 			)
-			console.log(dataFromFirebase.adminGroups);
+			setState({...state, newGroupsTmp: state.newGroupsTmp});
+			e.target.value = "";
 		}
 	};
 
 	const addNewMemberToTemp = (e) => {
-		if (e.key === 'Enter') {
+		// TODO check email
+		if (e.key === 'Enter' && e.target.value !== "") {
 			let groupId = state.currAdminGroupsView.id;
-			let name = e.target.value;
+			let email = e.target.value;
+			e.target.value = "";
 			console.log("addNewMemberToTemp");	
-			console.log(groupId, name);
+			console.log(groupId, email);
 		}
 	};
 
@@ -205,6 +209,18 @@ export default function Groups() {
 								)
 							})}
 
+							{state.newGroupsTmp.map(item => {
+								return(
+									<FlexboxItem key={item.id} 
+										onClick={() => btnAdminGroupsViewClick(item.id)}
+									>
+										<LeftButton>
+											{item.name}<CreateIcon onClick={() => editGroupTemp(item.id)}/>
+										</LeftButton>
+									</FlexboxItem>
+								)
+							})}
+							
 							<FlexboxItem>
 								<AddButton>
 									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" 
