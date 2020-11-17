@@ -24,19 +24,19 @@ const GreenCheckbox = withStyles({
 
 function AdminGroupsView(props) {
 
-	const removeUserFromGroupTemp = e => {
+	const removeUserFromGroupTemp = (groupId, personId) => {
 		console.log(`removeUserFromGroupTemp`);
-		console.group(e);
+		console.group(groupId, personId);
 	}
 
 	return(
 		<div>
-			{props.users.map(person => {
+			{props.group.users.map(person => {
 				return(
 				<FlexboxItem key={person.id}>
 					<RightButton id={person.id}>
 						{person.name} {person.surname}<Close 
-							onClick={() => removeUserFromGroupTemp(person.id)}
+							onClick={() => removeUserFromGroupTemp(props.group.id, person.id)}
 						/>
 					</RightButton>
 				</FlexboxItem>
@@ -49,7 +49,7 @@ function AdminGroupsView(props) {
 function OnlyMembersView(props) {
 	return(
 		<div>
-			{props.users.map(person => {
+			{props.group.users.map(person => {
 				return(
 					<FlexboxItem key={`${person.id}`}>
 						<RightButton>{person.name} {person.surname}</RightButton>
@@ -106,15 +106,15 @@ export default function Groups() {
 		checkedB : true,
 		checkedF : true,
 		checkedG : true,
-		AdminMembersArr: dataFromFirebase.adminGroups[0].users,
-		BelongsMembersArr: dataFromFirebase.onlyMember[0].users
+		currAdminGroupsView: dataFromFirebase.adminGroups[0],
+		currOnlyMemberView: dataFromFirebase.onlyMember[0]
 	});
 
 	const btnAdminGroupsViewClick = id => {
 		console.log(`btnAdminGroupsViewClick: ${id}`);
 		for(let i = 0; i < dataFromFirebase.adminGroups.length; i++) {
 			if(dataFromFirebase.adminGroups[i].id == id) {
-				setState({ ...state, AdminMembersArr: dataFromFirebase.adminGroups[i].users});
+				setState({ ...state, currAdminGroupsView: dataFromFirebase.adminGroups[i]});
 				break;
 			}
 		}
@@ -123,7 +123,7 @@ export default function Groups() {
 	const btnOnlyMemberViewClick = id => {
 		for(let i = 0; i < dataFromFirebase.onlyMember.length; i++) {
 			if(dataFromFirebase.onlyMember[i].id == id) {
-				setState({ ...state, BelongsMembersArr: dataFromFirebase.onlyMember[i].users});
+				setState({ ...state, currOnlyMemberView: dataFromFirebase.onlyMember[i]});
 				break;
 			}
 		}
@@ -142,8 +142,10 @@ export default function Groups() {
 		}
 	};
 
-	const addNewMemberToTemp = (e, groupId, name) => {
+	const addNewMemberToTemp = (e) => {
 		if (e.key === 'Enter') {
+			let groupId = state.currAdminGroupsView.id;
+			let name = e.target.value;
 			console.log("addNewMemberToTemp");	
 			console.log(groupId, name);
 		}
@@ -221,7 +223,7 @@ export default function Groups() {
 								</RightButton>
 							</FlexboxItem>
 
-						<AdminGroupsView users={state.AdminMembersArr} />
+						<AdminGroupsView group={state.currAdminGroupsView} />
 
 						</CreateGroupsRight>
 					</CreateGroups>
@@ -282,7 +284,7 @@ export default function Groups() {
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
 							
-							<OnlyMembersView users={state.BelongsMembersArr}/>
+							<OnlyMembersView group={state.currOnlyMemberView}/>
 
 						</CreateGroupsRight>
 					</CreateGroups>
