@@ -32,10 +32,14 @@ function UserAdminGroupsShowMembers(props) {
 	return(
 		<div>
 			{props.groupDetails.users.map(person => {
+				var text;
+				if(person.name === undefined || person.name === undefined)
+					text = person.email
+				else text = person.name + " " + person.surname
 				return(
 				<FlexboxItem key={person.id}>
 					<RightButton id={person.id}>
-						{person.name} {person.surname}<Close 
+						{text} <Close 
 							onClick={() => removeUserFromGroupTemp(props.groupDetails.id, person.id)}
 						/>
 					</RightButton>
@@ -109,12 +113,6 @@ export default function Groups() {
 		]
 	})
 
-	let TMP_AdminGroupsNew = new Map();
-	let TMP_AdminGroupsEditInfo = new Map();
-	let TMP_AdminGroupsAddMembers = new Map();
-	let TMP_AdminGroupsRemoveMembers = new Map();
-	let TMP_AdminDeleteGroups = new Map();
-
 	const [ state, setState ] = useState({
 		checkedA : true,
 		checkedB : true,
@@ -128,7 +126,14 @@ export default function Groups() {
 			userAdminGroups.get(Array.from(userAdminGroups.keys())[0]) : [],
 		userGroupsMembersView: Array.from(userGroups.keys()).length > 0 ? 
 			userGroups.get(Array.from(userGroups.keys())[0]) : [],
-		TMP_LeftFromGroups: []
+		TMP_AdminGroupsUndoList: [],
+		TMP_AdminDeleteGroups: [],
+		TMP_LeftFromGroups: [],
+		TMP_AdminGroupsNew: new Map(),
+		TMP_AdminGroupsEditInfo: new Map(),
+		TMP_AdminGroupsAddMembers: new Map(),
+		TMP_AdminGroupsRemoveMembers: new Map(),
+
 	});
 
 	const btnAdminGroupsViewClick = id => {
@@ -159,25 +164,68 @@ export default function Groups() {
 			}
 
 			state.userAdminGroupsView.set(obj.id, obj);
-			TMP_AdminGroupsNew.set(obj.id, obj)
+			state.TMP_AdminGroupsNew.set(obj.id, obj);
+			setState({...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
+
+			// Define undo method
+			state.TMP_AdminGroupsUndoList.push({
+				undo: () => {
+					let id = obj.id;
+					state.TMP_AdminGroupsNew.delete(id);
+					setState({...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
+					state.userAdminGroupsView.delete(id);
+					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+				}
+			});
+			setState({ ...state, TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList});
 
 			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
 			
 			btnAdminGroupsViewClick(obj.id);
 			e.target.value = "";
-			
-			console.log(TMP_AdminGroupsNew);
 		}
 	};
 
 	const addNewMember = (e) => {
-		// TODO check email
 		if (e.key === 'Enter' && e.target.value !== "") {
+
 			let groupId = state.userAdminGroupsMembersView.id;
-			let email = e.target.value;
+			let tmpId = Math.random();
+			let obj = {
+				id: tmpId,
+				email: e.target.value
+			}
+
+			// TODO check email
 			e.target.value = "";
-			console.log("addNewMember");	
-			console.log(groupId, email);
+
+			state.TMP_AdminGroupsUndoList.push({
+				undo: () => {
+					state.TMP_AdminGroupsAddMembers.get(groupId).users.pop();
+					if(state.TMP_AdminGroupsAddMembers.get(groupId).users.length === 0)
+						state.TMP_AdminGroupsAddMembers.delete(groupId)
+					setState({...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
+					state.userAdminGroupsView.get(groupId).users.pop();
+					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+					// TODO member view
+				}
+			});
+
+			state.userAdminGroupsView.get(groupId).users.push(obj);
+			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+
+			if(state.TMP_AdminGroupsAddMembers.has(groupId))
+				state.TMP_AdminGroupsAddMembers.get(groupId).users.push(obj);
+			else {
+				state.TMP_AdminGroupsAddMembers.set(groupId, {users: [obj]});
+			}
+				
+
+			setState({...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
+			state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
+			setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
+
+			console.log(state.TMP_AdminGroupsAddMembers);
 		}
 	};
 
@@ -202,15 +250,39 @@ export default function Groups() {
 	}
 
 	const editGroup = id => {
-		console.log(id);
+		let name = state.userAdminGroupsView.get(id).name;
+		state.TMP_AdminGroupsUndoList.push({
+			undo: () => {
+				state.TMP_AdminGroupsEditInfo.delete(id);
+				setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
+				state.userAdminGroupsView.get(id).name = name;
+				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+			}
+		});
+		state.userAdminGroupsView.get(id).name = "Edit test";
+		setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+		state.TMP_AdminGroupsEditInfo.set(id, state.userAdminGroupsView.get(id));
+		setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
 	};
 
 	const undoAdminViewChange = () => {
-		console.log(`undoAdminViewChange`);
+		if(state.TMP_AdminGroupsUndoList.length > 0) {
+			let obj = state.TMP_AdminGroupsUndoList.pop();
+			setState({ ...state, TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList});
+			obj.undo();
+		}
 	}
 
 	const submitAdminViewChange = () => {
-		console.log(`submitAdminViewChange`);
+		console.log(state.TMP_AdminGroupsNew);
+		console.log(state.TMP_AdminGroupsEditInfo);
+		console.log(state.TMP_AdminGroupsAddMembers);
+		console.log(state.TMP_AdminGroupsRemoveMembers);
+		setState({ ...state, TMP_AdminGroupsNew: new Map()});
+		setState({ ...state, TMP_AdminGroupsEditInfo: new Map()});
+		setState({ ...state, TMP_AdminGroupsAddMembers: new Map()});
+		setState({ ...state, TMP_AdminGroupsRemoveMembers: new Map()});
+		setState({ ...state, TMP_AdminGroupsUndoList: []});
 	}
 
 	const undoUserGroupsChange = () => {
@@ -219,13 +291,12 @@ export default function Groups() {
 			setState({ ...state, TMP_LeftFromGroups: state.TMP_LeftFromGroups});
 			state.userGroupsView.set(group.id, group);
 			setState({ ...state, userGroupsView: new Map([...state.userGroupsView.entries()].sort())});
-		} else {
-			console.log("TODO, members");
 		}
 	}
 
 	const submitUserGroupsChange = () => {
 		console.log(state.TMP_LeftFromGroups);
+		setState({ ...state, TMP_LeftFromGroups: []});
 	}
 
 	return (
