@@ -24,11 +24,6 @@ const GreenCheckbox = withStyles({
 
 function UserAdminGroupsShowMembers(props) {
 
-	const removeUserFromGroupTemp = (groupId, personId) => {
-		console.log(`removeUserFromGroupTemp`);
-		console.group(groupId, personId);
-	}
-
 	return(
 		<div>
 			{props.groupDetails.users.map(person => {
@@ -40,7 +35,7 @@ function UserAdminGroupsShowMembers(props) {
 				<FlexboxItem key={person.id}>
 					<RightButton id={person.id}>
 						{text} <Close 
-							onClick={() => removeUserFromGroupTemp(props.groupDetails.id, person.id)}
+							onClick={() => props.fun(props.groupDetails.id, person.id)}
 						/>
 					</RightButton>
 				</FlexboxItem>
@@ -136,6 +131,51 @@ export default function Groups() {
 
 	});
 
+
+	const removeUserFromGroupTemp = (groupId, personId) => {
+
+		let inx = state.userAdminGroupsView.get(groupId).users.findIndex(item => {
+			return item.id === personId;
+		});
+
+		let user = state.userAdminGroupsView.get(groupId).users[inx];
+
+		if(user.inDataBase === false) {
+			// TODO 
+			// BUG delete user that was added and not send to database
+		} else {
+			state.TMP_AdminGroupsUndoList.push({
+				undo: () => {
+					state.TMP_AdminGroupsRemoveMembers.get(groupId).users.pop();
+					if(state.TMP_AdminGroupsRemoveMembers.get(groupId).users.length === 0)
+						state.TMP_AdminGroupsRemoveMembers.delete(groupId);
+					setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
+					state.userAdminGroupsView.get(groupId).users.push(user);
+					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+					console.log(`Undo: remove user ${personId} from group ${groupId}`)
+				}
+			});
+	
+			state.userAdminGroupsView.get(groupId).users.splice(inx, 1);
+			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+	
+			if(state.TMP_AdminGroupsRemoveMembers.has(groupId))
+				state.TMP_AdminGroupsRemoveMembers.get(groupId).users.push(personId);
+			else {
+				state.TMP_AdminGroupsRemoveMembers.set(groupId, {users: [personId]});
+			}
+	
+			setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
+			state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
+			setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
+		}
+
+		console.log("state.TMP_AdminGroupsRemoveMembers");
+		console.log(state.TMP_AdminGroupsRemoveMembers);
+		console.log("state.TMP_AdminGroupsUndoList");
+		console.log(state.TMP_AdminGroupsUndoList);
+	}
+
 	const btnAdminGroupsViewClick = id => {
 
 		if(state.userAdminGroupsView.has(id) === false) return;
@@ -175,6 +215,7 @@ export default function Groups() {
 					setState({...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
 					state.userAdminGroupsView.delete(id);
 					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+					console.log(`Undo: crete new group ${id}`)
 				}
 			});
 			setState({ ...state, TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList});
@@ -183,6 +224,11 @@ export default function Groups() {
 			
 			btnAdminGroupsViewClick(obj.id);
 			e.target.value = "";
+
+			console.log("state.TMP_AdminGroupsNew");
+			console.log(state.TMP_AdminGroupsNew);
+			console.log("state.TMP_AdminGroupsUndoList");
+			console.log(state.TMP_AdminGroupsUndoList);
 		}
 	};
 
@@ -193,7 +239,8 @@ export default function Groups() {
 			let tmpId = Math.random();
 			let obj = {
 				id: tmpId,
-				email: e.target.value
+				email: e.target.value,
+				inDataBase: false			
 			}
 
 			// TODO check email
@@ -207,7 +254,7 @@ export default function Groups() {
 					setState({...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
 					state.userAdminGroupsView.get(groupId).users.pop();
 					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-					// TODO member view
+					console.log(`Undo: add new member ${obj.id} to group: ${groupId}`)
 				}
 			});
 
@@ -225,7 +272,10 @@ export default function Groups() {
 			state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
 			setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
 
+			console.log("state.TMP_AdminGroupsAddMembers");
 			console.log(state.TMP_AdminGroupsAddMembers);
+			console.log("state.TMP_AdminGroupsUndoList");
+			console.log(state.TMP_AdminGroupsUndoList);
 		}
 	};
 
@@ -257,12 +307,18 @@ export default function Groups() {
 				setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
 				state.userAdminGroupsView.get(id).name = name;
 				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+				console.log(`Undo: edit group ${id}`)
 			}
 		});
 		state.userAdminGroupsView.get(id).name = "Edit test";
 		setState({...state, userAdminGroupsView: state.userAdminGroupsView});
 		state.TMP_AdminGroupsEditInfo.set(id, state.userAdminGroupsView.get(id));
 		setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
+
+		console.log("state.TMP_AdminGroupsEditInfo");
+		console.log(state.TMP_AdminGroupsEditInfo);
+		console.log("state.TMP_AdminGroupsUndoList");
+		console.log(state.TMP_AdminGroupsUndoList);
 	};
 
 	const undoAdminViewChange = () => {
@@ -346,7 +402,7 @@ export default function Groups() {
 								</RightButton>
 							</FlexboxItem>
 
-						<UserAdminGroupsShowMembers groupDetails={state.userAdminGroupsMembersView} />
+						<UserAdminGroupsShowMembers groupDetails={state.userAdminGroupsMembersView} fun={removeUserFromGroupTemp} />
 
 						</CreateGroupsRight>
 					</CreateGroups>
