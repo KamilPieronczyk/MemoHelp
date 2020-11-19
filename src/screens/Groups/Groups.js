@@ -22,7 +22,7 @@ const GreenCheckbox = withStyles({
 	checked : {}
 })((props) => <Checkbox color="default" {...props} />);
 
-function AdminGroupsView(props) {
+function UserAdminGroupsShowMembers(props) {
 
 	const removeUserFromGroupTemp = (groupId, personId) => {
 		console.log(`removeUserFromGroupTemp`);
@@ -31,12 +31,12 @@ function AdminGroupsView(props) {
 
 	return(
 		<div>
-			{props.group.users.map(person => {
+			{props.groupDetails.users.map(person => {
 				return(
 				<FlexboxItem key={person.id}>
 					<RightButton id={person.id}>
 						{person.name} {person.surname}<Close 
-							onClick={() => removeUserFromGroupTemp(props.group.id, person.id)}
+							onClick={() => removeUserFromGroupTemp(props.groupDetails.id, person.id)}
 						/>
 					</RightButton>
 				</FlexboxItem>
@@ -46,10 +46,10 @@ function AdminGroupsView(props) {
 	)
 }
 
-function OnlyMembersView(props) {
+function UserGroupsShowMembers(props) {
 	return(
 		<div>
-			{props.group.users.map(person => {
+			{props.groupDetails.users.map(person => {
 				return(
 					<FlexboxItem key={`${person.id}`}>
 						<RightButton>{person.name} {person.surname}</RightButton>
@@ -61,107 +61,121 @@ function OnlyMembersView(props) {
 }
 
 export default function Groups() {
+	
+	let userAdminGroups = new Map();
+	let userGroups = new Map();
 
-	let dataFromFirebase = {
-		adminGroups: [
-			{
-				id: "G0",
-				name: "Grupa0", 
-				users: [
-					{id: "P0",name: "Radek",surname: "Mo"},
-					{id: "P2",name: "Kamil",surname: "Duda"}
-				]
-			},
-			{
-				id: "G1",
-				name: "Grupa1", 
-				users: [
-					{id: "P1",name: "Jan",surname: "Morawiecki"},
-					{id: "P2",name: "Kamil",surname: "Duda"}
-				]
-			}
-		],
-		onlyMember: [
-			{
-				id: "G2",
-				name: "Grupa2", 
-				users: [
-					{id: "P1",name: "Andrzej",surname: "Morawiecki"},
-					{id: "P2",name: "Donald",surname: "Bieden"},
-				]
-			},
-			{
-				id: "G3",
-				name: "Grupa3", 
-				users: [
-					{id: "P1",name: "Ja",surname: "Mo"},
-					{id: "P2",name: "Ru",surname: "Sto"},
-				]
-			}
+	// TODO get value from firebase
+
+	userAdminGroups.set("G0", {
+		id: "G0",
+		name: "Grupa0", 
+		users: [
+			{id: "P0",name: "Radek",surname: "Mo"},
+			{id: "P2",name: "Kamil",surname: "Duda"}
 		]
-	}
+	})
+
+	userAdminGroups.set("G1", {
+		id: "G1",
+		name: "Grupa1", 
+		users: [
+			{id: "P1",name: "Jan",surname: "Morawiecki"},
+			{id: "P2",name: "Kamil",surname: "Duda"}
+		]
+	})
+
+	userGroups.set("G2", {
+		id: "G2",
+		name: "Grupa2", 
+		users: [
+			{id: "P1",name: "Andrzej",surname: "Morawiecki"},
+			{id: "P2",name: "Donald",surname: "Bieden"},
+		]
+	})
+
+	userGroups.set("G3", {
+		id: "G3",
+		name: "Grupa3", 
+		users: [
+			{id: "P1",name: "Ja",surname: "Mo"},
+			{id: "P2",name: "Ru",surname: "Sto"},
+		]
+	})
+
+	let TMP_AdminGroupsNew = new Map();
+	let TMP_AdminGroupsEditInfo = new Map();
+	let TMP_AdminGroupsAddMembers = new Map();
+	let TMP_AdminGroupsRemoveMembers = new Map();
+	let TMP_AdminDeleteGroups = new Map();
+	let TMP_LeftFromGroups = new Map();
 
 	const [ state, setState ] = useState({
 		checkedA : true,
 		checkedB : true,
 		checkedF : true,
 		checkedG : true,
-		currAdminGroupsView: dataFromFirebase.adminGroups[0],
-		currOnlyMemberView: dataFromFirebase.onlyMember[0],
-		newGroupsTmp: []
+		userAdminGroupsView: Array.from(userAdminGroups.keys()).length > 0 ?
+			userAdminGroups : [],
+		userGroupsView: Array.from(userGroups.keys()).length > 0 ? 
+			userGroups : [],
+		userAdminGroupsMembersView: Array.from(userAdminGroups.keys()).length > 0 ? 
+			userAdminGroups.get(Array.from(userAdminGroups.keys())[0]) : [],
+		userGroupsMembersView: Array.from(userGroups.keys()).length > 0 ? 
+			userGroups.get(Array.from(userGroups.keys())[0]) : [],
 	});
 
 	const btnAdminGroupsViewClick = id => {
-		console.log(`btnAdminGroupsViewClick: ${id}`);
-		for(let i = 0; i < dataFromFirebase.adminGroups.length; i++) {
-			if(dataFromFirebase.adminGroups[i].id == id) {
-				setState({ ...state, currAdminGroupsView: dataFromFirebase.adminGroups[i]});
-				break;
-			}
-		}
+		if(Array.from(state.userAdminGroupsView.keys()).length > 0) {
+			setState({ ...state, userAdminGroupsMembersView: state.userAdminGroupsView.get(id)});
+		} else setState({ ...state, userAdminGroupsMembersView: []});
 	};
 
 	const btnOnlyMemberViewClick = id => {
-		for(let i = 0; i < dataFromFirebase.onlyMember.length; i++) {
-			if(dataFromFirebase.onlyMember[i].id == id) {
-				setState({ ...state, currOnlyMemberView: dataFromFirebase.onlyMember[i]});
-				break;
-			}
-		}
+		if(Array.from(state.userGroupsView.keys()).length) {
+			setState({ ...state, userGroupsMembersView: state.userGroupsView.get(id)});
+		} else setState({ ...state, userGroupsMembersView: []});
 	};
 
-	const addNewGroupToTemp = e => {
+	const addNewGroup = e => {
 		if (e.key === 'Enter' && e.target.value != "") {
-			state.newGroupsTmp.push(
-				{
-					id: Math.random(),
-					name: e.target.value,
-					users: []
-				}
-			)
-			setState({...state, newGroupsTmp: state.newGroupsTmp});
+			
+			let obj = {
+				id: Math.random(),
+				name: e.target.value,
+				users: []
+			}
+
+			state.userAdminGroupsView.set(obj.id, obj);
+			TMP_AdminGroupsNew.set(obj.id, obj)
+
+			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+			
+			btnAdminGroupsViewClick(obj.id);
 			e.target.value = "";
+			
+			console.log(TMP_AdminGroupsNew);
 		}
 	};
 
-	const addNewMemberToTemp = (e) => {
+	const addNewMember = (e) => {
 		// TODO check email
 		if (e.key === 'Enter' && e.target.value !== "") {
-			let groupId = state.currAdminGroupsView.id;
+			let groupId = state.userAdminGroupsMembersView.id;
 			let email = e.target.value;
 			e.target.value = "";
-			console.log("addNewMemberToTemp");	
+			console.log("addNewMember");	
 			console.log(groupId, email);
 		}
 	};
 
-	const leftFromGroupTemp = id => {
-		console.log(`leftFromGroupTemp`);
+	const leftFromGroup = id => {
+		console.log(`leftFromGroup`);
 		console.log(id);
 	}
 
-	const editGroupTemp = id => {
-		console.log(`editGroupTemp`);
+	const editGroup = id => {
+		console.log(`editGroup`);
 		console.log(id);
 	};
 
@@ -197,34 +211,23 @@ export default function Groups() {
 								</LeftButtonZnajomi>
 							</FlexboxItem> */}
 
-							{dataFromFirebase.adminGroups.map(item => {
+							{Array.from(state.userAdminGroupsView.keys()).map(key => {
+								let name = state.userAdminGroupsView.get(key).name;
 								return(
-									<FlexboxItem key={item.id} 
-										onClick={() => btnAdminGroupsViewClick(item.id)}
+									<FlexboxItem key={key} 
+										onClick={() => btnAdminGroupsViewClick(key)}
 									>
 										<LeftButton>
-											{item.name}<CreateIcon onClick={() => editGroupTemp(item.id)}/>
+											{name}<CreateIcon onClick={() => editGroup(key)}/>
 										</LeftButton>
 									</FlexboxItem>
 								)
 							})}
 
-							{state.newGroupsTmp.map(item => {
-								return(
-									<FlexboxItem key={item.id} 
-										onClick={() => btnAdminGroupsViewClick(item.id)}
-									>
-										<LeftButton>
-											{item.name}<CreateIcon onClick={() => editGroupTemp(item.id)}/>
-										</LeftButton>
-									</FlexboxItem>
-								)
-							})}
-							
 							<FlexboxItem>
 								<AddButton>
 									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" 
-										onKeyDown={addNewGroupToTemp}
+										onKeyDown={addNewGroup}
 									/>{' '}
 								</AddButton>
 							</FlexboxItem>
@@ -234,12 +237,12 @@ export default function Groups() {
 							<FlexboxItem>
 								<RightButton>
 									<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" 
-										onKeyDown={addNewMemberToTemp}
+										onKeyDown={addNewMember}
 									/>{' '}
 								</RightButton>
 							</FlexboxItem>
 
-						<AdminGroupsView group={state.currAdminGroupsView} />
+						<UserAdminGroupsShowMembers groupDetails={state.userAdminGroupsMembersView} />
 
 						</CreateGroupsRight>
 					</CreateGroups>
@@ -283,14 +286,14 @@ export default function Groups() {
 								</LeftButtonZnajomi>
 							</FlexboxItem> */}
 
-
-							{dataFromFirebase.onlyMember.map(item => {
+							{Array.from(state.userGroupsView.keys()).map(key => {
+								let name = state.userGroupsView.get(key).name
 								return(
-									<FlexboxItem key={item.id}
-										onClick={() => btnOnlyMemberViewClick(item.id)} 
+									<FlexboxItem key={key}
+										onClick={() => btnOnlyMemberViewClick(key)} 
 									>
 										<LeftButton>
-											{item.name}<Close onClick={() => leftFromGroupTemp(item.id)}/>
+											{name}<Close onClick={() => leftFromGroup(key)}/>
 										</LeftButton>
 									</FlexboxItem> 
 								)
@@ -300,7 +303,7 @@ export default function Groups() {
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
 							
-							<OnlyMembersView group={state.currOnlyMemberView}/>
+							<UserGroupsShowMembers groupDetails={state.userGroupsMembersView}/>
 
 						</CreateGroupsRight>
 					</CreateGroups>
