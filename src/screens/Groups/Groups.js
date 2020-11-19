@@ -47,17 +47,23 @@ function UserAdminGroupsShowMembers(props) {
 }
 
 function UserGroupsShowMembers(props) {
-	return(
-		<div>
-			{props.groupDetails.users.map(person => {
-				return(
-					<FlexboxItem key={`${person.id}`}>
-						<RightButton>{person.name} {person.surname}</RightButton>
-					</FlexboxItem>
-				)
-			})}
-		</div>
-	)
+	if(props.groupDetails.length !== 0) {
+		return(
+			<div>
+				{props.groupDetails.users.map(person => {
+					return(
+						<FlexboxItem key={`${person.id}`}>
+							<RightButton>{person.name} {person.surname}</RightButton>
+						</FlexboxItem>
+					)
+				})}
+			</div>
+		)
+	} else {
+		return(
+			<div></div>
+		)
+	}
 }
 
 export default function Groups() {
@@ -108,7 +114,6 @@ export default function Groups() {
 	let TMP_AdminGroupsAddMembers = new Map();
 	let TMP_AdminGroupsRemoveMembers = new Map();
 	let TMP_AdminDeleteGroups = new Map();
-	let TMP_LeftFromGroups = new Map();
 
 	const [ state, setState ] = useState({
 		checkedA : true,
@@ -123,15 +128,22 @@ export default function Groups() {
 			userAdminGroups.get(Array.from(userAdminGroups.keys())[0]) : [],
 		userGroupsMembersView: Array.from(userGroups.keys()).length > 0 ? 
 			userGroups.get(Array.from(userGroups.keys())[0]) : [],
+		TMP_LeftFromGroups: []
 	});
 
 	const btnAdminGroupsViewClick = id => {
+
+		if(state.userAdminGroupsView.has(id) === false) return;
+
 		if(Array.from(state.userAdminGroupsView.keys()).length > 0) {
 			setState({ ...state, userAdminGroupsMembersView: state.userAdminGroupsView.get(id)});
 		} else setState({ ...state, userAdminGroupsMembersView: []});
 	};
 
 	const btnOnlyMemberViewClick = id => {
+
+		if(state.userGroupsView.has(id) === false) return;
+
 		if(Array.from(state.userGroupsView.keys()).length) {
 			setState({ ...state, userGroupsMembersView: state.userGroupsView.get(id)});
 		} else setState({ ...state, userGroupsMembersView: []});
@@ -170,12 +182,26 @@ export default function Groups() {
 	};
 
 	const leftFromGroup = id => {
-		console.log(`leftFromGroup`);
-		console.log(id);
+		let group = userGroups.get(id);
+		
+		state.TMP_LeftFromGroups.push(group);
+		setState({ ...state, TMP_LeftFromGroups: state.TMP_LeftFromGroups});
+		
+		state.userGroupsView.delete(id);
+		
+		if(Array.from(state.userGroupsView.keys()).length > 0) {
+			setState({ ...state, userGroupsView: state.userGroupsView});
+			setState({ ...state, userGroupsMembersView: state.userGroupsView.get(
+				Array.from(state.userGroupsView.keys())[0]
+			)});
+		} else {
+			setState({ ...state, userGroupsView: []});
+			setState({ ...state, userGroupsMembersView: []});
+		}
+
 	}
 
 	const editGroup = id => {
-		console.log(`editGroup`);
 		console.log(id);
 	};
 
@@ -187,12 +213,19 @@ export default function Groups() {
 		console.log(`submitAdminViewChange`);
 	}
 
-	const undoOnlyMemberChange = () => {
-		console.log(`undoOnlyMemberChange`);
+	const undoUserGroupsChange = () => {
+		if(state.TMP_LeftFromGroups.length > 0) {
+			let group = state.TMP_LeftFromGroups.pop();
+			setState({ ...state, TMP_LeftFromGroups: state.TMP_LeftFromGroups});
+			state.userGroupsView.set(group.id, group);
+			setState({ ...state, userGroupsView: new Map([...state.userGroupsView.entries()].sort())});
+		} else {
+			console.log("TODO, members");
+		}
 	}
 
-	const submitOnlyMemberViewChange = () => {
-		console.log(`submitOnlyMemberViewChange`);
+	const submitUserGroupsChange = () => {
+		console.log(state.TMP_LeftFromGroups);
 	}
 
 	return (
@@ -303,7 +336,9 @@ export default function Groups() {
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
 							
-							<UserGroupsShowMembers groupDetails={state.userGroupsMembersView}/>
+							{state.userGroupsView !== [] &&
+								<UserGroupsShowMembers groupDetails={state.userGroupsMembersView}/>
+							}
 
 						</CreateGroupsRight>
 					</CreateGroups>
@@ -317,7 +352,7 @@ export default function Groups() {
 									style={{
 										color : '#73909C'
 									}}
-									onClick={undoOnlyMemberChange}
+									onClick={undoUserGroupsChange}
 								/>
 							</BottomRowBack>
 						</FlexboxItem>
@@ -330,7 +365,7 @@ export default function Groups() {
 									style={{
 										color : '#fff'
 									}}
-									onClick={submitOnlyMemberViewChange}
+									onClick={submitUserGroupsChange}
 								/>
 							</BottomRowSetChanges>
 						</FlexboxItem>
