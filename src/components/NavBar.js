@@ -19,17 +19,17 @@ export default function NavBar() {
   let OnClick=(newURL)=>{setURL(newURL)}
   return (
     <Container>
-      <MyLink to="/"          active={URL == ""?true:false}         onClick={()=>OnClick("")}>          <HomeIcon style={{paddingRight: 5}}     />Home </MyLink>
-      <MyLink to="/Calendar"  active={URL == "/Calendar"?true:false}onClick={()=>OnClick("/Calendar")}> <CalendarToday style={{paddingRight: 5}}/>Kalendarz</MyLink> 
-      <MyLink to="/Groups"    active={URL == "/Groups"?true:false}  onClick={()=>OnClick("/Groups")}>   <PeopleAlt style={{paddingRight: 5}}    />Zarządzaj grupami </MyLink>
-      <MyLink to="/settings"  active={URL == "/settings"?true:false} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
-      <MyLink to="/LogOut"    active={URL == "/LogOut"?true:false}  onClick={()=>OnClick("/LogOut")}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
+      <MyLink to="/"          active={URL == ""?1:0}          onClick={()=>OnClick("")}>          <HomeIcon style={{paddingRight: 5}}     />Home </MyLink>
+      <MyLink to="/Calendar"  active={URL == "/Calendar"?1:0} onClick={()=>OnClick("/Calendar")}> <CalendarToday style={{paddingRight: 5}}/>Kalendarz</MyLink> 
+      <MyLink to="/Groups"    active={URL == "/Groups"?1:0}   onClick={()=>OnClick("/Groups")}>   <PeopleAlt style={{paddingRight: 5}}    />Zarządzaj grupami </MyLink>
+      <MyLink to="/settings"  active={URL == "/settings"?1:0} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
+      <MyLink to="/LogOut"    active={URL == "/LogOut"?1:0}   onClick={()=>OnClick("/LogOut")}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
     </Container>
   )
 }
 
 const MyLink = styled(Link)`
-color: ${props=>props.active?"#738F9C":"black"} ;
+color: ${props=>props.active === 1 ?"#738F9C":"black"} ;
 text-decoration: none;
 display: flex;
 flex-direction: row;

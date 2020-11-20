@@ -24,18 +24,28 @@ const GreenCheckbox = withStyles({
 
 function UserAdminGroupsShowMembers(props) {
 
+	if(props.groupDetails.size === 0) {
+		return(
+			<span></span>
+		)
+	}
+	let groupId = props.groupDetails.id
 	return(
 		<div>
-			{props.groupDetails.users.map(person => {
+			{Array.from(props.groupDetails.users.keys()).map(key => {
+				let id = props.groupDetails.users.get(key).id;
+				let name = props.groupDetails.users.get(key).name;
+				let surname = props.groupDetails.users.get(key).surname;
+				let email = props.groupDetails.users.get(key).email;
 				var text;
-				if(person.name === undefined || person.name === undefined)
-					text = person.email
-				else text = person.name + " " + person.surname
+				if(name === undefined || surname === undefined)
+					text = email
+				else text = name + " " + surname
 				return(
-				<FlexboxItem key={person.id}>
-					<RightButton id={person.id}>
+				<FlexboxItem key={id}>
+					<RightButton id={id}>
 						{text} <Close 
-							onClick={() => props.fun(props.groupDetails.id, person.id)}
+							onClick={() => props.fun(groupId, id)}
 						/>
 					</RightButton>
 				</FlexboxItem>
@@ -70,55 +80,59 @@ export default function Groups() {
 	let userAdminGroups = new Map();
 	let userGroups = new Map();
 
-	// TODO get value from firebase
+	const getDataFromFirebase = () => {
+		// TODO
+		userAdminGroups.set("G0", {
+			id: "G0",
+			name: "Grupa0", 
+			users: new Map()
+		})
+		userAdminGroups.get("G0").users.set("P0", {
+			id: "P0",name: "Radek", surname: "Mo"
+		})
+		userAdminGroups.get("G0").users.set("P2", {
+			id: "P2",name: "Kamil",surname: "Duda"
+		})
+		userAdminGroups.set("G1", {
+			id: "G1",
+			name: "Grupa1", 
+			users: new Map()
+		})
+		userAdminGroups.get("G1").users.set("P1", {
+			id: "P1",name: "Jan",surname: "Morawiecki"
+		})
+		userAdminGroups.get("G1").users.set("P2", {
+			id: "P2",name: "Kamil",surname: "Duda"
+		})
+		userGroups.set("G2", {
+			id: "G2",
+			name: "Grupa2", 
+			users: [
+				{id: "P1",name: "Andrzej",surname: "Morawiecki"},
+				{id: "P2",name: "Donald",surname: "Bieden"},
+			]
+		})
+		userGroups.set("G3", {
+			id: "G3",
+			name: "Grupa3", 
+			users: [
+				{id: "P1",name: "Ja",surname: "Mo"},
+				{id: "P2",name: "Ru",surname: "Sto"},
+			]
+		})
+	}
 
-	userAdminGroups.set("G0", {
-		id: "G0",
-		name: "Grupa0", 
-		users: [
-			{id: "P0",name: "Radek",surname: "Mo"},
-			{id: "P2",name: "Kamil",surname: "Duda"}
-		]
-	})
-
-	userAdminGroups.set("G1", {
-		id: "G1",
-		name: "Grupa1", 
-		users: [
-			{id: "P1",name: "Jan",surname: "Morawiecki"},
-			{id: "P2",name: "Kamil",surname: "Duda"}
-		]
-	})
-
-	userGroups.set("G2", {
-		id: "G2",
-		name: "Grupa2", 
-		users: [
-			{id: "P1",name: "Andrzej",surname: "Morawiecki"},
-			{id: "P2",name: "Donald",surname: "Bieden"},
-		]
-	})
-
-	userGroups.set("G3", {
-		id: "G3",
-		name: "Grupa3", 
-		users: [
-			{id: "P1",name: "Ja",surname: "Mo"},
-			{id: "P2",name: "Ru",surname: "Sto"},
-		]
-	})
+	getDataFromFirebase();
 
 	const [ state, setState ] = useState({
 		checkedA : true,
 		checkedB : true,
 		checkedF : true,
 		checkedG : true,
-		userAdminGroupsView: Array.from(userAdminGroups.keys()).length > 0 ?
-			userAdminGroups : [],
-		userGroupsView: Array.from(userGroups.keys()).length > 0 ? 
-			userGroups : [],
+		userAdminGroupsView: userAdminGroups,
+		userGroupsView: userGroups,
 		userAdminGroupsMembersView: Array.from(userAdminGroups.keys()).length > 0 ? 
-			userAdminGroups.get(Array.from(userAdminGroups.keys())[0]) : [],
+			userAdminGroups.get(Array.from(userAdminGroups.keys())[0]) : new Map(),
 		userGroupsMembersView: Array.from(userGroups.keys()).length > 0 ? 
 			userGroups.get(Array.from(userGroups.keys())[0]) : [],
 		TMP_AdminGroupsUndoList: [],
@@ -131,44 +145,35 @@ export default function Groups() {
 
 	});
 
-
 	const removeUserFromGroupTemp = (groupId, personId) => {
 
-		let inx = state.userAdminGroupsView.get(groupId).users.findIndex(item => {
-			return item.id === personId;
-		});
+		let user = state.userAdminGroupsView.get(groupId).users.get(personId)
 
-		let user = state.userAdminGroupsView.get(groupId).users[inx];
-
-		if(user.inDataBase === false) {
-			// TODO 
-			// BUG delete user that was added and not send to database
-		} else {
-			state.TMP_AdminGroupsUndoList.push({
-				undo: () => {
-					state.TMP_AdminGroupsRemoveMembers.get(groupId).users.pop();
-					if(state.TMP_AdminGroupsRemoveMembers.get(groupId).users.length === 0)
-						state.TMP_AdminGroupsRemoveMembers.delete(groupId);
-					setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
-					state.userAdminGroupsView.get(groupId).users.push(user);
-					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-					console.log(`Undo: remove user ${personId} from group ${groupId}`)
-				}
-			});
-	
-			state.userAdminGroupsView.get(groupId).users.splice(inx, 1);
-			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-	
-			if(state.TMP_AdminGroupsRemoveMembers.has(groupId))
-				state.TMP_AdminGroupsRemoveMembers.get(groupId).users.push(personId);
-			else {
-				state.TMP_AdminGroupsRemoveMembers.set(groupId, {users: [personId]});
+		state.TMP_AdminGroupsUndoList.push({
+			undo: () => {
+				state.TMP_AdminGroupsRemoveMembers.get(groupId).users.pop();
+				if(state.TMP_AdminGroupsRemoveMembers.get(groupId).users.length === 0)
+				state.TMP_AdminGroupsRemoveMembers.delete(groupId);
+				setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
+				state.userAdminGroupsView.get(groupId).users.set(user.id, user);
+				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+				console.log(`Undo: remove user ${personId} from group ${groupId}`)
 			}
+		});
 	
-			setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
-			state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
-			setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
+		setState({...state, userAdminGroupsView: 
+			state.userAdminGroupsView.get(groupId).users.delete(personId)
+		});
+	
+		if(state.TMP_AdminGroupsRemoveMembers.has(groupId))
+			state.TMP_AdminGroupsRemoveMembers.get(groupId).users.push(personId);
+		else {
+			state.TMP_AdminGroupsRemoveMembers.set(groupId, {users: [personId]});
 		}
+	
+		setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
+		state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
+		setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
 
 		console.log("state.TMP_AdminGroupsRemoveMembers");
 		console.log(state.TMP_AdminGroupsRemoveMembers);
@@ -200,7 +205,7 @@ export default function Groups() {
 			let obj = {
 				id: Math.random(),
 				name: e.target.value,
-				users: []
+				users: new Map()
 			}
 
 			state.userAdminGroupsView.set(obj.id, obj);
@@ -221,7 +226,7 @@ export default function Groups() {
 			setState({ ...state, TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList});
 
 			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-			
+
 			btnAdminGroupsViewClick(obj.id);
 			e.target.value = "";
 
@@ -233,14 +238,16 @@ export default function Groups() {
 	};
 
 	const addNewMember = (e) => {
+		if(state.userAdminGroupsMembersView.length === 0) {
+			console.log("No group view")
+			return;
+		}
 		if (e.key === 'Enter' && e.target.value !== "") {
 
-			let groupId = state.userAdminGroupsMembersView.id;
-			let tmpId = Math.random();
-			let obj = {
-				id: tmpId,
-				email: e.target.value,
-				inDataBase: false			
+			let groupId = state.userAdminGroupsMembersView.id; 
+			let userData = {
+				id: Math.random(),
+				email: e.target.value,		
 			}
 
 			// TODO check email
@@ -252,19 +259,19 @@ export default function Groups() {
 					if(state.TMP_AdminGroupsAddMembers.get(groupId).users.length === 0)
 						state.TMP_AdminGroupsAddMembers.delete(groupId)
 					setState({...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
-					state.userAdminGroupsView.get(groupId).users.pop();
+					state.userAdminGroupsView.get(groupId).users.delete(userData.id);
 					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-					console.log(`Undo: add new member ${obj.id} to group: ${groupId}`)
+					console.log(`Undo: add new member ${userData.id} to group: ${groupId}`)
 				}
 			});
 
-			state.userAdminGroupsView.get(groupId).users.push(obj);
+			state.userAdminGroupsView.get(groupId).users.set(userData.id, userData);
 			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
 
 			if(state.TMP_AdminGroupsAddMembers.has(groupId))
-				state.TMP_AdminGroupsAddMembers.get(groupId).users.push(obj);
+				state.TMP_AdminGroupsAddMembers.get(groupId).users.push(userData);
 			else {
-				state.TMP_AdminGroupsAddMembers.set(groupId, {users: [obj]});
+				state.TMP_AdminGroupsAddMembers.set(groupId, {users: [userData]});
 			}
 				
 
@@ -330,14 +337,22 @@ export default function Groups() {
 	}
 
 	const submitAdminViewChange = () => {
+		console.log("state.TMP_AdminGroupsNew");
 		console.log(state.TMP_AdminGroupsNew);
+		console.log("state.TMP_AdminGroupsEditInfo");
 		console.log(state.TMP_AdminGroupsEditInfo);
+		console.log("state.TMP_AdminGroupsAddMembers");
 		console.log(state.TMP_AdminGroupsAddMembers);
+		console.log("state.TMP_AdminGroupsRemoveMembers");
 		console.log(state.TMP_AdminGroupsRemoveMembers);
-		setState({ ...state, TMP_AdminGroupsNew: new Map()});
-		setState({ ...state, TMP_AdminGroupsEditInfo: new Map()});
-		setState({ ...state, TMP_AdminGroupsAddMembers: new Map()});
-		setState({ ...state, TMP_AdminGroupsRemoveMembers: new Map()});
+		state.TMP_AdminGroupsNew = new Map()
+		setState({ ...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
+		state.TMP_AdminGroupsEditInfo = new Map();
+		setState({ ...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
+		state.TMP_AdminGroupsAddMembers = new Map()
+		setState({ ...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
+		state.TMP_AdminGroupsRemoveMembers = new Map()
+		setState({ ...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
 		setState({ ...state, TMP_AdminGroupsUndoList: []});
 	}
 
@@ -394,16 +409,25 @@ export default function Groups() {
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
-							<FlexboxItem>
-								<RightButton>
-									<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" 
-										onKeyDown={addNewMember}
-									/>{' '}
-								</RightButton>
-							</FlexboxItem>
+							{state.userAdminGroupsView.size > 0 &&
+								<div>
+									<div>Członkowie grupy: 
+										<span style={{marginLeft: 5, textDecoration: 'underline'}}>{state.userAdminGroupsMembersView.name}</span>
+									</div>
+									<FlexboxItem>
+										<RightButton>
+											<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" 
+												onKeyDown={addNewMember}
+											/>{' '}
+										</RightButton>
+									</FlexboxItem>
 
-						<UserAdminGroupsShowMembers groupDetails={state.userAdminGroupsMembersView} fun={removeUserFromGroupTemp} />
-
+									<UserAdminGroupsShowMembers 
+										groupDetails={state.userAdminGroupsMembersView} 
+										fun={removeUserFromGroupTemp} 
+									/>
+								</div>
+							}
 						</CreateGroupsRight>
 					</CreateGroups>
 					<CreateGroupsBottomRow>
@@ -462,11 +486,19 @@ export default function Groups() {
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
-							
-							{state.userGroupsView !== [] &&
-								<UserGroupsShowMembers groupDetails={state.userGroupsMembersView}/>
+							{state.userGroupsMembersView.length === 0 &&
+								<div>Nie należysz do żadnej grupy</div>
 							}
-
+							{state.userGroupsMembersView.length !== 0 &&
+								<div>
+									<div>Członkowie grupy: 
+										<span style={{marginLeft: 5, textDecoration: 'underline'}}>{state.userGroupsMembersView.name}</span>
+									</div>
+									<UserGroupsShowMembers 
+										groupDetails={state.userGroupsMembersView}
+									/>
+								</div>
+							}
 						</CreateGroupsRight>
 					</CreateGroups>
 					<CreateGroupsBottomRow>
@@ -604,6 +636,7 @@ const CreateGroupsRight = styled.div`
 	justify-content: space-around;
 	width: 100%;
 	color: #9c9083;
+	text-align: center;
 `;
 const RightButton = styled.div`
 	//min-width:100px;
