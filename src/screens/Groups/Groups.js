@@ -80,8 +80,12 @@ export default function Groups() {
 	let userAdminGroups = new Map();
 	let userGroups = new Map();
 
-	const getDataFromFirebase = () => {
-		// TODO
+	const getTestData = () => {
+		userAdminGroups.set("Friends", {
+			id: "Friends",
+			name: "Friends", 
+			users: new Map()
+		})
 		userAdminGroups.set("G0", {
 			id: "G0",
 			name: "Grupa0", 
@@ -120,6 +124,19 @@ export default function Groups() {
 				{id: "P2",name: "Ru",surname: "Sto"},
 			]
 		})
+	}
+
+	//getTestData();
+
+	const getDataFromFirebase = () => {
+		//userAdminGroups;
+		//userGroups;
+		userAdminGroups.set("Friends", {
+			id: "Friends",
+			name: "Friends", 
+			users: new Map()
+		})
+		console.log("Getting data from firebase");
 	}
 
 	getDataFromFirebase();
@@ -380,23 +397,26 @@ export default function Groups() {
 						<CreateGroupsLeft>
 							<div>Zarządzaj swoimi grupami</div>
 							
-							{/* <FlexboxItem>
-								<LeftButtonZnajomi>
-									Znajomi<CreateIcon />
-								</LeftButtonZnajomi>
-							</FlexboxItem> */}
-
 							{Array.from(state.userAdminGroupsView.keys()).map(key => {
-								let name = state.userAdminGroupsView.get(key).name;
-								return(
-									<FlexboxItem key={key} 
-										onClick={() => btnAdminGroupsViewClick(key)}
-									>
-										<LeftButton>
-											{name}<CreateIcon onClick={() => editGroup(key)}/>
-										</LeftButton>
-									</FlexboxItem>
-								)
+								if(key !== "Friends") {
+									let name = state.userAdminGroupsView.get(key).name;
+									return(
+										<FlexboxItem key={key} 
+											onClick={() => btnAdminGroupsViewClick(key)}
+										>
+											<LeftButton>
+												{name}<CreateIcon onClick={() => editGroup(key)}/>
+											</LeftButton>
+										</FlexboxItem>
+									)
+								} else {
+									return(
+										<FlexboxItem key={key} 
+											onClick={() => btnAdminGroupsViewClick(key)}>
+											<LeftButtonZnajomi>Znajomi</LeftButtonZnajomi>
+										</FlexboxItem>
+									)
+								}
 							})}
 
 							<FlexboxItem>
@@ -549,7 +569,6 @@ const Flexhelper = styled.div`
 `;
 const CreateGroups = styled.div`
 	display: flex;
-
 	background-color: #fffaf5;
 	flex-direction: row;
 	justify-content: space-between;
