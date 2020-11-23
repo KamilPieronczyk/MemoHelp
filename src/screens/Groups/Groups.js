@@ -10,7 +10,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { Button } from '../../components/index';
 import Close from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
-import firebase from 'firebase'
+import {getUserAdminGroupsData, getUserGroupsData, firebaseAdminGroupsMapState, 
+	firebaseLeftFromGroups, getUserAdminGroupsTestData, getUserGroupsTestData} from './Firebase'
 
 const GreenCheckbox = withStyles({
 	root    : {
@@ -77,69 +78,10 @@ function UserGroupsShowMembers(props) {
 
 export default function Groups() {
 	
-	let userAdminGroups = new Map();
-	let userGroups = new Map();
-
-	const getTestData = () => {
-		userAdminGroups.set("Friends", {
-			id: "Friends",
-			name: "Friends", 
-			users: new Map()
-		})
-		userAdminGroups.set("G0", {
-			id: "G0",
-			name: "Grupa0", 
-			users: new Map()
-		})
-		userAdminGroups.get("G0").users.set("P0", {
-			id: "P0",name: "Radek", surname: "Mo"
-		})
-		userAdminGroups.get("G0").users.set("P2", {
-			id: "P2",name: "Kamil",surname: "Duda"
-		})
-		userAdminGroups.set("G1", {
-			id: "G1",
-			name: "Grupa1", 
-			users: new Map()
-		})
-		userAdminGroups.get("G1").users.set("P1", {
-			id: "P1",name: "Jan",surname: "Morawiecki"
-		})
-		userAdminGroups.get("G1").users.set("P2", {
-			id: "P2",name: "Kamil",surname: "Duda"
-		})
-		userGroups.set("G2", {
-			id: "G2",
-			name: "Grupa2", 
-			users: [
-				{id: "P1",name: "Andrzej",surname: "Morawiecki"},
-				{id: "P2",name: "Donald",surname: "Bieden"},
-			]
-		})
-		userGroups.set("G3", {
-			id: "G3",
-			name: "Grupa3", 
-			users: [
-				{id: "P1",name: "Ja",surname: "Mo"},
-				{id: "P2",name: "Ru",surname: "Sto"},
-			]
-		})
-	}
-
-	//getTestData();
-
-	const getDataFromFirebase = () => {
-		//userAdminGroups;
-		//userGroups;
-		userAdminGroups.set("Friends", {
-			id: "Friends",
-			name: "Friends", 
-			users: new Map()
-		})
-		console.log("Getting data from firebase");
-	}
-
-	getDataFromFirebase();
+	//let userAdminGroups = getUserAdminGroupsTestData()
+	let userAdminGroups = getUserAdminGroupsData()
+	//let userGroups = getUserGroupsTestData()
+	let userGroups = getUserGroupsData()
 
 	const [ state, setState ] = useState({
 		checkedA : true,
@@ -354,14 +296,14 @@ export default function Groups() {
 	}
 
 	const submitAdminViewChange = () => {
-		console.log("state.TMP_AdminGroupsNew");
-		console.log(state.TMP_AdminGroupsNew);
-		console.log("state.TMP_AdminGroupsEditInfo");
-		console.log(state.TMP_AdminGroupsEditInfo);
-		console.log("state.TMP_AdminGroupsAddMembers");
-		console.log(state.TMP_AdminGroupsAddMembers);
-		console.log("state.TMP_AdminGroupsRemoveMembers");
-		console.log(state.TMP_AdminGroupsRemoveMembers);
+
+		firebaseAdminGroupsMapState(
+			state.TMP_AdminGroupsNew,
+			state.TMP_AdminGroupsEditInfo,
+			state.TMP_AdminGroupsAddMembers,
+			state.TMP_AdminGroupsRemoveMembers
+			);
+
 		state.TMP_AdminGroupsNew = new Map()
 		setState({ ...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
 		state.TMP_AdminGroupsEditInfo = new Map();
@@ -383,7 +325,7 @@ export default function Groups() {
 	}
 
 	const submitUserGroupsChange = () => {
-		console.log(state.TMP_LeftFromGroups);
+		firebaseLeftFromGroups(state.TMP_LeftFromGroups)
 		setState({ ...state, TMP_LeftFromGroups: []});
 	}
 
