@@ -2,7 +2,7 @@
 //import React from 'react'
 import styled from 'styled-components';
 //import Checkbox from '@material-ui/core/Checkbox';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -79,9 +79,14 @@ function UserGroupsShowMembers(props) {
 export default function Groups() {
 	
 	//let userAdminGroups = getUserAdminGroupsTestData()
-	let userAdminGroups = getUserAdminGroupsData()
+	let userAdminGroups;
 	//let userGroups = getUserGroupsTestData()
-	let userGroups = getUserGroupsData()
+	let userGroups;
+
+	useEffect(() => {
+		userAdminGroups = getUserAdminGroupsData();
+		userGroups = getUserGroupsData();
+	});
 
 	const [ state, setState ] = useState({
 		checkedA : true,
