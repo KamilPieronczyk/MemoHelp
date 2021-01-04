@@ -72,6 +72,8 @@ export function LoginForm() {
             'login_hint': 'user@example.com'
           });
           firebase.auth().signInWithPopup(provider).then(function(result) {
+            var credential = result.credential;
+
             // This gives you a Google Access Token. You can use it to access the Google API.
             var token = result.credential.accessToken;
             // The signed-in user info.

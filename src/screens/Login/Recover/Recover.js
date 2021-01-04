@@ -14,9 +14,24 @@ import {
     Link
   } from "react-router-dom";
 import {Button} from '../../../components';
+import firebase from 'firebase';
+
+
 
 export function Recover() {
     const [state, setState] = useState(false);
+    const [mail, setMail] = useState("");
+    
+    const sendMail = () =>{
+        var auth = firebase.auth();
+        var emailAddress = mail;
+
+        auth.sendPasswordResetEmail(emailAddress).then(function(){
+            //sent
+        }).catch(function(error){
+            //error
+        });
+    }
     
     if(state)
     {
@@ -37,7 +52,7 @@ export function Recover() {
                             color: '#fff',
                         }}
                         text="Wyślij wiadomość ponownie"
-                        onClick={()=>setState(true)}
+                        onClick={()=>{sendMail(); setState(true);}}
                     />
                 </Buttonscontainer>
             </LoginContainer>
@@ -49,7 +64,7 @@ export function Recover() {
             <MyText>Odzyskiwanie hasła:</MyText>
             <MyLink to="/login">Powrót</MyLink>
             </Nag>
-            <MyInput type="email" id="fname" name="fname" placeholder="e-mail">
+            <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
             </MyInput>
             <WrongMail>
                 Niepoprawny adres e-mail
@@ -64,7 +79,7 @@ export function Recover() {
 						color: '#fff',
 					}}
                     text="Wyślij wiadomość"
-                    onClick={()=>setState(true)}
+                    onClick={()=>{sendMail(); setState(true);}}
 				/>
             </Buttonscontainer>
         </LoginContainer>
