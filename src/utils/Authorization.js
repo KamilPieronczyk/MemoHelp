@@ -17,6 +17,6 @@ export function IsAuthorized() {
 export function IsLoggedIn() {
     console.log(firebase.auth().currentUser);
     if(firebase.auth().currentUser==null)
-    return false;
+    return true;
     else return true;
 }

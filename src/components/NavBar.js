@@ -7,6 +7,7 @@ import Person from '@material-ui/icons/Person';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import {IsAuthorized} from '../utils/index';
 import {IsLoggedIn} from '../utils/index';
+import firebase from 'firebase';
 
 
 import {
@@ -15,6 +16,17 @@ import {
   Route,
   Link
 } from "react-router-dom";
+
+const logOut = () =>{
+  firebase.auth().signOut().then(()=>{
+    //success
+  }).catch((error)=>{
+    //error
+  });
+  //history.push("/");
+  //window.location.reload();
+  console.log("wylogowano (chyba)");
+}
 
 export default function NavBar() {
   IsAuthorized();
@@ -27,7 +39,7 @@ export default function NavBar() {
       <MyLink to="/Calendar"  active={URL == "/Calendar"?true:false}onClick={()=>OnClick("/Calendar")}> <CalendarToday style={{paddingRight: 5}}/>Kalendarz</MyLink> 
       <MyLink to="/Groups"    active={URL == "/Groups"?true:false}  onClick={()=>OnClick("/Groups")}>   <PeopleAlt style={{paddingRight: 5}}    />Zarządzaj grupami </MyLink>
       <MyLink to="/settings"  active={URL == "/settings"?true:false} onClick={()=>OnClick("/settings")}>  <Person style={{paddingRight: 5}}       />Jan Kowalski </MyLink>
-      <MyLink to="/LogOut"    active={URL == "/LogOut"?true:false}  onClick={()=>OnClick("/LogOut")}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
+      <MyLink to="/Login"     onClick={logOut}>   <ExitToApp style={{paddingRight: 5}}    />Wyloguj</MyLink>    
     </Container>
   )
   else
