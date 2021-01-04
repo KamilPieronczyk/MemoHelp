@@ -95,23 +95,31 @@ export default function Groups() {
 		TMP_AdminGroupsEditInfo: new Map(),
 		TMP_AdminGroupsAddMembers: new Map(),
 		TMP_AdminGroupsRemoveMembers: new Map(),
-	}, () => {
-		setState({
-			...state,
-			userAdminGroupsMembersView: Array.from(state.userAdminGroupsView.keys()).length > 0 ? 
-				state.userAdminGroupsView.get(Array.from(state.userAdminGroupsView.keys())[0]) : new Map(),
-			userGroupsMembersView: Array.from(state.userGroupsView.keys()).length > 0 ? 
-				state.userGroupsView.get(Array.from(state.userGroupsView.keys())[0]) : [],
-			load: true
-		}, () => {
-			console.log("STATE INIT");
-			console.log(state.userAdminGroupsView);
-			console.log(state.userGroupsView);
-		});
 	});
 
-	console.log(state.userAdminGroupsView);
-	console.log(state.userAdminGroupsView.value);
+	useEffect(() => {
+		if(state.load === false) {
+			state.userAdminGroupsView.then(function(resultUserAdminGroupsView) {
+				state.userGroupsView.then(function(resultUserGroupsView) {
+					//console.log("STATE INIT");
+					//console.log(resultUserAdminGroupsView);
+					//console.log(resultUserGroupsView);
+					setState({
+						...state,
+						userAdminGroupsMembersView: Array.from(resultUserAdminGroupsView.keys()).length > 0 ? 
+							resultUserAdminGroupsView.get(Array.from(resultUserAdminGroupsView.keys())[0]) : new Map(),
+						userGroupsMembersView: Array.from(resultUserGroupsView.keys()).length > 0 ? 
+							resultUserGroupsView.get(Array.from(resultUserGroupsView.keys())[0]) : [],
+						load: true
+					});
+				});
+			});
+		} else {
+			console.log("STATE INIT");
+			console.log(state.userAdminGroupsMembersView);
+			console.log(state.userGroupsMembersView);
+		}
+	});
 
 	const removeUserFromGroupTemp = (groupId, personId) => {
 
@@ -348,29 +356,30 @@ export default function Groups() {
 						<CreateGroupsLeft>
 							<div>Zarządzaj swoimi grupami</div>
 							
-							{state.load == true && Array.from(state.userAdminGroupsView.keys()).map(key => {
-								console.log(key);
-								if(key !== "Friends") {
-									let name = state.userAdminGroupsView.get(key).name;
-									return(
-										<FlexboxItem key={key} 
-											onClick={() => btnAdminGroupsViewClick(key)}
-										>
-											<LeftButton>
-												{name}<CreateIcon onClick={() => editGroup(key)}/>
-											</LeftButton>
-										</FlexboxItem>
-									)
-								} else {
-									return(
-										<FlexboxItem key={key} 
-											onClick={() => btnAdminGroupsViewClick(key)}>
-											<LeftButtonZnajomi>Znajomi</LeftButtonZnajomi>
-										</FlexboxItem>
-									)
-								}
-							})}
-
+							{state.userAdminGroupsView.size > 0 &&
+								Array.from(state.userAdminGroupsView.keys()).map(key => {
+									console.log(key);
+									if(key !== "Friends") {
+										let name = state.userAdminGroupsView.get(key).name;
+										return(
+											<FlexboxItem key={key} 
+												onClick={() => btnAdminGroupsViewClick(key)}
+											>
+												<LeftButton>
+													{name}<CreateIcon onClick={() => editGroup(key)}/>
+												</LeftButton>
+											</FlexboxItem>
+										)
+									} else {
+										return(
+											<FlexboxItem key={key} 
+												onClick={() => btnAdminGroupsViewClick(key)}>
+												<LeftButtonZnajomi>Znajomi</LeftButtonZnajomi>
+											</FlexboxItem>
+										)
+									}
+								})
+							}
 							<FlexboxItem>
 								<AddButton>
 									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" 
@@ -442,26 +451,28 @@ export default function Groups() {
 								</LeftButtonZnajomi>
 							</FlexboxItem> */}
 
-							{state.userGroupsView.lenght > 0 &&Array.from(state.userGroupsView.keys()).map(key => {
-								let name = state.userGroupsView.get(key).name
-								return(
-									<FlexboxItem key={key}
-										onClick={() => btnOnlyMemberViewClick(key)} 
-									>
-										<LeftButton>
-											{name}<Close onClick={() => leftFromGroup(key)}/>
-										</LeftButton>
-									</FlexboxItem> 
-								)
-							})}
+							{state.userGroupsView.lenght > 0 &&
+								Array.from(state.userGroupsView.keys()).map(key => {
+									let name = state.userGroupsView.get(key).name
+									return(
+										<FlexboxItem key={key}
+											onClick={() => btnOnlyMemberViewClick(key)} 
+										>
+											<LeftButton>
+												{name}<Close onClick={() => leftFromGroup(key)}/>
+											</LeftButton>
+										</FlexboxItem> 
+									)
+								})
+							}
 
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
-							{state.userGroupsMembersView.length === 0 &&
+							{state.userGroupsMembersView.size < 0 &&
 								<div>Nie należysz do żadnej grupy</div>
 							}
-							{state.userGroupsMembersView.length !== 0 &&
+							{state.userGroupsMembersView.size > 0 &&
 								<div>
 									<div>Członkowie grupy: 
 										<span style={{marginLeft: 5, textDecoration: 'underline'}}>{state.userGroupsMembersView.name}</span>

@@ -61,13 +61,11 @@ async function _getUserGroupsData(name) {
 
 export async function getUserAdminGroupsData() {
     let data = await _getUserGroupsData("Admins");
-    console.log("getUserAdminGroupsData()", data);
     return data;
 }
 
 export async function getUserGroupsData() {
     let data = await _getUserGroupsData("Members");
-    console.log("getUserGroupsData()", data);
     return data;
 }
 
