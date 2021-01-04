@@ -91,6 +91,10 @@ export const firebaseAdminGroupsMapState = (NewGroupsMap, EditInfoGroupsMap, New
 }
 
 const sendToFirebaseNewGroupsData = (Map) => {
+    // var docRef = db.firestore().collection("Users")
+    //             .doc("sQpA99mVpXQnvC0D1IcmNNhlPyr2").collection("Groups").doc(name);
+    // Getting all array of groups id which user is admin
+    //await docRef.get()
     console.log(Map)
 }
 
@@ -106,61 +110,84 @@ const removeFromFirebaseGroupsMembers = (Map) => {
     console.log(Map)
 }
 
-export const firebaseLeftFromGroups = (Arr) => {
+export async function firebaseLeftFromGroups(Arr) {
+    // TODO user ID
+    var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+
     if(Arr.length > 0) {
-        console.log(Arr)
+
+        var docUserGroupsRef = db.firestore().collection("Users")
+            .doc(userId).collection("Groups").doc("Members"); 
+             
+        for(var i=0; i < Arr.length; i++) {
+            let groupId = Arr[i].id;
+
+            // Remove user from group
+            await db.firestore().collection("Groups").doc(groupId).update({
+                members: db.firestore.FieldValue.arrayRemove(userId),
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+
+            // Remove group in user collection
+            docUserGroupsRef.update({
+                data: db.firestore.FieldValue.arrayRemove(groupId),
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+        }
     }
 }
 
-export const getUserAdminGroupsTestData = () => {
-    let userAdminGroups = new Map();
-    userAdminGroups.set("Friends", {
-        id: "Friends",
-        name: "Friends", 
-        users: new Map()
-    })
-    userAdminGroups.set("G0", {
-        id: "G0",
-        name: "Grupa0", 
-        users: new Map()
-    })
-    userAdminGroups.get("G0").users.set("P0", {
-        id: "P0",name: "Radek", surname: "Mo"
-    })
-    userAdminGroups.get("G0").users.set("P2", {
-        id: "P2",name: "Kamil",surname: "Duda"
-    })
-    userAdminGroups.set("G1", {
-        id: "G1",
-        name: "Grupa1", 
-        users: new Map()
-    })
-    userAdminGroups.get("G1").users.set("P1", {
-        id: "P1",name: "Jan",surname: "Morawiecki"
-    })
-    userAdminGroups.get("G1").users.set("P2", {
-        id: "P2",name: "Kamil",surname: "Duda"
-    })
-    return userAdminGroups
-}
+// export const getUserAdminGroupsTestData = () => {
+//     let userAdminGroups = new Map();
+//     userAdminGroups.set("Friends", {
+//         id: "Friends",
+//         name: "Friends", 
+//         users: new Map()
+//     })
+//     userAdminGroups.set("G0", {
+//         id: "G0",
+//         name: "Grupa0", 
+//         users: new Map()
+//     })
+//     userAdminGroups.get("G0").users.set("P0", {
+//         id: "P0",name: "Radek", surname: "Mo"
+//     })
+//     userAdminGroups.get("G0").users.set("P2", {
+//         id: "P2",name: "Kamil",surname: "Duda"
+//     })
+//     userAdminGroups.set("G1", {
+//         id: "G1",
+//         name: "Grupa1", 
+//         users: new Map()
+//     })
+//     userAdminGroups.get("G1").users.set("P1", {
+//         id: "P1",name: "Jan",surname: "Morawiecki"
+//     })
+//     userAdminGroups.get("G1").users.set("P2", {
+//         id: "P2",name: "Kamil",surname: "Duda"
+//     })
+//     return userAdminGroups
+// }
 
-export const getUserGroupsTestData = () => {
-    let userGroups = new Map();
-    userGroups.set("G2", {
-        id: "G2",
-        name: "Grupa2", 
-        users: [
-            {id: "P1",name: "Andrzej",surname: "Morawiecki"},
-            {id: "P2",name: "Donald",surname: "Bieden"},
-        ]
-    })
-    userGroups.set("G3", {
-        id: "G3",
-        name: "Grupa3", 
-        users: [
-            {id: "P1",name: "Ja",surname: "Mo"},
-            {id: "P2",name: "Ru",surname: "Sto"},
-        ]
-    })
-    return userGroups
-}
+// export const getUserGroupsTestData = () => {
+//     let userGroups = new Map();
+//     userGroups.set("G2", {
+//         id: "G2",
+//         name: "Grupa2", 
+//         users: [
+//             {id: "P1",name: "Andrzej",surname: "Morawiecki"},
+//             {id: "P2",name: "Donald",surname: "Bieden"},
+//         ]
+//     })
+//     userGroups.set("G3", {
+//         id: "G3",
+//         name: "Grupa3", 
+//         users: [
+//             {id: "P1",name: "Ja",surname: "Mo"},
+//             {id: "P2",name: "Ru",surname: "Sto"},
+//         ]
+//     })
+//     return userGroups
+// }

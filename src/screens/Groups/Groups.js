@@ -334,8 +334,8 @@ export default function Groups() {
 		}
 	}
 
-	const submitUserGroupsChange = () => {
-		firebaseLeftFromGroups(state.TMP_LeftFromGroups)
+	async function submitUserGroupsChange() {
+		await firebaseLeftFromGroups(state.TMP_LeftFromGroups)
 		setState({ ...state, TMP_LeftFromGroups: []});
 	}
 
