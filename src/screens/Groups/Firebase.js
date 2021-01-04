@@ -75,9 +75,9 @@ export async function getUserGroupsData() {
 * state.TMP_AdminGroupsAddMembers,
 * state.TMP_AdminGroupsRemoveMembers
  */
-export const firebaseAdminGroupsMapState = (NewGroupsMap, EditInfoGroupsMap, NewGroupsMembersMap, RemoveMemebersFromGroupsMap) => {
+export async function firebaseAdminGroupsMapState(NewGroupsMap, EditInfoGroupsMap, NewGroupsMembersMap, RemoveMemebersFromGroupsMap) {
     if(NewGroupsMap.size > 0)
-		sendToFirebaseNewGroupsData(NewGroupsMap)
+		await sendToFirebaseNewGroupsData(NewGroupsMap)
 
 	if(EditInfoGroupsMap.size > 0)
 		updateInFirebaseGroupsInfo(EditInfoGroupsMap)
@@ -90,24 +90,133 @@ export const firebaseAdminGroupsMapState = (NewGroupsMap, EditInfoGroupsMap, New
 
 }
 
-const sendToFirebaseNewGroupsData = (Map) => {
-    // var docRef = db.firestore().collection("Users")
-    //             .doc("sQpA99mVpXQnvC0D1IcmNNhlPyr2").collection("Groups").doc(name);
-    // Getting all array of groups id which user is admin
-    //await docRef.get()
-    console.log(Map)
+async function sendToFirebaseNewGroupsData(mp) {
+    // TODO user ID
+    var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+
+    for (const item of mp) {
+
+        console.log(item[1]);
+
+        var docUserGroupsRef = db.firestore().collection("Users")
+            .doc(userId).collection("Groups").doc("Admins"); 
+             
+        // Create new group and get ID
+        await db.firestore().collection("Groups").add({
+            name: item[1].name,
+            members: [],
+            admin: [{id: userId}],
+        })
+        .then(function(docRef) {
+            var groupId = docRef.id;
+
+            console.log("Document written with ID: ", groupId);
+            // Add grop ID to users Admins aaray
+            docUserGroupsRef.update({
+                data: db.firestore.FieldValue.arrayUnion(groupId)
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+
+            // TODO: same as in sendToFirebaseNewGroupsMembers()
+            for(const newUser of item[1].users) {
+                let email = newUser[1].email;
+
+                // TODO:// find users by email and send invitation - add email validation
+                // Adding group id to user collection
+                // var docUserGroupsRef = db.firestore().collection("Users")
+                //     .doc(userId).collection("Groups").doc("Members"); 
+                // docUserGroupsRef.update({
+                //     data: db.firestore.FieldValue.arrayRemove(groupId),
+                // }).catch(function(error) {
+                //     console.error("Error removing document: ", error);
+                // });
+
+                //TODO:// only for test - uses email (should be ID)
+                // Add user to group collection
+                db.firestore().collection("Groups").doc(groupId).update({
+                    members: db.firestore.FieldValue.arrayUnion(email),
+                }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                });
+            }
+
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
+    }
 }
 
-const updateInFirebaseGroupsInfo = (Map) => {
-    console.log(Map)
+const updateInFirebaseGroupsInfo = (mp) => {
+    for (const item of mp) {
+
+        //console.log(item[1]);
+   
+        // Create new group and get ID
+        db.firestore().collection("Groups").doc(item[1].id).update({
+            name: item[1].name
+        }).catch(function(error) {
+            console.error("Error removing document: ", error);
+        });
+    }
 }
 
-const sendToFirebaseNewGroupsMembers = (Map) => {
-    console.log(Map)
+const sendToFirebaseNewGroupsMembers = (mp) => {
+    console.log(mp)
+
+    for (const item of mp) {
+        let groupId = item[0];
+        if(typeof groupId === "number")
+            continue;
+        for(const newUserData of item[1].users) {
+            console.log(newUserData);
+            let email = newUserData.email;
+
+            // TODO:// find users by email and send invitation - add email validation
+            // Adding group id to user collection
+            // var docUserGroupsRef = db.firestore().collection("Users")
+            //     .doc(userId).collection("Groups").doc("Members"); 
+            // docUserGroupsRef.update({
+            //     data: db.firestore.FieldValue.arrayRemove(groupId),
+            // }).catch(function(error) {
+            //     console.error("Error removing document: ", error);
+            // });
+
+            //TODO:// only for test - uses email (should be ID)
+            // Add user to group collection
+            db.firestore().collection("Groups").doc(groupId).update({
+                members: db.firestore.FieldValue.arrayUnion(email),
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+        }
+    }
 }
 
-const removeFromFirebaseGroupsMembers = (Map) => {
-    console.log(Map)
+const removeFromFirebaseGroupsMembers = (mp) => {
+    console.log(mp)
+
+    for (const item of mp) {
+        var groupId = item[0];
+        for(const userId of item[1].users) {
+
+            // Remove user from group
+            db.firestore().collection("Groups").doc(groupId).update({
+                members: db.firestore.FieldValue.arrayRemove(userId),
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+
+            // Remove group in user collection
+            db.firestore().collection("Users")
+            .doc(userId).collection("Groups").doc("Members").update({
+                data: db.firestore.FieldValue.arrayRemove(groupId),
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+        }
+    }
 }
 
 export async function firebaseLeftFromGroups(Arr) {

@@ -108,9 +108,9 @@ export default function Groups() {
 				});
 			});
 		} else {
-			console.log("ADMINS GROUPS", state.userAdminGroupsMembersView);
-			console.log("MEMBERS GROUPS", state.userGroupsMembersView);
-			console.log("MEMBERS VIEW GROUPS", state.userGroupsMembersView);
+			//console.log("ADMINS GROUPS", state.userAdminGroupsMembersView);
+			//console.log("MEMBERS GROUPS", state.userGroupsMembersView);
+			//console.log("MEMBERS VIEW GROUPS", state.userGroupsMembersView);
 		}
 	});
 
