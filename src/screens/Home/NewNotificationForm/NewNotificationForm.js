@@ -13,6 +13,7 @@ import {CollapseButton} from './CollapseButton'
 import {makeStyles} from '@material-ui/core';
 import {useRecoilState, useRecoilValue} from 'recoil'
 import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState } from '../../../utils/FirebaseReminders'
+import {useSnackbar} from 'notistack'
 
 const useStyles = makeStyles((theme) => ({
 		openedContainer: {
@@ -29,8 +30,20 @@ const useStyles = makeStyles((theme) => ({
 		},
 		noCollapsedSecondColumn: {
 			flex: 1
+		},
+		errorTextInput: {
+			border: '1px solid red',
+			borderRadius: '10px'
+		},
+		successTextInput: {
+			border: 'none'
+		},
+		opacity100: {
+			opacity: 1
+		},
+		opacity40: {
+			opacity: .4
 		}
-
 }));
 
 export function NewNotificationForm() {
@@ -39,6 +52,9 @@ export function NewNotificationForm() {
 	const [selectedTime, handleTimeChange] = useRecoilState(timeState);
 	const [textContent, handleTextChange] = useRecoilState(textContentState);
 	const [showMoreSettings, setShowMoreSettings] = useState(true);
+	const [textInputState, setTextInputState] = useState(true);
+	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+	const [datePickerVersion, setDatePickerVersion] = useState(true)
 
 	const autoGrowContentInput = (element) => {
 		console.log(textContent);
@@ -49,19 +65,44 @@ export function NewNotificationForm() {
 
 	const toggleMoreSettings = () => {
 		setShowMoreSettings(state => !state);
-
 	}
 
 	var reminder = new Reminder();
-		reminder.textContent = textContent;
-		reminder.date = useRecoilValue(dateState);
-		reminder.time = useRecoilValue(timeState);
-		reminder.frequency = useRecoilValue(frequencyState);
-		const days = useRecoilValue(weekDaysState);
-		reminder.weekDays = days;
+	reminder.textContent = textContent;
+	let date = useRecoilValue(dateState);
+	let time = useRecoilValue(timeState)
+	reminder.date = datePickerVersion ? date : time;
+	reminder.frequency = useRecoilValue(frequencyState);
+	const days = useRecoilValue(weekDaysState);
+	reminder.weekDays = days;
 
 	const pushToFirestore = () => {
+		if(!validateTextInput()) return
+		if(!validateDate()) return
 		reminder.SendReminderToUserCollection();
+	}
+
+	const validateTextInput = () => {
+		if(textContent == ""){
+			setTextInputState(false)
+			enqueueSnackbar('Treść przypomnienia nie może być pusta', {variant: 'error'})
+			return false
+		}
+		return true
+	}
+
+	const validateDate = () => {
+		let date = new Date(selectedDate)
+		let time = new Date(selectedTime)
+		if(datePickerVersion && date.getTime() < Date.now()){
+			enqueueSnackbar('Data nie może odnosić się do przeszłości', {variant: 'error'})
+			return false
+		}
+		if(!datePickerVersion && time.getTime() < Date.now()){
+			enqueueSnackbar('Godzina nie może odnosić się do przeszłości', {variant: 'error'})
+			return false
+		}
+		return true
 	}
 
 	return (
@@ -69,15 +110,15 @@ export function NewNotificationForm() {
 			<Container>
 				<div className={styles.firstColumn}>
 					<Typography variant="subtitle2">Utwórz przypomnienie</Typography>
-					<ContentInput type="text" placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} onChange={e => handleTextChange(e.target.value)} />
+					<ContentInput type="text" className={textInputState ? styles.successTextInput : styles.errorTextInput} placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} onChange={e => {handleTextChange(e.target.value); setTextInputState(true)}} />
 					<TimePickersContainer>
-						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} onClick={()=>setDatePickerVersion(true)} className={datePickerVersion ? styles.opacity100 : styles.opacity40}>
 							<Timer style={{ marginRight: 5 }} />
 							<MuiPickersUtilsProvider utils={DateFnsUtils}>
-								<DateTimePicker value={selectedDate} onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
+								<DateTimePicker  value={selectedDate}  onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
 							</MuiPickersUtilsProvider>
 						</span>
-						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }}>
+						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }} className={datePickerVersion ? styles.opacity40 : styles.opacity100} onClick={()=>setDatePickerVersion(false)}>
 							<Timelapse style={{ marginRight: 5 }} />
 							<span style={{ marginRight: 5 }}>za</span>
 							<MuiPickersUtilsProvider utils={DateFnsUtils}>
