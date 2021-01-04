@@ -2,7 +2,7 @@ import db from 'firebase'
 
 async function _getUserGroupsData(name) {
     let data = new Map();
-    // TODO user ID
+    // TODO user data and id
     var docRef = db.firestore().collection("Users")
                 .doc("sQpA99mVpXQnvC0D1IcmNNhlPyr2").collection("Groups").doc(name);
     // Getting all array of groups id which user is admin
@@ -31,9 +31,9 @@ async function _getUserGroupsData(name) {
                             var userId = doc.data().members[i].trim();
                             await db.firestore().collection("Users").doc(userId).get().then(async function(doc) {
                                 if(doc.exists){
-                                    // TODO remove i !!!!
+                                    // TODO names and surname
                                     if(name == "Admins") {
-                                        data.get(groupId).users.set(i, {
+                                        data.get(groupId).users.set(userId, {
                                             id: userId, name: "Radek", surname: "Mo"
                                         })
                                     } else {

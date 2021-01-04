@@ -78,8 +78,8 @@ export default function Groups() {
 		checkedF : true,
 		checkedG : true,
 		load: false,
-		userAdminGroupsView: getUserAdminGroupsData(),
-		userGroupsView: getUserGroupsData(),
+		userAdminGroupsView: new Map(),
+		userGroupsView: new Map(),
 		userAdminGroupsMembersView: new Map(),
 		userGroupsMembersView: [],
 		TMP_AdminGroupsUndoList: [],
@@ -93,9 +93,8 @@ export default function Groups() {
 
 	useEffect(() => {
 		if(state.load === false) {
-			state.userAdminGroupsView.then(function(resultUserAdminGroupsView) {
-				state.userGroupsView.then(function(resultUserGroupsView) {
-					console.log("MEMBERS GROUPS 1", resultUserGroupsView);
+			getUserAdminGroupsData().then(function(resultUserAdminGroupsView) {
+				getUserGroupsData().then(function(resultUserGroupsView) {
 					setState({
 						...state,
 						userAdminGroupsView: resultUserAdminGroupsView,
