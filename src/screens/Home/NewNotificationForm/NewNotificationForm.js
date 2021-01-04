@@ -70,7 +70,7 @@ export function NewNotificationForm() {
 	const toggleMoreSettings = () => {
 		setShowMoreSettings(state => !state);
 		if(!showMoreSettings){
-			reminder.type = Reminder.reminderTypes.default
+			setType(Reminder.reminderTypes.default)
 		}
 	}
 

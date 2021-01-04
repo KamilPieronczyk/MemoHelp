@@ -3,10 +3,10 @@ import { atom } from 'recoil';
 
 export class Reminder {
 	static reminderTypes = {
-		default: 'DEFAULT',
-		cyclical: 'CYCLICAL',
-		special: 'SPECIAL'
-	}
+		default  : 'DEFAULT',
+		cyclical : 'CYCLICAL',
+		special  : 'SPECIAL'
+	};
 	type;
 	textContent;
 	date;
@@ -19,13 +19,21 @@ export class Reminder {
 		//firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid)
 		console.log(this.textContent);
 		return new Promise((resolve, reject) => {
-			firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('Reminders').add({
-				text      : this.textContent,
-				date      : this.date,
-				frequency : this.frequency,
-				weekDays  : this.weekDays
-			}).then(()=>resolve()).catch(()=>reject())
-		})
+			firebase
+				.firestore()
+				.collection('Users')
+				.doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2')
+				.collection('Reminders')
+				.add({
+					text      : this.textContent,
+					date      : this.date,
+					frequency : this.frequency,
+					weekDays  : this.weekDays,
+					type      : this.type
+				})
+				.then(() => resolve())
+				.catch(() => reject());
+		});
 	}
 
 	SendReminderToGroupCollection(groupID) {
