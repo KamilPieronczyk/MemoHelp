@@ -1,7 +1,9 @@
-import React,{useEffect, useRef, useState} from "react"
+import React, { useEffect, useRef, useState } from "react"
 import styled from 'styled-components'
-import {IsAuthorized} from '../../utils';
-import {IsLoggedIn} from '../../utils';
+import { IsAuthorized } from '../../utils';
+import { IsLoggedIn } from '../../utils';
+import firebase from 'firebase';
+import { useSetRecoilState } from "recoil";
 
 const dayNames = ['pon', 'wto', 'śro', 'czw', 'pią', 'sob', 'nie'];
 const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
@@ -9,6 +11,7 @@ var now = new Date();
 
 var startingDate = new Date(now.setDate(1));
 var calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
+
 
 var remindersList = [
     {
@@ -27,14 +30,42 @@ var remindersList = [
     }
 ]
 
+async function LoadReminders(callback) {
+    const db = firebase.firestore();
+    const remindersCollection = db.collection('Users').doc(firebase.auth().currentUser.uid).collection("Reminders");
+    const snapshot = await remindersCollection.get();
+
+    if (!remindersCollection.empty) {
+        remindersList = new Array();
+        snapshot.forEach(doc => {
+            console.log(doc.id, '=>', doc.data());
+            var date = new Date(doc.data().date.seconds * 1000);
+            console.log("Date: ", date);
+            remindersList.push({
+                day: date.getDate(),
+                month: date.getMonth() + 1,
+                year: date.getFullYear(),
+                time: date.getHours() + ':' + date.getMinutes(),
+                text: doc.data().text
+            });
+            console.log("Reminders List: ");
+            console.log(remindersList);
+        });
+    } else {
+        console.log("Reminders Collection is empty");
+    }
+    callback();
+}
+
 export function Calendar() {
     IsAuthorized();
     const calendarDivRef = useRef();
     const [month, setMonth] = useState(now.getMonth());
 
-    useEffect(()=>{
+    useEffect(() => {
+        LoadReminders(()=>setMonth(month));
         document.addEventListener("wheel", function (e) {
-            var value = (e.deltaY>0) ? 1 : -1;
+            var value = (e.deltaY > 0) ? 1 : -1;
             console.log(e.deltaY + " " + value);
             now.setDate(1);
             now.setMonth(now.getMonth() + value);
@@ -42,28 +73,28 @@ export function Calendar() {
             now.setDate(1);
             return false;
         }, true);
-    },[]);
+    }, []);
 
     startingDate = new Date(now.setDate(1));
-    calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
-    if(IsLoggedIn())
-    return (
-        <CalendarDiv ref={calendarDivRef}>
-            <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold'}}>
-                {monthNames[now.getMonth()]} {now.getFullYear()}
-            </p>
-            <Wrapper>
-                <GridContainer>
-                    <PrepareCalendarDays />
-                </GridContainer>
-            </Wrapper>
-            
-        </CalendarDiv>
-    )
+    calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 0));
+    if (IsLoggedIn())
+        return (
+            <CalendarDiv ref={calendarDivRef}>
+                <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold' }}>
+                    {monthNames[now.getMonth()]} {now.getFullYear()}
+                </p>
+                <Wrapper>
+                    <GridContainer>
+                        <PrepareCalendarDays />
+                    </GridContainer>
+                </Wrapper>
+
+            </CalendarDiv>
+        )
     else
-    return(
-        <div/>
-    )
+        return (
+            <div />
+        )
 }
 
 class PrepareCalendarDays extends React.Component {
