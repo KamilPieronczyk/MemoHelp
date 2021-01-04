@@ -57,23 +57,17 @@ function UserAdminGroupsShowMembers(props) {
 }
 
 function UserGroupsShowMembers(props) {
-	if(props.groupDetails.length !== 0) {
-		return(
-			<div>
-				{props.groupDetails.users.map(person => {
-					return(
-						<FlexboxItem key={`${person.id}`}>
-							<RightButton>{person.name} {person.surname}</RightButton>
-						</FlexboxItem>
-					)
-				})}
-			</div>
-		)
-	} else {
-		return(
-			<div></div>
-		)
-	}
+	return(
+		<div>
+			{props.groupDetails.users.map(person => {
+				return(
+					<FlexboxItem key={`${person.id}`}>
+						<RightButton>{person.name} {person.surname}</RightButton>
+					</FlexboxItem>
+				)
+			})}
+		</div>
+	)
 }
 
 export default function Groups() {
@@ -101,23 +95,23 @@ export default function Groups() {
 		if(state.load === false) {
 			state.userAdminGroupsView.then(function(resultUserAdminGroupsView) {
 				state.userGroupsView.then(function(resultUserGroupsView) {
-					//console.log("STATE INIT");
-					//console.log(resultUserAdminGroupsView);
-					//console.log(resultUserGroupsView);
+					console.log("MEMBERS GROUPS 1", resultUserGroupsView);
 					setState({
 						...state,
+						userAdminGroupsView: resultUserAdminGroupsView,
+						userGroupsView: resultUserGroupsView,
 						userAdminGroupsMembersView: Array.from(resultUserAdminGroupsView.keys()).length > 0 ? 
 							resultUserAdminGroupsView.get(Array.from(resultUserAdminGroupsView.keys())[0]) : new Map(),
 						userGroupsMembersView: Array.from(resultUserGroupsView.keys()).length > 0 ? 
-							resultUserGroupsView.get(Array.from(resultUserGroupsView.keys())[0]) : [],
+							resultUserGroupsView.get(Array.from(resultUserGroupsView.keys())[0]) : {},
 						load: true
 					});
 				});
 			});
 		} else {
-			console.log("STATE INIT");
-			console.log(state.userAdminGroupsMembersView);
-			console.log(state.userGroupsMembersView);
+			console.log("ADMINS GROUPS", state.userAdminGroupsMembersView);
+			console.log("MEMBERS GROUPS", state.userGroupsMembersView);
+			console.log("MEMBERS VIEW GROUPS", state.userGroupsMembersView);
 		}
 	});
 
@@ -358,7 +352,6 @@ export default function Groups() {
 							
 							{state.userAdminGroupsView.size > 0 &&
 								Array.from(state.userAdminGroupsView.keys()).map(key => {
-									console.log(key);
 									if(key !== "Friends") {
 										let name = state.userAdminGroupsView.get(key).name;
 										return(
@@ -451,7 +444,7 @@ export default function Groups() {
 								</LeftButtonZnajomi>
 							</FlexboxItem> */}
 
-							{state.userGroupsView.lenght > 0 &&
+							{state.userGroupsView.size > 0 &&
 								Array.from(state.userGroupsView.keys()).map(key => {
 									let name = state.userGroupsView.get(key).name
 									return(
@@ -469,10 +462,10 @@ export default function Groups() {
 						</CreateGroupsLeft>
 						<CreateGroupsDivider />
 						<CreateGroupsRight>
-							{state.userGroupsMembersView.size < 0 &&
+							{Object.keys(state.userGroupsMembersView).length <= 0 &&
 								<div>Nie należysz do żadnej grupy</div>
 							}
-							{state.userGroupsMembersView.size > 0 &&
+							{Object.keys(state.userGroupsMembersView).length > 0 &&
 								<div>
 									<div>Członkowie grupy: 
 										<span style={{marginLeft: 5, textDecoration: 'underline'}}>{state.userGroupsMembersView.name}</span>
