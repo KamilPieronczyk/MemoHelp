@@ -78,27 +78,16 @@ function UserGroupsShowMembers(props) {
 
 export default function Groups() {
 	
-	//let userAdminGroups = getUserAdminGroupsTestData()
-	let userAdminGroups;
-	//let userGroups = getUserGroupsTestData()
-	let userGroups;
-
-	useEffect(() => {
-		userAdminGroups = getUserAdminGroupsData();
-		userGroups = getUserGroupsData();
-	});
-
 	const [ state, setState ] = useState({
 		checkedA : true,
 		checkedB : true,
 		checkedF : true,
 		checkedG : true,
-		userAdminGroupsView: userAdminGroups,
-		userGroupsView: userGroups,
-		userAdminGroupsMembersView: Array.from(userAdminGroups.keys()).length > 0 ? 
-			userAdminGroups.get(Array.from(userAdminGroups.keys())[0]) : new Map(),
-		userGroupsMembersView: Array.from(userGroups.keys()).length > 0 ? 
-			userGroups.get(Array.from(userGroups.keys())[0]) : [],
+		load: false,
+		userAdminGroupsView: getUserAdminGroupsData(),
+		userGroupsView: getUserGroupsData(),
+		userAdminGroupsMembersView: new Map(),
+		userGroupsMembersView: [],
 		TMP_AdminGroupsUndoList: [],
 		TMP_AdminDeleteGroups: [],
 		TMP_LeftFromGroups: [],
@@ -106,8 +95,23 @@ export default function Groups() {
 		TMP_AdminGroupsEditInfo: new Map(),
 		TMP_AdminGroupsAddMembers: new Map(),
 		TMP_AdminGroupsRemoveMembers: new Map(),
-
+	}, () => {
+		setState({
+			...state,
+			userAdminGroupsMembersView: Array.from(state.userAdminGroupsView.keys()).length > 0 ? 
+				state.userAdminGroupsView.get(Array.from(state.userAdminGroupsView.keys())[0]) : new Map(),
+			userGroupsMembersView: Array.from(state.userGroupsView.keys()).length > 0 ? 
+				state.userGroupsView.get(Array.from(state.userGroupsView.keys())[0]) : [],
+			load: true
+		}, () => {
+			console.log("STATE INIT");
+			console.log(state.userAdminGroupsView);
+			console.log(state.userGroupsView);
+		});
 	});
+
+	console.log(state.userAdminGroupsView);
+	console.log(state.userAdminGroupsView.value);
 
 	const removeUserFromGroupTemp = (groupId, personId) => {
 
@@ -251,7 +255,7 @@ export default function Groups() {
 	};
 
 	const leftFromGroup = id => {
-		let group = userGroups.get(id);
+		let group = state.userGroupsView.get(id);
 		
 		state.TMP_LeftFromGroups.push(group);
 		setState({ ...state, TMP_LeftFromGroups: state.TMP_LeftFromGroups});
@@ -344,7 +348,8 @@ export default function Groups() {
 						<CreateGroupsLeft>
 							<div>Zarządzaj swoimi grupami</div>
 							
-							{Array.from(state.userAdminGroupsView.keys()).map(key => {
+							{state.load == true && Array.from(state.userAdminGroupsView.keys()).map(key => {
+								console.log(key);
 								if(key !== "Friends") {
 									let name = state.userAdminGroupsView.get(key).name;
 									return(
@@ -437,7 +442,7 @@ export default function Groups() {
 								</LeftButtonZnajomi>
 							</FlexboxItem> */}
 
-							{Array.from(state.userGroupsView.keys()).map(key => {
+							{state.userGroupsView.lenght > 0 &&Array.from(state.userGroupsView.keys()).map(key => {
 								let name = state.userGroupsView.get(key).name
 								return(
 									<FlexboxItem key={key}
