@@ -51,6 +51,8 @@ export function NewNotificationForm() {
 	const [selectedDate, handleDateChange] = useRecoilState(dateState);
 	const [selectedTime, handleTimeChange] = useRecoilState(timeState);
 	const [textContent, handleTextChange] = useRecoilState(textContentState);
+	const [weekDaysArr, setWeekDaysArr] = useRecoilState(weekDaysState)
+	const [frequency, setFrequency] = useRecoilState(frequencyState)
 	const [showMoreSettings, setShowMoreSettings] = useState(true);
 	const [textInputState, setTextInputState] = useState(true);
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -70,16 +72,18 @@ export function NewNotificationForm() {
 	var reminder = new Reminder();
 	reminder.textContent = textContent;
 	let date = useRecoilValue(dateState);
-	let time = useRecoilValue(timeState)
+	let time = useRecoilValue(timeState);
+	time = Date.now() + (time.getTime() - (new Date()).setHours(0,0,0,0))
+	time = new Date(time)
 	reminder.date = datePickerVersion ? date : time;
-	reminder.frequency = useRecoilValue(frequencyState);
+	reminder.frequency = frequency;
 	const days = useRecoilValue(weekDaysState);
 	reminder.weekDays = days;
 
 	const pushToFirestore = () => {
 		if(!validateTextInput()) return
 		if(!validateDate()) return
-		reminder.SendReminderToUserCollection();
+		//reminder.SendReminderToUserCollection();
 	}
 
 	const validateTextInput = () => {
@@ -98,11 +102,14 @@ export function NewNotificationForm() {
 			enqueueSnackbar('Data nie może odnosić się do przeszłości', {variant: 'error'})
 			return false
 		}
-		if(!datePickerVersion && time.getTime() < Date.now()){
-			enqueueSnackbar('Godzina nie może odnosić się do przeszłości', {variant: 'error'})
-			return false
-		}
 		return true
+	}
+
+	const clearForm = () => {
+		handleTextChange("")
+		setTextInputState(true)
+		setWeekDaysArr(new Array())
+		setFrequency(null)
 	}
 
 	return (
@@ -110,7 +117,7 @@ export function NewNotificationForm() {
 			<Container>
 				<div className={styles.firstColumn}>
 					<Typography variant="subtitle2">Utwórz przypomnienie</Typography>
-					<ContentInput type="text" className={textInputState ? styles.successTextInput : styles.errorTextInput} placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} onChange={e => {handleTextChange(e.target.value); setTextInputState(true)}} />
+					<ContentInput value={textContent} type="text" className={textInputState ? styles.successTextInput : styles.errorTextInput} placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} onChange={e => {handleTextChange(e.target.value); setTextInputState(true)}} />
 					<TimePickersContainer>
 						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} onClick={()=>setDatePickerVersion(true)} className={datePickerVersion ? styles.opacity100 : styles.opacity40}>
 							<Timer style={{ marginRight: 5 }} />
@@ -161,7 +168,7 @@ export function NewNotificationForm() {
 							marginRight: 10, width: '100%',
 							color: '#73909C',
 						}}
-						onClick={toggleMoreSettings}
+						onClick={clearForm}
 					/>
 					<Button
 						color="#73909C"

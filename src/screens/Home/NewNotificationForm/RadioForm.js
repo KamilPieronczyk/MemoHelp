@@ -5,6 +5,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
+import { frequencyState } from '../../../utils/FirebaseReminders'
+import {useRecoilState} from 'recoil'
+
 
 const MyRadio = withStyles({
   root: {
@@ -23,9 +26,15 @@ const MyLabel = withStyles({
 })((props) => <FormControlLabel {...props} />);
 
 export default function RadioForm() {
+  const [value, setValue] = useRecoilState(frequencyState)
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
+
   return (
     <FormControl component="fieldset">
-      <RadioGroup row aria-label="position" name="position" defaultValue="top">
+      <RadioGroup row aria-label="position" name="position" defaultValue="top" value={value} onChange={handleChange}>
         <MyLabel
           value="everyDay"
           control={<MyRadio />}

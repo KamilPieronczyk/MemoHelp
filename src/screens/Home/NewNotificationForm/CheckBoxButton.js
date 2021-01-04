@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {useRecoilState} from 'recoil'
@@ -42,6 +42,13 @@ export function CheckBoxButton() {
   const [state, setState] = useState(new Set())
   const [weekDaysArr, setWeekDaysState] = useRecoilState(weekDaysState);
   
+  useEffect(() => {
+    let set = new Set()
+    weekDaysArr.forEach(day => {
+      set.add(day)
+    })
+    setState(new Set(set))
+  }, [weekDaysArr])
 
   let getVariant = (weekDay) => {
     return state.has(weekDay) ? 'contained' : 'outlined';
