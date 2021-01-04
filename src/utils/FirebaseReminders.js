@@ -2,6 +2,12 @@ import firebase from 'firebase';
 import { atom } from 'recoil';
 
 export class Reminder {
+	static reminderTypes = {
+		default: 'DEFAULT',
+		cyclical: 'CYCLICAL',
+		special: 'SPECIAL'
+	}
+	type;
 	textContent;
 	date;
 	time;
@@ -12,12 +18,14 @@ export class Reminder {
 	SendReminderToUserCollection() {
 		//firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid)
 		console.log(this.textContent);
-		firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('Reminders').add({
-			text      : this.textContent,
-			date      : this.date,
-			frequency : this.frequency,
-			weekDays  : this.weekDays
-		});
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('Reminders').add({
+				text      : this.textContent,
+				date      : this.date,
+				frequency : this.frequency,
+				weekDays  : this.weekDays
+			}).then(()=>resolve()).catch(()=>reject())
+		})
 	}
 
 	SendReminderToGroupCollection(groupID) {
@@ -54,4 +62,9 @@ export const timeState = atom({
 export const frequencyState = atom({
 	key     : 'frequency',
 	default : ''
+});
+
+export const typeState = atom({
+	key     : 'reminderType',
+	default : Reminder.reminderTypes.default
 });

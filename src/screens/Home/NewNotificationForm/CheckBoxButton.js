@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {useRecoilState} from 'recoil'
-import { weekDaysState } from '../../../utils/FirebaseReminders'
+import { weekDaysState, typeState, Reminder } from '../../../utils/FirebaseReminders'
 
 const useStyles = makeStyles((theme) => ({
   outlined: {
@@ -41,7 +41,16 @@ export function CheckBoxButton() {
   const classes = useStyles();
   const [state, setState] = useState(new Set())
   const [weekDaysArr, setWeekDaysState] = useRecoilState(weekDaysState);
-  
+  const [type, setType] = useRecoilState(typeState);
+
+  useEffect(() => {
+    if(type != Reminder.reminderTypes.special) {
+      setState(new Set())
+      setWeekDaysState(new Array())
+    }
+    console.log('type', type)
+  }, [type])
+
   useEffect(() => {
     let set = new Set()
     weekDaysArr.forEach(day => {
@@ -61,6 +70,11 @@ export function CheckBoxButton() {
       state.add(weekDay)
     setState(new Set(state))
     setWeekDaysState(Array.from(state))
+    if(state.size > 0) {
+      setType(Reminder.reminderTypes.special)
+    } else {
+      setType(Reminder.reminderTypes.default)
+    }
   }
   return (
     <div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -7,7 +7,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
 import { frequencyState } from '../../../utils/FirebaseReminders'
 import {useRecoilState} from 'recoil'
-
+import { weekDaysState, typeState, Reminder } from '../../../utils/FirebaseReminders'
 
 const MyRadio = withStyles({
   root: {
@@ -27,8 +27,15 @@ const MyLabel = withStyles({
 
 export default function RadioForm() {
   const [value, setValue] = useRecoilState(frequencyState)
+  const [type, setType] = useRecoilState(typeState);
+
+  useEffect(() => {
+    if(type != Reminder.reminderTypes.cyclical)
+      setValue(null)
+  }, [type])
 
   const handleChange = (event) => {
+    setType(Reminder.reminderTypes.cyclical)
     setValue(event.target.value);
   };
 

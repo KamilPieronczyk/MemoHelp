@@ -12,7 +12,7 @@ import {CheckBoxButton} from './CheckBoxButton'
 import {CollapseButton} from './CollapseButton'
 import {makeStyles} from '@material-ui/core';
 import {useRecoilState, useRecoilValue} from 'recoil'
-import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState } from '../../../utils/FirebaseReminders'
+import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState } from '../../../utils/FirebaseReminders'
 import {useSnackbar} from 'notistack'
 
 const useStyles = makeStyles((theme) => ({
@@ -53,6 +53,7 @@ export function NewNotificationForm() {
 	const [textContent, handleTextChange] = useRecoilState(textContentState);
 	const [weekDaysArr, setWeekDaysArr] = useRecoilState(weekDaysState)
 	const [frequency, setFrequency] = useRecoilState(frequencyState)
+  const [type, setType] = useRecoilState(typeState);
 	const [showMoreSettings, setShowMoreSettings] = useState(true);
 	const [textInputState, setTextInputState] = useState(true);
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -64,12 +65,15 @@ export function NewNotificationForm() {
 		element.target.style.height = '30px';
 		element.target.style.height = element.target.scrollHeight + 'px';
 	};
+	var reminder = new Reminder();
 
 	const toggleMoreSettings = () => {
 		setShowMoreSettings(state => !state);
+		if(!showMoreSettings){
+			reminder.type = Reminder.reminderTypes.default
+		}
 	}
 
-	var reminder = new Reminder();
 	reminder.textContent = textContent;
 	let date = useRecoilValue(dateState);
 	let time = useRecoilValue(timeState);
@@ -77,13 +81,19 @@ export function NewNotificationForm() {
 	time = new Date(time)
 	reminder.date = datePickerVersion ? date : time;
 	reminder.frequency = frequency;
+	reminder.type = type
 	const days = useRecoilValue(weekDaysState);
 	reminder.weekDays = days;
 
 	const pushToFirestore = () => {
 		if(!validateTextInput()) return
 		if(!validateDate()) return
-		//reminder.SendReminderToUserCollection();
+		reminder.SendReminderToUserCollection().then(()=>{
+			enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
+			clearForm()
+		}).catch(()=>{
+			enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
+		})
 	}
 
 	const validateTextInput = () => {
@@ -110,6 +120,7 @@ export function NewNotificationForm() {
 		setTextInputState(true)
 		setWeekDaysArr(new Array())
 		setFrequency(null)
+		setType(Reminder.reminderTypes.default)
 	}
 
 	return (
