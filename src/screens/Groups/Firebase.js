@@ -34,11 +34,11 @@ async function _getUserGroupsData(name) {
                                     // TODO names and surname
                                     if(name == "Admins") {
                                         data.get(groupId).users.set(userId, {
-                                            id: userId, name: "Radek", surname: "Mo"
+                                            id: userId, userName: doc.data().userName
                                         })
                                     } else {
                                         data.get(groupId).users.push(
-                                            {id: userId, name: "Radek", surname: "Mo"}
+                                            {id: userId, userName: doc.data().userName}
                                         )
                                     }
                                     console.log("TODO:// get user data from firestore");
@@ -81,21 +81,29 @@ export async function getUserGroupsData() {
 * state.TMP_AdminGroupsRemoveMembers
  */
 export async function firebaseAdminGroupsMapState(NewGroupsMap, EditInfoGroupsMap, NewGroupsMembersMap, RemoveMemebersFromGroupsMap, RemoveGroupsMap) {
-    if(NewGroupsMap.size > 0)
-		await sendToFirebaseNewGroupsData(NewGroupsMap)
+    
+    var updates = new Map;
 
+    if(NewGroupsMap.size > 0) {
+        updates.set("NEW-GROUPS-USERS-ID", await sendToFirebaseNewGroupsData(NewGroupsMap))
+    }   
+        
+        
+    if(NewGroupsMembersMap.size > 0) {
+        updates.set("NEW-USERS-ID", await sendToFirebaseNewGroupsMembers(NewGroupsMembersMap))
+    }
+		
 	if(EditInfoGroupsMap.size > 0)
 		updateInFirebaseGroupsInfo(EditInfoGroupsMap)
 		
-	if(NewGroupsMembersMap.size > 0)
-		sendToFirebaseNewGroupsMembers(NewGroupsMembersMap)
-		
+	
 	if(RemoveMemebersFromGroupsMap.size > 0)
         removeFromFirebaseGroupsMembers(RemoveMemebersFromGroupsMap)
     
     if(RemoveGroupsMap.size > 0)
         removeGroupsFromFirebase(RemoveGroupsMap)
 
+    return updates;
 }
 
 async function removeGroupsFromFirebase(mp) {
@@ -155,10 +163,11 @@ async function sendToFirebaseNewGroupsData(mp) {
     // TODO user ID
     var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
 
+    let firestoreGroupsIds = new Map();
+
     for (const item of mp) {
 
-        console.log(item[1]);
-
+        var randomGroupId = item[0];
         var docUserGroupsRef = db.firestore().collection("Users")
             .doc(userId).collection("Groups").doc("Admins"); 
              
@@ -172,6 +181,11 @@ async function sendToFirebaseNewGroupsData(mp) {
         .then(function(docRef) {
             var groupId = docRef.id;
 
+            firestoreGroupsIds.set(randomGroupId, {
+                id: docRef.id,
+                users: new Map() 
+            });
+
             // BUG update ID in state.userAdminGroupsView, state.userAdminGroupsMembersView
             console.log("Document written with ID: ", groupId);
             // Add group ID to users Admins aaray
@@ -183,14 +197,21 @@ async function sendToFirebaseNewGroupsData(mp) {
 
             // TODO: same as in sendToFirebaseNewGroupsMembers()
             for(const newUser of item[1].users) {
+                var randomUserId = newUser[1].id;
                 let email = newUser[1].email;
+
+                firestoreGroupsIds.get(randomGroupId).users.set(randomUserId, {
+                    id: null,
+                    userName: null
+                });
 
                 // Get id from email
                 db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
-                    let emailExists = false;
                     querySnapshot.forEach(function(doc) {
                         //console.log(doc.id, " => ", doc.data());
-                        emailExists = true;
+
+                        firestoreGroupsIds.get(randomGroupId).users.get(randomUserId).id = doc.id;
+                        firestoreGroupsIds.get(randomGroupId).users.get(randomUserId).userName = doc.data().userName;
 
                         // Adding group id to user collection
                         var docUserGroupsRef = db.firestore().collection("Users")
@@ -207,12 +228,7 @@ async function sendToFirebaseNewGroupsData(mp) {
                         }).catch(function(error) {
                             console.error("Error update document: ", error);
                         });
-
                     });
-                    if(emailExists === false) {
-                        // TODO alert
-                        console.log("Can't found email", email);
-                    }
                 })
                 .catch(function(error) {
                     console.log("Error getting documents (user id from email): ", error);
@@ -224,6 +240,8 @@ async function sendToFirebaseNewGroupsData(mp) {
             console.error("Error adding document: ", error);
         });
     }
+
+    return firestoreGroupsIds;
 }
 
 const updateInFirebaseGroupsInfo = (mp) => {
@@ -243,20 +261,34 @@ const updateInFirebaseGroupsInfo = (mp) => {
 const sendToFirebaseNewGroupsMembers = (mp) => {
     console.log(mp)
 
+    let firestoreUsersIds = new Map();
+
     for (const item of mp) {
         let groupId = item[0];
         if(typeof groupId === "number")
             continue;
+        
+        firestoreUsersIds.set(groupId, {
+            users: new Map() 
+        });
+
         for(const newUserData of item[1].users) {
             console.log(newUserData);
+            var randomUserId = newUserData.id;
             let email = newUserData.email;
+            
+            firestoreUsersIds.get(groupId).users.set(randomUserId, {
+                id: null,
+                userName: null
+            });
 
             // Get id from email
             db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
-                let emailExists = false;
                 querySnapshot.forEach(function(doc) {
                     //console.log(doc.id, " => ", doc.data());
-                    emailExists = true;
+
+                    firestoreUsersIds.get(groupId).users.get(randomUserId).id = doc.id;
+                    firestoreUsersIds.get(groupId).users.get(randomUserId).userName = doc.data().userName;
 
                     // Adding group id to user collection
                     var docUserGroupsRef = db.firestore().collection("Users")
@@ -275,10 +307,6 @@ const sendToFirebaseNewGroupsMembers = (mp) => {
                     });
 
                 });
-                if(emailExists === false) {
-                    // TODO alert
-                    console.log("Can't found email", email);
-                }
             })
             .catch(function(error) {
                 console.log("Error getting documents (user id from email): ", error);
@@ -286,6 +314,8 @@ const sendToFirebaseNewGroupsMembers = (mp) => {
 
         }
     }
+
+    return firestoreUsersIds;
 }
 
 const removeFromFirebaseGroupsMembers = (mp) => {

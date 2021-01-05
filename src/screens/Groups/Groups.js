@@ -36,13 +36,12 @@ function UserAdminGroupsShowMembers(props) {
 		<div>
 			{Array.from(props.groupDetails.users.keys()).map(key => {
 				let id = props.groupDetails.users.get(key).id;
-				let name = props.groupDetails.users.get(key).name;
-				let surname = props.groupDetails.users.get(key).surname;
+				let userName = props.groupDetails.users.get(key).userName;
 				let email = props.groupDetails.users.get(key).email;
 				var text;
-				if(name === undefined || surname === undefined)
+				if(userName === undefined)
 					text = email
-				else text = name + " " + surname
+				else text = userName
 				return(
 				<FlexboxItem key={id}>
 					<RightButton id={id}>
@@ -172,6 +171,8 @@ export default function Groups() {
 	const addNewGroup = e => {
 		if (e.key === 'Enter' && e.target.value != "") {
 			
+
+
 			let obj = {
 				id: Math.random(),
 				name: e.target.value,
@@ -214,13 +215,13 @@ export default function Groups() {
 		}
 		if (e.key === 'Enter' && e.target.value !== "") {
 
+			// TODO user ID
 			let groupId = state.userAdminGroupsMembersView.id; 
 			let userData = {
 				id: Math.random(),
 				email: e.target.value,		
 			}
 
-			// TODO check email
 			e.target.value = "";
 
 			state.TMP_AdminGroupsUndoList.push({
@@ -333,15 +334,19 @@ export default function Groups() {
 		}
 	}
 
-	const submitAdminViewChange = () => {
+	async function submitAdminViewChange() {
 
-		firebaseAdminGroupsMapState(
+		let updates = await firebaseAdminGroupsMapState(
 			state.TMP_AdminGroupsNew,
 			state.TMP_AdminGroupsEditInfo,
 			state.TMP_AdminGroupsAddMembers,
 			state.TMP_AdminGroupsRemoveMembers,
 			state.TMP_AdminDeleteGroups
 			);
+		
+		console.log("UPDATES", updates);
+		//NEW-GROUPS-USERS-ID -> (group<id>, users <randomId, (id, userName)>) 
+		//NEW-USERS-ID -> (group, users <randomId, (id, userName)>)
 
 		state.TMP_AdminGroupsNew = new Map()
 		setState({ ...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
