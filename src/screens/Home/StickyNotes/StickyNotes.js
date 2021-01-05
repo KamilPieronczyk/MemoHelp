@@ -1,17 +1,44 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react';
 import styled from 'styled-components'
 import {StickyNote} from './StickyNote'
 import {StickyNoteCreator} from './StickyNoteCreator'
+import firebase from 'firebase'
 
 export function StickyNotes(props) {
+  const [list, setList] = useState(new Array())
+
+  useEffect(() => {
+    const stickyNote = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('StickyNotes')
+    const query = stickyNote.limit(5)
+    const stickyNoteSubscription = query.onSnapshot(snapshot => {
+      renderList(snapshot)
+    })
+    return () => {
+      stickyNoteSubscription()
+    }
+  }, [])
+
+  const renderList = (snapshot) => {
+    let array = new Array()
+    snapshot.forEach(stickyNote => {
+      let data = {
+          text: stickyNote.data().text,
+          ref: stickyNote.ref
+
+      }
+      console.log(data);
+      console.log(data.ref);
+      array.push(
+        <StickyNote content={data.text} stickyRef={data.ref}/>
+      )
+    })
+    console.log(array)
+    setList(array)
+  }
   return (
     <Container>
       <StickyNoteCreator title="stworz notatke" />
-      <StickyNote title="Stwórz notatke" content="Quibusdam qui exercitationem eum nihil. Sunt quisquam ut unde possimus est eveniet ex pariatur. Nemo enim possimus ut aut cumque quis consectetur enim. Laboriosam atque alias ullam quia voluptatem molestiae et ut in. Omnis reiciendis tempora. Dolore consequatur doloribus." />
-      <StickyNote title="Elo" content="Lorem ipsum" />
-      <StickyNote title="Elo" content="Lorem ipsum" />
-      <StickyNote title="Elo" content="Lorem ipsum" />
-      <StickyNote title="Elo" content="Lorem ipsum" />
+        {list}
     </Container>
   )
 }

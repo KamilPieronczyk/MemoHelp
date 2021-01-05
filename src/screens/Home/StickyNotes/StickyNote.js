@@ -1,32 +1,26 @@
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
 export function StickyNote(props) {
+	const handleRemove = () => {
+		props.stickyRef.delete()
+	  }
 	return (
 		<Container>
-			<Typography variant="subtitle2">{props.title}</Typography>
       		<Typography variant="body1">{props.content}</Typography>
 			<MoreIconContainer>
-				<MoreIcon />
+				<DeleteIcon onClick={handleRemove}/>
 			</MoreIconContainer>
 		</Container>
 	);
 }
-export function StickyNoteCreator(props) {
-	return (
-		<Container>
-			<MyTextInput placeholder="Dodaj notatke" color='#9C9083'></MyTextInput>
-			<MoreIconContainer>
-				<AddIcon />
-			</MoreIconContainer>
-		</Container>
-	);
-}
+
+
 
 const Container = styled.div`
 	width: calc(100% / 2 - 10px);
@@ -41,22 +35,6 @@ const Container = styled.div`
   margin-top: 10px;
   margin-right: 15px;
 `;
-
-const MyTextInput=styled.textarea`
-height: 100%;
-width: 100%;
-text-decoration:none;
-border: none;
-background:none;
-outline:none;
-color:#9C9083;
-resize: vertical;
-font-size:16px;
-
-
-
-`;
-
 const MoreIconContainer = withStyles((theme) => ({
 	root : {
 		position : 'absolute',
