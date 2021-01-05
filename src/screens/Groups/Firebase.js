@@ -75,7 +75,7 @@ export async function getUserGroupsData() {
 * state.TMP_AdminGroupsAddMembers,
 * state.TMP_AdminGroupsRemoveMembers
  */
-export async function firebaseAdminGroupsMapState(NewGroupsMap, EditInfoGroupsMap, NewGroupsMembersMap, RemoveMemebersFromGroupsMap) {
+export async function firebaseAdminGroupsMapState(NewGroupsMap, EditInfoGroupsMap, NewGroupsMembersMap, RemoveMemebersFromGroupsMap, RemoveGroupsMap) {
     if(NewGroupsMap.size > 0)
 		await sendToFirebaseNewGroupsData(NewGroupsMap)
 
@@ -86,8 +86,54 @@ export async function firebaseAdminGroupsMapState(NewGroupsMap, EditInfoGroupsMa
 		sendToFirebaseNewGroupsMembers(NewGroupsMembersMap)
 		
 	if(RemoveMemebersFromGroupsMap.size > 0)
-		removeFromFirebaseGroupsMembers(RemoveMemebersFromGroupsMap)
+        removeFromFirebaseGroupsMembers(RemoveMemebersFromGroupsMap)
+    
+    if(RemoveGroupsMap.size > 0)
+        removeGroupsFromFirebase(RemoveGroupsMap)
 
+}
+
+async function removeGroupsFromFirebase(mp) {
+ 
+    for (const item of mp) {
+        let groupId = item[0];
+        if(typeof groupId === "number")
+            continue;
+
+        var docGroupsRef = db.firestore().collection("Groups").doc(groupId)
+
+        // Remove in user collection groups ID
+        await docGroupsRef.get().then(function(doc) {
+            if(doc.exists) {
+                for(let i = 0; i < doc.data().admin.length; i++) {
+                    let id = doc.data().admin[i].id;
+
+                    db.firestore().collection("Users").doc(id).collection("Groups").doc("Admins").update({
+                        data: db.firestore.FieldValue.arrayRemove(groupId)
+                    }).catch(function(error) {
+                        console.error("Error removing document: ", error);
+                    });
+                }
+
+                for(let i = 0; i < doc.data().members.length; i++) {
+                    let id = doc.data().members[i];
+
+                    db.firestore().collection("Users").doc(id).collection("Groups").doc("Members").update({
+                        data: db.firestore.FieldValue.arrayRemove(groupId)
+                    }).catch(function(error) {
+                        console.error("Error removing document: ", error);
+                    });
+                }
+            }
+        }).catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
+        
+        // Remove group
+        docGroupsRef.delete();
+    }
+
+    
 }
 
 async function sendToFirebaseNewGroupsData(mp) {
@@ -110,6 +156,7 @@ async function sendToFirebaseNewGroupsData(mp) {
         .then(function(docRef) {
             var groupId = docRef.id;
 
+            // BUG update ID in state.userAdminGroupsView, state.userAdminGroupsMembersView
             console.log("Document written with ID: ", groupId);
             // Add grop ID to users Admins aaray
             docUserGroupsRef.update({

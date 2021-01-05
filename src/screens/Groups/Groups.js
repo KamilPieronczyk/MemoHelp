@@ -9,9 +9,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Button } from '../../components/index';
 import Close from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create';
 import {getUserAdminGroupsData, getUserGroupsData, firebaseAdminGroupsMapState, 
-	firebaseLeftFromGroups, getUserAdminGroupsTestData, getUserGroupsTestData} from './Firebase'
+	firebaseLeftFromGroups} from './Firebase'
 
 const GreenCheckbox = withStyles({
 	root    : {
@@ -83,7 +84,7 @@ export default function Groups() {
 		userAdminGroupsMembersView: new Map(),
 		userGroupsMembersView: [],
 		TMP_AdminGroupsUndoList: [],
-		TMP_AdminDeleteGroups: [],
+		TMP_AdminDeleteGroups: new Map(),
 		TMP_LeftFromGroups: [],
 		TMP_AdminGroupsNew: new Map(),
 		TMP_AdminGroupsEditInfo: new Map(),
@@ -297,6 +298,29 @@ export default function Groups() {
 		console.log(state.TMP_AdminGroupsUndoList);
 	};
 
+	const deleteGroup = id => {
+		let groupData = state.userAdminGroupsView.get(id);
+		
+		state.TMP_AdminGroupsUndoList.push({
+			undo: () => {
+				state.TMP_AdminDeleteGroups.delete(id);
+				setState({...state, TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups});
+				state.userAdminGroupsView.set(id, groupData);
+				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+				console.log(`Undo: delete group ${id}`)
+			}
+		});
+
+		state.TMP_AdminDeleteGroups.set(id, groupData);
+		setState({...state, TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups});
+		
+		state.userAdminGroupsView.delete(id);
+		setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+
+		console.log("state.TMP_AdminDeleteGroups");
+		console.log(state.TMP_AdminDeleteGroups);
+	}
+
 	const undoAdminViewChange = () => {
 		if(state.TMP_AdminGroupsUndoList.length > 0) {
 			let obj = state.TMP_AdminGroupsUndoList.pop();
@@ -311,7 +335,8 @@ export default function Groups() {
 			state.TMP_AdminGroupsNew,
 			state.TMP_AdminGroupsEditInfo,
 			state.TMP_AdminGroupsAddMembers,
-			state.TMP_AdminGroupsRemoveMembers
+			state.TMP_AdminGroupsRemoveMembers,
+			state.TMP_AdminDeleteGroups
 			);
 
 		state.TMP_AdminGroupsNew = new Map()
@@ -323,6 +348,8 @@ export default function Groups() {
 		state.TMP_AdminGroupsRemoveMembers = new Map()
 		setState({ ...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
 		setState({ ...state, TMP_AdminGroupsUndoList: []});
+		state.TMP_AdminDeleteGroups = new Map();
+		setState({ ...state, TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups});
 	}
 
 	const undoUserGroupsChange = () => {
@@ -358,7 +385,11 @@ export default function Groups() {
 												onClick={() => btnAdminGroupsViewClick(key)}
 											>
 												<LeftButton>
-													{name}<CreateIcon onClick={() => editGroup(key)}/>
+													{name}
+													<div>
+														<CreateIcon onClick={() => editGroup(key)}/>
+														<DeleteIcon onClick={() => deleteGroup(key)}/>
+													</div>	
 												</LeftButton>
 											</FlexboxItem>
 										)
