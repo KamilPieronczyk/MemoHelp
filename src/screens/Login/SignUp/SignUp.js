@@ -17,6 +17,7 @@ import {
     Link
   } from "react-router-dom";
 import {Button} from '../../../components';
+import { min } from 'date-fns';
 // const GreenCheckbox = withStyles({
 //     root: {
 //         color: green[400],
@@ -31,6 +32,7 @@ export function Register(props) {
     const [mail, setMail] = useState("");
     const [password, setPassword]=useState("");
     const [password2,setPassword2]=useState("");
+    const [name, setName]=useState("");
     const [state, setState] = useState(false);
     const handleChange = (event) => {
         setState(!state);
@@ -42,6 +44,8 @@ export function Register(props) {
             return false;
         if (!validator.isLength(password,{min:6, max:30}))
             return false;
+        if (!validator.isLength(name,{min:4, max:30}))
+            return false;
         if (!state)
             return false;
         return true;
@@ -52,9 +56,20 @@ export function Register(props) {
             console.log("Błąd walidacji");
             return false;
         }
-        firebase.auth().createUserWithEmailAndPassword(mail, password).then(()=>{
-            history.push("/");
-            window.location.reload();
+        firebase.auth().createUserWithEmailAndPassword(mail, password).then(({user})=>{
+            //uploadData();
+            console.log(user);
+            var email = mail;
+            var userName = name;
+            console.log("moj email: ", email);
+            console.log("moj nick: ", userName);
+            firebase.firestore().collection('Users').doc(user.uid).set({
+                email: email,
+                userName: userName
+            }).then(function(){
+                history.push("/");
+                window.location.reload();
+            });
         }).catch(function(error) {
             // Handle Errors here.
             //var errorCode = error.code;
@@ -64,12 +79,30 @@ export function Register(props) {
           });
         
     }
+    // const uploadData = () => {
+    //     var email = mail;
+    //     //var user = firebase.auth().currentUser;
+    //     var uid = user.uid;
+    //     if (user!=null){
+    //         // user.providerData.forEach(function(profile){
+                
+    //         //     console.log(profile);
+            
+    //         // });
+    //         firebase.database().ref('users/' + user.uid).set({
+    //             email: email
+    //         });
+    //     }
+        
+    // }
     return (
         <LoginContainer>
             <Nag>
             <MyText>Rejestracja:</MyText>
             <MyLink to="/login">Powrót</MyLink>
             </Nag>
+            <MyInput type="text" id="nname" name="nname" placeholder="imię i nazwisko" onChange={n=>setName(n.target.value)}>
+            </MyInput>
             <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
             </MyInput>
             <MyInput type="password" id="pname" name="pname" placeholder="hasło" onChange={p=>setPassword(p.target.value)}>
