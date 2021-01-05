@@ -13,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create';
 import {getUserAdminGroupsData, getUserGroupsData, firebaseAdminGroupsMapState, 
 	firebaseLeftFromGroups} from './Firebase'
+import {useSnackbar} from 'notistack'
 
 const GreenCheckbox = withStyles({
     root: {
@@ -72,6 +73,8 @@ function UserGroupsShowMembers(props) {
 
 export default function Groups() {
 	
+	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
 	const [ state, setState ] = useState({
 		checkedA : true,
 		checkedB : true,
@@ -360,6 +363,7 @@ export default function Groups() {
 					});
 					state.userAdminGroupsView.delete(randomGroupId);
 					// TODO:// set as invitation, handle error
+					//enqueueSnackbar('Wystąpił problem z dodaniem notatki', { variant: 'error' })
 				}
 			}
 
@@ -379,6 +383,7 @@ export default function Groups() {
 			setState({ ...state, userAdminGroupsView: state.userAdminGroupsView, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
 		}
 
+		enqueueSnackbar('Operacja została wykonana pomyślnie', { variant: 'success' })
 
 		state.TMP_AdminGroupsNew = new Map()
 		setState({ ...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
@@ -404,6 +409,7 @@ export default function Groups() {
 
 	async function submitUserGroupsChange() {
 		await firebaseLeftFromGroups(state.TMP_LeftFromGroups)
+		enqueueSnackbar('Operacja została wykonana pomyślnie', { variant: 'success' })
 		setState({ ...state, TMP_LeftFromGroups: []});
 	}
 
