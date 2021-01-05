@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 			borderRadius: '10px'
 		},
 		successTextInput: {
-			border: 'none'
+			borderBottom: '2px #73909C solid'
 		},
 		opacity100: {
 			opacity: 1
@@ -58,6 +58,7 @@ export function NewNotificationForm() {
 	const [textInputState, setTextInputState] = useState(true);
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const [datePickerVersion, setDatePickerVersion] = useState(true)
+	const [buttonDisabled, setButtonDisabled] = useState(false)
 
 	const autoGrowContentInput = (element) => {
 		console.log(textContent);
@@ -69,7 +70,7 @@ export function NewNotificationForm() {
 
 	const toggleMoreSettings = () => {
 		setShowMoreSettings(state => !state);
-		if(!showMoreSettings){
+		if(showMoreSettings){
 			setType(Reminder.reminderTypes.default)
 		}
 	}
@@ -88,11 +89,14 @@ export function NewNotificationForm() {
 	const pushToFirestore = () => {
 		if(!validateTextInput()) return
 		if(!validateDate()) return
+		setButtonDisabled(true)
 		reminder.SendReminderToUserCollection().then(()=>{
 			enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
 			clearForm()
+			setButtonDisabled(false)
 		}).catch(()=>{
 			enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
+			setButtonDisabled(false)
 		})
 	}
 
@@ -108,7 +112,7 @@ export function NewNotificationForm() {
 	const validateDate = () => {
 		let date = new Date(selectedDate)
 		let time = new Date(selectedTime)
-		if(datePickerVersion && date.getTime() < Date.now()){
+		if(datePickerVersion && date.getTime() < Date.now() && type != Reminder.reminderTypes.special){
 			enqueueSnackbar('Data nie może odnosić się do przeszłości', {variant: 'error'})
 			return false
 		}
@@ -133,7 +137,19 @@ export function NewNotificationForm() {
 						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} onClick={()=>setDatePickerVersion(true)} className={datePickerVersion ? styles.opacity100 : styles.opacity40}>
 							<Timer style={{ marginRight: 5 }} />
 							<MuiPickersUtilsProvider utils={DateFnsUtils}>
-								<DateTimePicker  value={selectedDate}  onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
+								{
+									type != Reminder.reminderTypes.special ?
+										<DateTimePicker  value={selectedDate}  onChange={handleDateChange} showTodayButton disablePast ampm={false} color="primary" />
+										:
+										<TimePicker
+											ampm={false}
+											openTo="minutes"
+											views={['hours', 'minutes']}
+											format="hh:mm"
+											value={selectedDate}
+											onChange={handleDateChange}
+										/>
+								}
 							</MuiPickersUtilsProvider>
 						</span>
 						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }} className={datePickerVersion ? styles.opacity40 : styles.opacity100} onClick={()=>setDatePickerVersion(false)}>
@@ -190,6 +206,7 @@ export function NewNotificationForm() {
 						}}
 						text="Zapisz"
 						onClick={pushToFirestore}
+						disabled={buttonDisabled}
 					/>
 				</div>
 				<div className={showMoreSettings ? styles.noCollapsedSecondColumn : styles.collapsedSecondColumn}></div>
@@ -233,6 +250,7 @@ const ContentInput = styled.textarea`
 	resize: none;
 	font-family: 'Roboto';
 	background-color: #fffaf5;
+	border-bottom: '1px #73909C solid'
 `;
 
 const TimePickersContainer = styled(ButtonsContainer)`

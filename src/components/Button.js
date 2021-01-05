@@ -27,6 +27,7 @@ function Btn(props) {
             style={s}
             onClick={props.onClick}
             endIcon={props.endIcon}
+            disabled={props.disabled}
         >
             {props.text}
         </Button>
