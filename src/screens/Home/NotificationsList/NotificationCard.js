@@ -1,22 +1,51 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import TimeIcon from '@material-ui/icons/Timer'
 import IconButton from '@material-ui/core/IconButton';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { withStyles } from '@material-ui/core/styles';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 
 export function NotificationCard(props) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  let time = props.time
+  let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+  let timeString = time.toLocaleString("pl-PL", options)
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  }
+
+  const handleRemove = () => {
+    props.value.ref.delete()
+    handleClose()
+  }
+
+  const openMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  }
+
   return (
     <Container>
       {props.message}
       <Time>
         <TimeIcon />
-        <span style={{marginLeft: 7 + 'px'}}>{props.time}</span>
+        <span style={{marginLeft: 7 + 'px'}}>{timeString}</span>
       </Time>
       <MoreIconContainer>
-        <MoreIcon />
+        <MoreIcon onClick={openMenu} />
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleRemove}>Usuń</MenuItem>
+        </Menu>
       </MoreIconContainer>
     </Container>
   )
