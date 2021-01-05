@@ -1,18 +1,49 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {NotificationCard} from './NotificationCard'
+import firebase from 'firebase'
 
 export function NotificationsList() {
+  const [list, setList] = useState(new Array())
+
+  useEffect(() => {
+    const reminders = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('Reminders')
+    const query = reminders.limit(7).orderBy('date', 'asc')
+    const remindersSubscription = query.onSnapshot(snapshot => {
+      renderList(snapshot)
+    })
+    return () => {
+      remindersSubscription()
+    }
+  }, [])
+
+  const renderList = (snapshot) => {
+    let array = new Array()
+    snapshot.forEach(reminder => {
+      let data = {
+        id: reminder.id,
+          text: reminder.data().text,
+          date: new Date(reminder.data().date.seconds * 1000),
+          frequency: reminder.data().frequency,
+          weekDays: reminder.data().weekDays,
+          type: reminder.data().type,
+          ref: reminder.ref
+      }
+      array.push(
+        <NotificationCard message={data.text} time={data.date} id={data.id} value={data}/>
+      )
+    })
+    console.log(array)
+    setList(array)
+  }
+
   return (
     <Container>
       <Header>
         <HeaderText>NAJBLIŻSZE POWIADOMIENIA</HeaderText>
       </Header>
       <List>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
-        <NotificationCard message="Zadzwonić do serwisu" time="21:37 11 listopada 2020" id="1"/>
+        {list}
       </List>
     </Container>
   )

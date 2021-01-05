@@ -9,70 +9,64 @@ const dayNames = ['pon', 'wto', 'śro', 'czw', 'pią', 'sob', 'nie'];
 const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
 var now = new Date();
 
+var user = 'sQpA99mVpXQnvC0D1IcmNNhlPyr2';
+
+var wheelListener = false;
 var startingDate = new Date(now.setDate(1));
 var calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
 
+var remindersList = new Array();
 
-var remindersList = [
-    {
-        day: 20,
-        month: 11,
-        year: 2020,
-        time: '10:30',
-        text: 'cos tam bla bla',
-    },
-    {
-        day: 14,
-        month: 10,
-        year: 2020,
-        time: '10:30',
-        text: 'cos tam bla bla',
-    }
-]
+async function LoadReminders(currentMonth, callback) {
+    if (remindersList.length == 0) {
+        const db = firebase.firestore();
+        const remindersCollection = db.collection('Users').doc(user).collection("Reminders");
+        const snapshot = await remindersCollection.get();
 
-async function LoadReminders(callback) {
-    const db = firebase.firestore();
-    const remindersCollection = db.collection('Users').doc(firebase.auth().currentUser.uid).collection("Reminders");
-    const snapshot = await remindersCollection.get();
-
-    if (!remindersCollection.empty) {
-        remindersList = new Array();
-        snapshot.forEach(doc => {
-            console.log(doc.id, '=>', doc.data());
-            var date = new Date(doc.data().date.seconds * 1000);
-            console.log("Date: ", date);
-            remindersList.push({
-                day: date.getDate(),
-                month: date.getMonth() + 1,
-                year: date.getFullYear(),
-                time: date.getHours() + ':' + date.getMinutes(),
-                text: doc.data().text
+        if (!remindersCollection.empty) {
+            remindersList = new Array();
+            snapshot.forEach(doc => {
+                console.log(doc.id, '=>', doc.data());
+                var date = new Date(doc.data().date.seconds * 1000);
+                console.log("Date: ", date);
+                remindersList.push({
+                    day: date.getDate(),
+                    month: date.getMonth() + 1,
+                    year: date.getFullYear(),
+                    time: date.getHours() + ':' + date.getMinutes(),
+                    text: doc.data().text
+                });
             });
-            console.log("Reminders List: ");
-            console.log(remindersList);
-        });
-    } else {
-        console.log("Reminders Collection is empty");
+        } else {
+            console.log("Reminders Collection is empty");
+        }
     }
-    callback();
+    callback(currentMonth + 1);
+    callback(currentMonth);
 }
+
 
 export function Calendar() {
     IsAuthorized();
+
     const calendarDivRef = useRef();
     const [month, setMonth] = useState(now.getMonth());
 
+    const setMonthListener = (e) => {
+        var value = (e.deltaY > 0) ? 1 : -1;
+        console.log(e.deltaY + " " + value);
+        now.setDate(1);
+        now.setMonth(now.getMonth() + value);
+        setMonth(now.getMonth());
+        now.setDate(1);
+        console.log("month: ", now.getMonth() + 1);
+        return false;
+    }
+    
     useEffect(() => {
-        LoadReminders(()=>setMonth(month));
-        document.addEventListener("wheel", function (e) {
-            var value = (e.deltaY > 0) ? 1 : -1;
-            console.log(e.deltaY + " " + value);
-            now.setDate(1);
-            now.setMonth(now.getMonth() + value);
-            setMonth(now.getMonth());
-            now.setDate(1);
-            return false;
-        }, true);
+        LoadReminders(now.getMonth(), (date) => { setMonth(date); });
+        document.addEventListener("wheel", setMonthListener, true);
+        return () => { document.removeEventListener("wheel", setMonthListener, true) };
     }, []);
 
     startingDate = new Date(now.setDate(1));
@@ -194,7 +188,7 @@ const ReminderLabel = styled.div`
     flex-grow: 0;
     justify-content: left;
     align-items: center;
-    background-color: #9C9083;
+    background-color: #B593C9;
     vertical-align: middle;
     border-radius: 12px;
 `
