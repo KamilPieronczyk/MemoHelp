@@ -276,26 +276,27 @@ export default function Groups() {
 
 	}
 
-	const editGroup = id => {
-		let name = state.userAdminGroupsView.get(id).name;
-		state.TMP_AdminGroupsUndoList.push({
-			undo: () => {
-				state.TMP_AdminGroupsEditInfo.delete(id);
-				setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
-				state.userAdminGroupsView.get(id).name = name;
-				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-				console.log(`Undo: edit group ${id}`)
-			}
-		});
-		state.userAdminGroupsView.get(id).name = "Edit test";
-		setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-		state.TMP_AdminGroupsEditInfo.set(id, state.userAdminGroupsView.get(id));
-		setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
-
-		console.log("state.TMP_AdminGroupsEditInfo");
-		console.log(state.TMP_AdminGroupsEditInfo);
-		console.log("state.TMP_AdminGroupsUndoList");
-		console.log(state.TMP_AdminGroupsUndoList);
+	const editGroup = (e, id)=> {
+		if (e.key === 'Enter' && e.target.value !== "") {
+			let name = state.userAdminGroupsView.get(id).name;
+			state.TMP_AdminGroupsUndoList.push({
+				undo: () => {
+					state.TMP_AdminGroupsEditInfo.delete(id);
+					setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
+					state.userAdminGroupsView.get(id).name = name;
+					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+					console.log(`Undo: edit group ${id}`)
+				}
+			});
+			state.userAdminGroupsView.get(id).name = e.target.value;
+			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+			state.TMP_AdminGroupsEditInfo.set(id, state.userAdminGroupsView.get(id));
+			setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
+			console.log("state.TMP_AdminGroupsEditInfo");
+			console.log(state.TMP_AdminGroupsEditInfo);
+			console.log("state.TMP_AdminGroupsUndoList");
+			console.log(state.TMP_AdminGroupsUndoList);
+		}
 	};
 
 	const deleteGroup = id => {
@@ -385,11 +386,10 @@ export default function Groups() {
 												onClick={() => btnAdminGroupsViewClick(key)}
 											>
 												<LeftButton>
-													{name}
-													<div>
-														<CreateIcon onClick={() => editGroup(key)}/>
-														<DeleteIcon onClick={() => deleteGroup(key)}/>
-													</div>	
+													<MyTextInput2 maxLength="20" placeholder={name} color="#9C9083" 
+														onKeyDown={(e) => editGroup(e, key)}
+													/>
+													<DeleteIcon onClick={() => deleteGroup(key)}/>
 												</LeftButton>
 											</FlexboxItem>
 										)
@@ -540,6 +540,17 @@ export default function Groups() {
 		</FlexboxContainerContainer>
 	);
 }
+const MyTextInput2 = styled.input`
+	text-decoration: none;
+	border: none;
+	background: none;
+	outline: none;
+	color: #9c9083;
+	font-size: 16px;
+	width: 50%;
+	opacity: 1;
+`;
+
 const MyTextInput = styled.input`
 	text-decoration: none;
 	border: none;
