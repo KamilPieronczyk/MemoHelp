@@ -45,6 +45,11 @@ async function _getUserGroupsData(name) {
                                 }
                             });
                         }
+                        // Getting user data invitations from firestore
+                        for(let i = 0; i < doc.data().invitations.length; i++) {
+                            var userId = doc.data().invitations[i].trim();
+                            //TODO:// show invitations
+                        }
                     }
                 }).catch(function(error) {
                     console.log("Error getting document:", error);
@@ -151,6 +156,7 @@ async function sendToFirebaseNewGroupsData(mp) {
         await db.firestore().collection("Groups").add({
             name: item[1].name,
             members: [],
+            invitations: [],
             admin: [{id: userId}],
         })
         .then(function(docRef) {
