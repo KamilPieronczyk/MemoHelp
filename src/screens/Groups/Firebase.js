@@ -41,7 +41,6 @@ async function _getUserGroupsData(name) {
                                             {id: userId, userName: doc.data().userName}
                                         )
                                     }
-                                    console.log("TODO:// get user data from firestore");
                                 }
                             });
                         }

@@ -344,9 +344,41 @@ export default function Groups() {
 			state.TMP_AdminDeleteGroups
 			);
 		
-		console.log("UPDATES", updates);
-		//NEW-GROUPS-USERS-ID -> (group<id>, users <randomId, (id, userName)>) 
-		//NEW-USERS-ID -> (group, users <randomId, (id, userName)>)
+		if(updates.size > 0) {
+			console.log("UPDATES", updates);
+			if(updates.has("NEW-GROUPS-USERS-ID")){
+				console.log("NEW-GROUPS-USERS-ID", updates.get("NEW-GROUPS-USERS-ID"));
+				//New groups, update generated group id and users, if some 'user' have wrong email === null
+				for(const [key, value] of updates.get("NEW-GROUPS-USERS-ID").entries()) {
+					let randomGroupId = key;
+					let firebaseGroupId = value.id;
+					let groupName = state.userAdminGroupsView.get(randomGroupId).name;
+					state.userAdminGroupsView.set(firebaseGroupId, {
+						id: firebaseGroupId,
+						name: groupName, 
+						users: new Map()
+					});
+					state.userAdminGroupsView.delete(randomGroupId);
+					// TODO:// set as invitation, handle error
+				}
+			}
+
+			if(updates.has("NEW-USERS-ID")) {
+				console.log("NEW-USERS-ID", updates.get("NEW-USERS-ID"));
+				// TODO:// set as invitation, handle error
+				for(const [key, value] of updates.get("NEW-USERS-ID").entries()) {
+					let groupId = key;
+					state.userAdminGroupsView.get(groupId).users = new Map();
+				}
+			}
+
+			if(Array.from(state.userAdminGroupsView.keys()).length > 0) {
+				state.userAdminGroupsMembersView = state.userAdminGroupsView.get(Array.from(state.userAdminGroupsView.keys())[0])
+			} else state.userAdminGroupsMembersView = new Map();
+
+			setState({ ...state, userAdminGroupsView: state.userAdminGroupsView, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
+		}
+
 
 		state.TMP_AdminGroupsNew = new Map()
 		setState({ ...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
