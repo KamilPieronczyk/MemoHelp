@@ -158,7 +158,7 @@ async function sendToFirebaseNewGroupsData(mp) {
 
             // BUG update ID in state.userAdminGroupsView, state.userAdminGroupsMembersView
             console.log("Document written with ID: ", groupId);
-            // Add grop ID to users Admins aaray
+            // Add group ID to users Admins aaray
             docUserGroupsRef.update({
                 data: db.firestore.FieldValue.arrayUnion(groupId)
             }).catch(function(error) {
@@ -169,22 +169,37 @@ async function sendToFirebaseNewGroupsData(mp) {
             for(const newUser of item[1].users) {
                 let email = newUser[1].email;
 
-                // TODO:// find users by email and send invitation - add email validation
-                // Adding group id to user collection
-                // var docUserGroupsRef = db.firestore().collection("Users")
-                //     .doc(userId).collection("Groups").doc("Members"); 
-                // docUserGroupsRef.update({
-                //     data: db.firestore.FieldValue.arrayRemove(groupId),
-                // }).catch(function(error) {
-                //     console.error("Error removing document: ", error);
-                // });
+                // TODO get id from email
+                db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
+                    let emailExists = false;
+                    querySnapshot.forEach(function(doc) {
+                        //console.log(doc.id, " => ", doc.data());
+                        emailExists = true;
 
-                //TODO:// only for test - uses email (should be ID)
-                // Add user to group collection
-                db.firestore().collection("Groups").doc(groupId).update({
-                    members: db.firestore.FieldValue.arrayUnion(email),
-                }).catch(function(error) {
-                    console.error("Error removing document: ", error);
+                        // Adding group id to user collection
+                        var docUserGroupsRef = db.firestore().collection("Users")
+                            .doc(doc.id).collection("Groups").doc("Invitations"); 
+                        docUserGroupsRef.update({
+                            data: db.firestore.FieldValue.arrayUnion(groupId),
+                        }).catch(function(error) {
+                            console.error("Error update document: ", error);
+                        });
+
+                        // Add user to group collection data invitations
+                        db.firestore().collection("Groups").doc(groupId).update({
+                            invitations: db.firestore.FieldValue.arrayUnion(doc.id),
+                        }).catch(function(error) {
+                            console.error("Error update document: ", error);
+                        });
+
+                    });
+                    if(emailExists === false) {
+                        // TODO alert
+                        console.log("Can't found email", email);
+                    }
+                })
+                .catch(function(error) {
+                    console.log("Error getting documents (user id from email): ", error);
                 });
             }
 
@@ -220,23 +235,39 @@ const sendToFirebaseNewGroupsMembers = (mp) => {
             console.log(newUserData);
             let email = newUserData.email;
 
-            // TODO:// find users by email and send invitation - add email validation
-            // Adding group id to user collection
-            // var docUserGroupsRef = db.firestore().collection("Users")
-            //     .doc(userId).collection("Groups").doc("Members"); 
-            // docUserGroupsRef.update({
-            //     data: db.firestore.FieldValue.arrayRemove(groupId),
-            // }).catch(function(error) {
-            //     console.error("Error removing document: ", error);
-            // });
+            // TODO get id from email
+            db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
+                let emailExists = false;
+                querySnapshot.forEach(function(doc) {
+                    //console.log(doc.id, " => ", doc.data());
+                    emailExists = true;
 
-            //TODO:// only for test - uses email (should be ID)
-            // Add user to group collection
-            db.firestore().collection("Groups").doc(groupId).update({
-                members: db.firestore.FieldValue.arrayUnion(email),
-            }).catch(function(error) {
-                console.error("Error removing document: ", error);
+                    // Adding group id to user collection
+                    var docUserGroupsRef = db.firestore().collection("Users")
+                        .doc(doc.id).collection("Groups").doc("Invitations"); 
+                    docUserGroupsRef.update({
+                        data: db.firestore.FieldValue.arrayUnion(groupId),
+                    }).catch(function(error) {
+                        console.error("Error update document: ", error);
+                    });
+
+                    // Add user to group collection data invitations
+                    db.firestore().collection("Groups").doc(groupId).update({
+                        invitations: db.firestore.FieldValue.arrayUnion(doc.id),
+                    }).catch(function(error) {
+                        console.error("Error update document: ", error);
+                    });
+
+                });
+                if(emailExists === false) {
+                    // TODO alert
+                    console.log("Can't found email", email);
+                }
+            })
+            .catch(function(error) {
+                console.log("Error getting documents (user id from email): ", error);
             });
+
         }
     }
 }
