@@ -129,6 +129,16 @@ async function removeGroupsFromFirebase(mp) {
                         console.error("Error removing document: ", error);
                     });
                 }
+
+                for(let i = 0; i < doc.data().invitations.length; i++) {
+                    let id = doc.data().invitations[i];
+
+                    db.firestore().collection("Users").doc(id).collection("Groups").doc("Invitations").update({
+                        data: db.firestore.FieldValue.arrayRemove(groupId)
+                    }).catch(function(error) {
+                        console.error("Error removing document: ", error);
+                    });
+                }
             }
         }).catch(function(error) {
             console.error("Error adding document: ", error);
@@ -175,7 +185,7 @@ async function sendToFirebaseNewGroupsData(mp) {
             for(const newUser of item[1].users) {
                 let email = newUser[1].email;
 
-                // TODO get id from email
+                // Get id from email
                 db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
                     let emailExists = false;
                     querySnapshot.forEach(function(doc) {
@@ -241,7 +251,7 @@ const sendToFirebaseNewGroupsMembers = (mp) => {
             console.log(newUserData);
             let email = newUserData.email;
 
-            // TODO get id from email
+            // Get id from email
             db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
                 let emailExists = false;
                 querySnapshot.forEach(function(doc) {

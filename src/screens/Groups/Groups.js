@@ -300,6 +300,9 @@ export default function Groups() {
 	};
 
 	const deleteGroup = id => {
+
+		console.log("TOD::// deleteGroup update id after send to firestore", id)
+
 		let groupData = state.userAdminGroupsView.get(id);
 		
 		state.TMP_AdminGroupsUndoList.push({
