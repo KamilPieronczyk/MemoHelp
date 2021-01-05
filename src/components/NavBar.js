@@ -50,7 +50,7 @@ export default function NavBar() {
 }
 
 const MyLink = styled(Link)`
-color: ${props=>props.active?"#738F9C":"black"} ;
+color: ${props=>props.active === 1 ?"#738F9C":"black"} ;
 text-decoration: none;
 display: flex;
 flex-direction: row;
