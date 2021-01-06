@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useEffect} from "react"
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,32 +11,37 @@ import Login from './screens/Login/login'
 import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 import Groups from './screens/Groups/Groups'
-import history from './history';
+import browserHistory from './history';
+import {AuthProvider, AuthGuard} from './utils'
 
 function App() {
   return (
-    <Body>
-      <Router history={history}>
-        <NavBar />
-        <Switch>
-          <Route path="/login/:path?">
-            <Login></Login>
-          </Route>
-          <Route path="/calendar">
-            <Calendar></Calendar>
-          </Route>
-          <Route path="/settings">
-            <Settings />
-          </Route>
-          <Route path="/Groups">
-            <Groups />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </Router>
-    </Body>
+    <AuthProvider>
+      <Body>
+        <Router history={browserHistory}>
+          <AuthGuard>
+            <NavBar />
+            <Switch>
+              <Route path="/login/:path?">
+                <Login></Login>
+              </Route>
+              <Route path="/calendar">
+                <Calendar></Calendar>
+              </Route>
+              <Route path="/settings">
+                <Settings />
+              </Route>
+              <Route path="/Groups">
+                <Groups />
+              </Route>
+              <Route path="/">
+                <Home />
+              </Route>
+            </Switch>
+          </AuthGuard>
+        </Router>
+      </Body>
+    </AuthProvider>
   );
 }
 
