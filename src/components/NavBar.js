@@ -5,8 +5,7 @@ import CalendarToday from '@material-ui/icons/CalendarToday';
 import PeopleAlt from '@material-ui/icons/PeopleAlt';
 import Person from '@material-ui/icons/Person';
 import ExitToApp from '@material-ui/icons/ExitToApp';
-import {IsAuthorized} from '../utils/index';
-import {IsLoggedIn} from '../utils/index';
+import {useUser} from '../utils';
 import firebase from 'firebase';
 
 
@@ -14,7 +13,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  Link,
+  useHistory
 } from "react-router-dom";
 
 const logOut = () =>{
@@ -29,10 +29,11 @@ const logOut = () =>{
 }
 
 export default function NavBar() {
-  IsAuthorized();
+  const {isLoggedIn} = useUser()
   const [URL,setURL]=useState(window.location.pathname);
-  let OnClick=(newURL)=>{setURL(newURL)}
-  if(window.location.pathname!="/Login"&&IsLoggedIn())
+  const history = useHistory()
+  let OnClick = (newURL) => {history.push(newURL)}
+  if(isLoggedIn)
   return (
     <Container>
       <MyLink to="/"          active={URL == ""?true:false}         onClick={()=>OnClick("")}>          <HomeIcon style={{paddingRight: 5}}     />Home </MyLink>
@@ -44,7 +45,7 @@ export default function NavBar() {
   )
   else
   return(
-    <Container>  
+    <Container>
     </Container>
   )
 }

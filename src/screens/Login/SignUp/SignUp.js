@@ -67,8 +67,8 @@ export function Register(props) {
                 email: email,
                 userName: userName
             }).then(function(){
-                history.push("/");
-                window.location.reload();
+                // history.push("/");
+                // window.location.reload();
             });
         }).catch(function(error) {
             // Handle Errors here.

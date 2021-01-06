@@ -54,8 +54,6 @@ export function LoginForm() {
             return false;
         }
         firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
-            history.push("/");
-            window.location.reload();
             console.log("zalogowano");
         }).catch(function(error) {
             // Handle Errors here.
@@ -79,8 +77,6 @@ export function LoginForm() {
             // The signed-in user info.
             var user = result.user;
             // ...
-            history.push("/");
-            window.location.reload();
             console.log("zalogowano gmail (chyba)");
           }).catch(function(error) {
             // Handle Errors here.
