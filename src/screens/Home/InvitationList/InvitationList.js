@@ -7,28 +7,26 @@ export function InvitationList() {
   const [invitationList, setList] = useState(new Array())
 
   useEffect(() => {
-    const invitations = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('Groups').doc("Invitations");
-    const invitationsSubscription = invitations.onSnapshot(doc => {
-      renderList(doc.data())
+    const invitations = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection("GroupsInvitations");
+    const invitationsSubscription = invitations.onSnapshot(snapshot => {
+      renderList(snapshot)
     })
     return () => {
       invitationsSubscription()
     }
   }, [])
 
-  const renderList = (doc) => {
+  const renderList = (snapshot) => {
     let array = new Array()
-    console.log("Invitations", doc.data);
-    doc.data.forEach(item => {
-      console.log("Invitation", item);
+    snapshot.docs.map(doc => {
       let data = {
-        id: item,
-        msg: `Zaproszenie do dołączenia do grupy ${item}`
+        id: doc.id,
+        msg: doc.data().msg
       }
       array.push(
         <InvitationCard value={data}/>
       )
-    });
+    })
     console.log(array)
     setList(array)
   }

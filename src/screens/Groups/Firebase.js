@@ -45,10 +45,10 @@ async function _getUserGroupsData(name) {
                             });
                         }
                         // Getting user data invitations from firestore
-                        for(let i = 0; i < doc.data().invitations.length; i++) {
-                            var userId = doc.data().invitations[i].trim();
-                            //TODO:// show invitations
-                        }
+                        // for(let i = 0; i < doc.data().invitations.length; i++) {
+                        //     var userId = doc.data().invitations[i].trim();
+                        //     //TODO:// show invitations
+                        // }
                     }
                 }).catch(function(error) {
                     console.log("Error getting document:", error);
@@ -140,9 +140,8 @@ async function removeGroupsFromFirebase(mp) {
                 for(let i = 0; i < doc.data().invitations.length; i++) {
                     let id = doc.data().invitations[i];
 
-                    db.firestore().collection("Users").doc(id).collection("Groups").doc("Invitations").update({
-                        data: db.firestore.FieldValue.arrayRemove(groupId)
-                    }).catch(function(error) {
+                    db.firestore().collection("Users").doc(id).collection("GroupsInvitations").doc(groupId).delete()
+                    .catch(function(error) {
                         console.error("Error removing document: ", error);
                     });
                 }
@@ -165,8 +164,8 @@ async function sendToFirebaseNewGroupsData(mp) {
     let firestoreGroupsIds = new Map();
 
     for (const item of mp) {
-
         var randomGroupId = item[0];
+        var groupName = item[1].name;
         var docUserGroupsRef = db.firestore().collection("Users")
             .doc(userId).collection("Groups").doc("Admins"); 
              
@@ -212,14 +211,18 @@ async function sendToFirebaseNewGroupsData(mp) {
                         firestoreGroupsIds.get(randomGroupId).users.get(randomUserId).id = doc.id;
                         firestoreGroupsIds.get(randomGroupId).users.get(randomUserId).userName = doc.data().userName;
 
+                        let invitation = {
+                            id: groupId,
+                            msg: `Jan Kowalski zaprosił się do grupy ${groupName}`
+                        }
+    
                         // Adding group id to user collection
                         var docUserGroupsRef = db.firestore().collection("Users")
-                            .doc(doc.id).collection("Groups").doc("Invitations"); 
-                        docUserGroupsRef.update({
-                            data: db.firestore.FieldValue.arrayUnion(groupId),
-                        }).catch(function(error) {
-                            console.error("Error update document: ", error);
+                            .doc(doc.id).collection("GroupsInvitations").doc(groupId); 
+                        docUserGroupsRef.set(invitation).catch(function(error) {
+                            console.log("Error getting documents (user id from email): ", error);
                         });
+
 
                         // Add user to group collection data invitations
                         db.firestore().collection("Groups").doc(groupId).update({
@@ -271,6 +274,8 @@ const sendToFirebaseNewGroupsMembers = (mp) => {
             users: new Map() 
         });
 
+        let groupName = item[1].name;
+
         for(const newUserData of item[1].users) {
             console.log(newUserData);
             var randomUserId = newUserData.id;
@@ -289,13 +294,16 @@ const sendToFirebaseNewGroupsMembers = (mp) => {
                     firestoreUsersIds.get(groupId).users.get(randomUserId).id = doc.id;
                     firestoreUsersIds.get(groupId).users.get(randomUserId).userName = doc.data().userName;
 
+                    let invitation = {
+                        id: groupId,
+                        msg: `Jan Kowalski zaprosił się do grupy ${groupName}`
+                    }
+
                     // Adding group id to user collection
                     var docUserGroupsRef = db.firestore().collection("Users")
-                        .doc(doc.id).collection("Groups").doc("Invitations"); 
-                    docUserGroupsRef.update({
-                        data: db.firestore.FieldValue.arrayUnion(groupId),
-                    }).catch(function(error) {
-                        console.error("Error update document: ", error);
+                        .doc(doc.id).collection("GroupsInvitations").doc(groupId); 
+                    docUserGroupsRef.set(invitation).catch(function(error) {
+                        console.log("Error getting documents (user id from email): ", error);
                     });
 
                     // Add user to group collection data invitations

@@ -1,7 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import MenuItem from '@material-ui/core/MenuItem';
-import CheckIcon from '@material-ui/icons/Check'
 import Btn from '../../../components/Button';
 import firebase from 'firebase'
 import {useSnackbar} from 'notistack'
@@ -10,48 +8,46 @@ export function InvitationCard(props) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let invitation = props.value;
   
-  const removeInvitation = () => {
+  async function removeInvitation() {
     let userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2"
     let groupId = invitation.id;
 
-    firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Invitations").update({
-      data: firebase.firestore.FieldValue.arrayRemove(groupId)
-    }).catch(function(error) {
-        enqueueSnackbar('Nie udało się zaakceptować zaproszenia', {variant: 'error'})
-    });
+    try {
+      firebase.firestore().collection("Users").doc(userId).collection("GroupsInvitations").doc(groupId).delete();
+      firebase.firestore().collection("Groups").doc(groupId).update({
+        invitations: firebase.firestore.FieldValue.arrayRemove(userId),
+      })
+    } catch (error) {
+      throw error;
+    }
 
-    firebase.firestore().collection("Groups").doc(groupId).update({
-      invitations: firebase.firestore.FieldValue.arrayRemove(userId),
-    }).catch(function(error) {
-        enqueueSnackbar('Nie udało się zaakceptować zaproszenia', {variant: 'error'})
-    });
   }
 
-  const handleAccept = () => {
+  async function handleAccept() {
     let userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2"
     let groupId = invitation.id;
 
-    removeInvitation();
-
-    firebase.firestore().collection("Groups").doc(groupId).update({
-      members: firebase.firestore.FieldValue.arrayUnion(userId),
-    }).catch(function(error) {
-        enqueueSnackbar('Nie udało się zaakceptować zaproszenia', {variant: 'error'})
-    });
-
-    firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Members").update({
-      data: firebase.firestore.FieldValue.arrayUnion(groupId)
-    }).catch(function(error) {
-        enqueueSnackbar('Nie udało się zaakceptować zaproszenia', {variant: 'error'})
-    });
-
-    enqueueSnackbar('Zaproszenie zotało zaakceptowane', { variant: 'success' })
+    try{
+      await removeInvitation();
+      firebase.firestore().collection("Groups").doc(groupId).update({
+        members: firebase.firestore.FieldValue.arrayUnion(userId),
+      })
+      firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Members").update({
+        data: firebase.firestore.FieldValue.arrayUnion(groupId)
+      })
+      enqueueSnackbar('Zaproszenie zotało zaakceptowane', { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar(`Nie udało się zaakceptować zaproszenia: ${error}`, {variant: 'error'})
+    }
   }
 
-  const handleRemove = () => {
-    removeInvitation();
-    enqueueSnackbar('Zaproszenie zotało usunięte', { variant: 'w' })
-    return;
+  async function handleRemove() {
+    try{
+      await removeInvitation();
+      enqueueSnackbar('Zaproszenie zotało usunięte', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar(`Nie udało się usunąć zaproszenia: ${error}`, {variant: 'error'})
+    }
   }
 
   return (
