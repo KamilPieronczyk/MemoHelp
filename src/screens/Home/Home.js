@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import {NotificationsList} from './NotificationsList/NotificationsList'
+import {InvitationList} from './InvitationList/InvitationList'
 import {ListContainer} from './List/List'
 import {StickyNotes} from './StickyNotes/StickyNotes'
 import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
@@ -18,6 +19,7 @@ export default function Home() {
         <StickyNotes />
         <NewNotificationForm />
         <ListContainer />
+        <InvitationList />
         <div style={{gridArea: '4 / 5', gridRow: '1 / span 4'}}></div>
       </WidgetContainer>
     </Container>
