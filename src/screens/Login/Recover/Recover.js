@@ -21,9 +21,11 @@ import firebase from 'firebase';
 export function Recover() {
     const [state, setState] = useState(false);
     const [mail, setMail] = useState("");
-    const [buttonDisabled, setButtonDisabled] = useState(false)
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [state2, setState2] = useState(false);
     
     const sendMail = () =>{
+        setState2(false);
         setButtonDisabled(true);
         var auth = firebase.auth();
         var emailAddress = mail;
@@ -33,11 +35,12 @@ export function Recover() {
             setButtonDisabled(false);
         }).catch(function(error){
             //error
+            setState2(true);
             setButtonDisabled(false);
         });
     }
     
-    if(state)
+    if(state&&(!state2))
     {
         return (
             <LoginContainer>
@@ -63,6 +66,36 @@ export function Recover() {
             </LoginContainer>
         )
     }
+    if(state2)
+    {
+        return (
+            <LoginContainer>
+                <Nag>
+                <MyText>Odzyskiwanie hasła:</MyText>
+                <MyLink to="/login">Powrót</MyLink>
+                </Nag>
+                <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
+                </MyInput>
+                <WrongMail>
+                    Niepoprawny adres e-mail
+                </WrongMail>
+                
+                <Buttonscontainer>
+                <Button
+                        color="#73909C"
+                        type="contained"
+                        style={{
+                            width: '60%',
+                            color: '#fff',
+                        }}
+                        text="Wyślij wiadomość"
+                        onClick={()=>{sendMail(); setState(true);}}
+                        disabled={buttonDisabled}
+                    />
+                </Buttonscontainer>
+            </LoginContainer>
+        );
+    }
     return (
         <LoginContainer>
             <Nag>
@@ -72,25 +105,26 @@ export function Recover() {
             <MyInput type="email" id="fname" name="fname" placeholder="e-mail" onChange={e=>setMail(e.target.value)}>
             </MyInput>
             <WrongMail>
-                Niepoprawny adres e-mail
+                
             </WrongMail>
             
             <Buttonscontainer>
             <Button
                     color="#73909C"
-					type="contained"
-					style={{
-						width: '60%',
-						color: '#fff',
-					}}
+                    type="contained"
+                    style={{
+                        width: '60%',
+                        color: '#fff',
+                    }}
                     text="Wyślij wiadomość"
                     onClick={()=>{sendMail(); setState(true);}}
                     disabled={buttonDisabled}
-				/>
+                />
             </Buttonscontainer>
         </LoginContainer>
-    )
+    );
 }
+
 
 const LoginContainer = styled.div`
     //min-height: 300px;
