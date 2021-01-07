@@ -16,6 +16,7 @@ export function AuthProvider(props){
 
   useEffect(()=>{
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      console.log('authprovider', isLoggedIn, loading, user)
       if(user != null) {
         setIsLoggedIn(true)
         setUser(user)
