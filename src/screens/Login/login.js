@@ -3,10 +3,6 @@
 import styled from 'styled-components'
 //import Checkbox from '@material-ui/core/Checkbox';
 import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import {LoginForm} from './SignIn/SignIn';
 import {
     BrowserRouter as Router,
@@ -34,20 +30,17 @@ export default function Login() {
                     </FlexboxItem2>
                 </FlexboxItem>
                 <FlexboxItem>
-                    
-                        <Switch>
-                            <Route exact path="/login/reg">
-                                <Register />
-                            </Route>
-                            <Route exact path="/login/recover">
-                                <Recover />
-                            </Route>
-                            <Route path="/login">
-                                <LoginForm />
-                            </Route>
-                            
-                        </Switch>
-                    
+                    <Switch>
+                        <Route exact path="/login/reg">
+                            <Register />
+                        </Route>
+                        <Route exact path="/login/recover">
+                            <Recover />
+                        </Route>
+                        <Route path="/login">
+                            <LoginForm />
+                        </Route>
+                    </Switch>
                 </FlexboxItem>
             </FlexboxContainer>
         </FlexboxContainerContainer>

@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
 import styled from 'styled-components'
-import { IsAuthorized } from '../../utils';
-import { IsLoggedIn } from '../../utils';
 import firebase from 'firebase';
 import { useSetRecoilState } from "recoil";
 
@@ -47,8 +45,6 @@ async function LoadReminders(currentMonth, callback) {
 
 
 export function Calendar() {
-    IsAuthorized();
-
     const calendarDivRef = useRef();
     const [month, setMonth] = useState(now.getMonth());
 
@@ -62,7 +58,7 @@ export function Calendar() {
         console.log("month: ", now.getMonth() + 1);
         return false;
     }
-    
+
     useEffect(() => {
         LoadReminders(now.getMonth(), (date) => { setMonth(date); });
         document.addEventListener("wheel", setMonthListener, true);
@@ -71,24 +67,21 @@ export function Calendar() {
 
     startingDate = new Date(now.setDate(1));
     calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 0));
-    if (IsLoggedIn())
-        return (
-            <CalendarDiv ref={calendarDivRef}>
-                <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold' }}>
-                    {monthNames[now.getMonth()]} {now.getFullYear()}
-                </p>
-                <Wrapper>
-                    <GridContainer>
-                        <PrepareCalendarDays />
-                    </GridContainer>
-                </Wrapper>
 
-            </CalendarDiv>
-        )
-    else
-        return (
-            <div />
-        )
+    return (
+        <CalendarDiv ref={calendarDivRef}>
+            <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold' }}>
+                {monthNames[now.getMonth()]} {now.getFullYear()}
+            </p>
+            <Wrapper>
+                <GridContainer>
+                    <PrepareCalendarDays />
+                </GridContainer>
+            </Wrapper>
+
+        </CalendarDiv>
+    )
+
 }
 
 class PrepareCalendarDays extends React.Component {
