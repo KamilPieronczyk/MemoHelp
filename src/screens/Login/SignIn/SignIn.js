@@ -29,14 +29,18 @@ import {Button} from '../../../components'
 // })((props) => <Checkbox color="default" {...props} />);
 
 export function LoginForm() {
-    const [state, setState] = useState({
-        checkedA: true,
-        checkedB: true,
-        checkedF: true,
-        checkedG: true,
-    });
+    // const [state, setState] = useState({
+    //     checkedA: true,
+    //     checkedB: true,
+    //     checkedF: true,
+    //     checkedG: true,
+    // });
+    const [state, setState] = useState(false);
+    // const handleChange = (event) => {
+    //     setState({ ...state, [event.target.name]: event.target.checked });
+    // };
     const handleChange = (event) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
+        setState(!state);
     };
     const [mail, setMail] = useState("");
     const [password, setPassword]=useState("");
@@ -53,15 +57,41 @@ export function LoginForm() {
             console.log("Błąd walidacji");
             return false;
         }
-        firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
-            console.log("zalogowano");
-        }).catch(function(error) {
-            // Handle Errors here.
-            //var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log("firebase auth:",errorMessage);
-            // ...
-          });
+        if (!state){
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(()=>{
+                firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
+                    console.log("zalogowano");
+                }).catch(function(error) {
+                    // Handle Errors here.
+                    //var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log("firebase auth:",errorMessage);
+                    // ...
+                  });
+            });
+        }
+        else{
+            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+                firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
+                    console.log("zalogowano");
+                }).catch(function(error) {
+                    // Handle Errors here.
+                    //var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log("firebase auth:",errorMessage);
+                    // ...
+                  });
+            });
+        }
+        // firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
+        //     console.log("zalogowano");
+        // }).catch(function(error) {
+        //     // Handle Errors here.
+        //     //var errorCode = error.code;
+        //     var errorMessage = error.message;
+        //     console.log("firebase auth:",errorMessage);
+        //     // ...
+        //   });
         
     }
     var provider = new firebase.auth.GoogleAuthProvider();
