@@ -44,6 +44,7 @@ export function LoginForm() {
     };
     const [mail, setMail] = useState("");
     const [password, setPassword]=useState("");
+    const [buttonDisabled, setButtonDisabled] = useState(false);
     const validateForm = () => {
         if(!validator.isEmail(mail))
             return false;
@@ -52,20 +53,24 @@ export function LoginForm() {
         return true;
     };
     const login = () => {
+        setButtonDisabled(true);
         if (!validateForm())
         {
             console.log("Błąd walidacji");
+            setButtonDisabled(false);
             return false;
         }
         if (!state){
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(()=>{
                 firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
                     console.log("zalogowano");
+                    setButtonDisabled(false);
                 }).catch(function(error) {
                     // Handle Errors here.
                     //var errorCode = error.code;
                     var errorMessage = error.message;
                     console.log("firebase auth:",errorMessage);
+                    setButtonDisabled(false);
                     // ...
                   });
             });
@@ -74,11 +79,13 @@ export function LoginForm() {
             firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
                 firebase.auth().signInWithEmailAndPassword(mail, password).then(()=>{
                     console.log("zalogowano");
+                    setButtonDisabled(false);
                 }).catch(function(error) {
                     // Handle Errors here.
                     //var errorCode = error.code;
                     var errorMessage = error.message;
                     console.log("firebase auth:",errorMessage);
+                    setButtonDisabled(false);
                     // ...
                   });
             });
@@ -96,6 +103,7 @@ export function LoginForm() {
     }
     var provider = new firebase.auth.GoogleAuthProvider();
     const gLogin = () => {
+        setButtonDisabled(true);
         provider.setCustomParameters({
             'login_hint': 'user@example.com'
           });
@@ -108,6 +116,7 @@ export function LoginForm() {
             var user = result.user;
             // ...
             console.log("zalogowano gmail (chyba)");
+            setButtonDisabled(false);
           }).catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
@@ -116,6 +125,7 @@ export function LoginForm() {
             var email = error.email;
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
+            setButtonDisabled(false);
             // ...
           });
     }
@@ -152,6 +162,7 @@ export function LoginForm() {
 					}}
                     text="Zaloguj się g"
                     onClick={gLogin}
+                    disabled={buttonDisabled}
 				/>
                 <Button
 					color="#73909C"
@@ -162,6 +173,7 @@ export function LoginForm() {
 					}}
                     text="Zaloguj się"
                     onClick={login}
+                    disabled={buttonDisabled}
 				/>
             </Buttonscontainer>
            

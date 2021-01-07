@@ -11,11 +11,11 @@ export const AuthGuard = (props) => {
   useEffect(()=>{
     console.log('authguard',isLoggedIn, loading, user)
     if(!location.pathname.toLowerCase().includes('login') && isLoggedIn == false)
-    history.replace('/login')
+      history.replace('/login')
     if(loading) return;
     if(location.pathname.toLowerCase().includes('login') && isLoggedIn == true)
       history.replace('/')
-  }, [location, isLoggedIn, user])
+  }, [location, isLoggedIn, user, loading])
 
   return (
     <React.Fragment>
