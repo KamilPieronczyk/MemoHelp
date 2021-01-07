@@ -21,15 +21,19 @@ import firebase from 'firebase';
 export function Recover() {
     const [state, setState] = useState(false);
     const [mail, setMail] = useState("");
+    const [buttonDisabled, setButtonDisabled] = useState(false)
     
     const sendMail = () =>{
+        setButtonDisabled(true);
         var auth = firebase.auth();
         var emailAddress = mail;
 
         auth.sendPasswordResetEmail(emailAddress).then(function(){
             //sent
+            setButtonDisabled(false);
         }).catch(function(error){
             //error
+            setButtonDisabled(false);
         });
     }
     
@@ -53,6 +57,7 @@ export function Recover() {
                         }}
                         text="Wyślij wiadomość ponownie"
                         onClick={()=>{sendMail(); setState(true);}}
+                        disabled={buttonDisabled}
                     />
                 </Buttonscontainer>
             </LoginContainer>
@@ -80,6 +85,7 @@ export function Recover() {
 					}}
                     text="Wyślij wiadomość"
                     onClick={()=>{sendMail(); setState(true);}}
+                    disabled={buttonDisabled}
 				/>
             </Buttonscontainer>
         </LoginContainer>
