@@ -17,6 +17,7 @@ import {
     Link
   } from "react-router-dom";
 import {Button} from '../../../components'
+import {useSnackbar} from 'notistack'
 
 // const GreenCheckbox = withStyles({
 //     root: {
@@ -45,17 +46,21 @@ export function LoginForm() {
     const [mail, setMail] = useState("");
     const [password, setPassword]=useState("");
     const [buttonDisabled, setButtonDisabled] = useState(false);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const validateForm = () => {
-        if(!validator.isEmail(mail))
+        if(!validator.isEmail(mail)){
             return false;
-        if (!validator.isLength(password,{min:6, max:30}))
+        }
+        if (!validator.isLength(password,{min:6, max:30})){
             return false;
+        }
         return true;
     };
     const login = () => {
         setButtonDisabled(true);
         if (!validateForm())
         {
+            enqueueSnackbar('Błędne dane logowania', {variant: 'error'});
             console.log("Błąd walidacji");
             setButtonDisabled(false);
             return false;
@@ -70,6 +75,7 @@ export function LoginForm() {
                     //var errorCode = error.code;
                     var errorMessage = error.message;
                     console.log("firebase auth:",errorMessage);
+                    enqueueSnackbar('Błędne dane logowania', {variant: 'error'});
                     setButtonDisabled(false);
                     // ...
                   });
@@ -85,6 +91,7 @@ export function LoginForm() {
                     //var errorCode = error.code;
                     var errorMessage = error.message;
                     console.log("firebase auth:",errorMessage);
+                    enqueueSnackbar('Błędne dane logowania', {variant: 'error'});
                     setButtonDisabled(false);
                     // ...
                   });

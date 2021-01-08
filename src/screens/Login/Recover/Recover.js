@@ -15,6 +15,7 @@ import {
   } from "react-router-dom";
 import {Button} from '../../../components';
 import firebase from 'firebase';
+import {useSnackbar} from 'notistack'
 
 
 
@@ -23,6 +24,7 @@ export function Recover() {
     const [mail, setMail] = useState("");
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [state2, setState2] = useState(false);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     
     const sendMail = () =>{
         setState2(false);
@@ -32,9 +34,11 @@ export function Recover() {
 
         auth.sendPasswordResetEmail(emailAddress).then(function(){
             //sent
+            enqueueSnackbar('Wiadomość została wysłana', {variant: 'success'});
             setButtonDisabled(false);
         }).catch(function(error){
             //error
+            enqueueSnackbar('Wystąpił błąd', {variant: 'error'})
             setState2(true);
             setButtonDisabled(false);
         });
