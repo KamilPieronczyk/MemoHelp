@@ -123,7 +123,21 @@ export function LoginForm() {
             var user = result.user;
             // ...
             console.log("zalogowano gmail (chyba)");
-            setButtonDisabled(false);
+
+            var user = firebase.auth().currentUser;
+            var email = user.email;
+            var userName = user.displayName;
+
+            firebase.firestore().collection('Users').doc(user.uid).set({
+                email: email,
+                userName: userName
+            }).then(function(){
+                // history.push("/");
+                // window.location.reload();
+                setButtonDisabled(false);
+            });
+
+            //setButtonDisabled(false);
           }).catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
@@ -132,6 +146,7 @@ export function LoginForm() {
             var email = error.email;
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
+            enqueueSnackbar('Wystąpił błąd', {variant: 'error'});
             setButtonDisabled(false);
             // ...
           });
