@@ -1,29 +1,11 @@
-//import { Container } from '@material-ui/core'
-//import React from 'react'
 import styled from 'styled-components'
-//import Checkbox from '@material-ui/core/Checkbox';
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import {Button} from '../../components/index';
 import Close from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete'
-import CreateIcon from '@material-ui/icons/Create';
 import {getUserAdminGroupsData, getUserGroupsData, firebaseAdminGroupsMapState, 
 	firebaseLeftFromGroups} from './Firebase'
 import {useSnackbar} from 'notistack'
-
-const GreenCheckbox = withStyles({
-    root: {
-      color: green[400],
-      '&$checked': {
-        color: green[600],
-      },
-    },
-    checked: {},
-  })((props) => <Checkbox color="default" {...props} />);
 
 function UserAdminGroupsShowMembers(props) {
 
@@ -110,10 +92,6 @@ export default function Groups() {
 					});
 				});
 			});
-		} else {
-			//console.log("ADMINS GROUPS", state.userAdminGroupsMembersView);
-			//console.log("MEMBERS GROUPS", state.userGroupsMembersView);
-			//console.log("MEMBERS VIEW GROUPS", state.userGroupsMembersView);
 		}
 	});
 
@@ -126,15 +104,14 @@ export default function Groups() {
 				state.TMP_AdminGroupsRemoveMembers.get(groupId).users.pop();
 				if(state.TMP_AdminGroupsRemoveMembers.get(groupId).users.length === 0)
 				state.TMP_AdminGroupsRemoveMembers.delete(groupId);
-				setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
 				state.userAdminGroupsView.get(groupId).users.set(user.id, user);
-				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+				setState({
+					...state,
+					userAdminGroupsView: state.userAdminGroupsView,
+					TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers, 
+				});
 				console.log(`Undo: remove user ${personId} from group ${groupId}`)
 			}
-		});
-	
-		setState({...state, userAdminGroupsView: 
-			state.userAdminGroupsView.get(groupId).users.delete(personId)
 		});
 	
 		if(state.TMP_AdminGroupsRemoveMembers.has(groupId))
@@ -143,14 +120,14 @@ export default function Groups() {
 			state.TMP_AdminGroupsRemoveMembers.set(groupId, {users: [personId]});
 		}
 	
-		setState({...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
 		state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
-		setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
 
-		console.log("state.TMP_AdminGroupsRemoveMembers");
-		console.log(state.TMP_AdminGroupsRemoveMembers);
-		console.log("state.TMP_AdminGroupsUndoList");
-		console.log(state.TMP_AdminGroupsUndoList);
+		setState({
+			...state,
+			userAdminGroupsView: state.userAdminGroupsView.get(groupId).users.delete(personId),
+			userAdminGroupsMembersView: state.userAdminGroupsMembersView,
+			TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers,
+		});
 	}
 
 	const btnAdminGroupsViewClick = id => {
@@ -174,8 +151,6 @@ export default function Groups() {
 	const addNewGroup = e => {
 		if (e.key === 'Enter' && e.target.value != "") {
 			
-
-
 			let obj = {
 				id: Math.random(),
 				name: e.target.value,
@@ -184,41 +159,37 @@ export default function Groups() {
 
 			state.userAdminGroupsView.set(obj.id, obj);
 			state.TMP_AdminGroupsNew.set(obj.id, obj);
-			setState({...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
 
-			// Define undo method
 			state.TMP_AdminGroupsUndoList.push({
 				undo: () => {
-					let id = obj.id;
-					state.TMP_AdminGroupsNew.delete(id);
-					setState({...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
-					state.userAdminGroupsView.delete(id);
-					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
-					console.log(`Undo: crete new group ${id}`)
+					state.TMP_AdminGroupsNew.delete(obj.id);
+					state.userAdminGroupsView.delete(obj.id);
+					setState({
+						...state, 
+						TMP_AdminGroupsNew: state.TMP_AdminGroupsNew, 
+						userAdminGroupsView: state.userAdminGroupsView
+					});
+					console.log(`Undo: crete new group ${obj.id}`)
 				}
 			});
-			setState({ ...state, TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList});
 
-			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+			setState({ 
+				...state,
+				userAdminGroupsView: state.userAdminGroupsView,
+				TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList,
+				TMP_AdminGroupsNew: state.TMP_AdminGroupsNew,
+			});
 
 			btnAdminGroupsViewClick(obj.id);
 			e.target.value = "";
-
-			console.log("state.TMP_AdminGroupsNew");
-			console.log(state.TMP_AdminGroupsNew);
-			console.log("state.TMP_AdminGroupsUndoList");
-			console.log(state.TMP_AdminGroupsUndoList);
 		}
 	};
 
 	const addNewMember = (e) => {
-		if(state.userAdminGroupsMembersView.length === 0) {
-			console.log("No group view")
-			return;
-		}
+		if(state.userAdminGroupsMembersView.length === 0) return;
+
 		if (e.key === 'Enter' && e.target.value !== "") {
 
-			// TODO user ID
 			let groupId = state.userAdminGroupsMembersView.id; 
 			let userData = {
 				id: Math.random(),
@@ -232,15 +203,17 @@ export default function Groups() {
 					state.TMP_AdminGroupsAddMembers.get(groupId).users.pop();
 					if(state.TMP_AdminGroupsAddMembers.get(groupId).users.length === 0)
 						state.TMP_AdminGroupsAddMembers.delete(groupId)
-					setState({...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
 					state.userAdminGroupsView.get(groupId).users.delete(userData.id);
-					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+					setState({
+						...state, 
+						TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers, 
+						userAdminGroupsView: state.userAdminGroupsView
+					});
 					console.log(`Undo: add new member ${userData.id} to group: ${groupId}`)
 				}
 			});
 
 			state.userAdminGroupsView.get(groupId).users.set(userData.id, userData);
-			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
 
 			if(state.TMP_AdminGroupsAddMembers.has(groupId))
 				state.TMP_AdminGroupsAddMembers.get(groupId).users.push(userData);
@@ -249,15 +222,13 @@ export default function Groups() {
 				state.TMP_AdminGroupsAddMembers.set(groupId, {name: gName, users: [userData]});
 			}
 				
-
-			setState({...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
 			state.userAdminGroupsMembersView = state.userAdminGroupsView.get(groupId);
-			setState({...state, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
-
-			console.log("state.TMP_AdminGroupsAddMembers");
-			console.log(state.TMP_AdminGroupsAddMembers);
-			console.log("state.TMP_AdminGroupsUndoList");
-			console.log(state.TMP_AdminGroupsUndoList);
+			setState({
+				...state,
+				userAdminGroupsView: state.userAdminGroupsView,
+				TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers,
+				userAdminGroupsMembersView: state.userAdminGroupsMembersView
+			});
 		}
 	};
 
@@ -270,13 +241,11 @@ export default function Groups() {
 		state.userGroupsView.delete(id);
 		
 		if(Array.from(state.userGroupsView.keys()).length > 0) {
-			setState({ ...state, userGroupsView: state.userGroupsView});
-			setState({ ...state, userGroupsMembersView: state.userGroupsView.get(
+			setState({ ...state, userGroupsView: state.userGroupsView, userGroupsMembersView: state.userGroupsView.get(
 				Array.from(state.userGroupsView.keys())[0]
 			)});
 		} else {
-			setState({ ...state, userGroupsView: []});
-			setState({ ...state, userGroupsMembersView: []});
+			setState({ ...state, userGroupsView: [], userGroupsMembersView: []});
 		}
 
 	}
@@ -287,53 +256,58 @@ export default function Groups() {
 			state.TMP_AdminGroupsUndoList.push({
 				undo: () => {
 					state.TMP_AdminGroupsEditInfo.delete(id);
-					setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
 					state.userAdminGroupsView.get(id).name = name;
-					setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+					setState({
+						...state,
+						userAdminGroupsView: state.userAdminGroupsView,
+						TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo,
+					});
 					console.log(`Undo: edit group ${id}`)
 				}
 			});
 			state.userAdminGroupsView.get(id).name = e.target.value;
-			setState({...state, userAdminGroupsView: state.userAdminGroupsView});
 			state.TMP_AdminGroupsEditInfo.set(id, state.userAdminGroupsView.get(id));
-			setState({...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
-			console.log("state.TMP_AdminGroupsEditInfo");
-			console.log(state.TMP_AdminGroupsEditInfo);
-			console.log("state.TMP_AdminGroupsUndoList");
-			console.log(state.TMP_AdminGroupsUndoList);
+			setState({
+				...state,
+				userAdminGroupsView: state.userAdminGroupsView,
+				TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo
+			});
 		}
 	};
 
 	const deleteGroup = id => {
-
-		console.log("TOD::// deleteGroup update id after send to firestore", id)
-
 		let groupData = state.userAdminGroupsView.get(id);
 		
 		state.TMP_AdminGroupsUndoList.push({
 			undo: () => {
 				state.TMP_AdminDeleteGroups.delete(id);
-				setState({...state, TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups});
 				state.userAdminGroupsView.set(id, groupData);
-				setState({...state, userAdminGroupsView: state.userAdminGroupsView});
+				setState({
+					...state,
+					userAdminGroupsView: state.userAdminGroupsView,
+					TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups,
+				});
 				console.log(`Undo: delete group ${id}`)
 			}
 		});
 
 		state.TMP_AdminDeleteGroups.set(id, groupData);
-		setState({...state, TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups});
-		
 		state.userAdminGroupsView.delete(id);
-		setState({...state, userAdminGroupsView: state.userAdminGroupsView});
 
-		console.log("state.TMP_AdminDeleteGroups");
-		console.log(state.TMP_AdminDeleteGroups);
+		setState({
+			...state,
+			userAdminGroupsView: state.userAdminGroupsView,
+			TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups,
+		});
 	}
 
 	const undoAdminViewChange = () => {
 		if(state.TMP_AdminGroupsUndoList.length > 0) {
 			let obj = state.TMP_AdminGroupsUndoList.pop();
-			setState({ ...state, TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList});
+			setState({
+				...state,
+				TMP_AdminGroupsUndoList: state.TMP_AdminGroupsUndoList
+			});
 			obj.undo();
 		}
 	}
@@ -363,40 +337,45 @@ export default function Groups() {
 						users: new Map()
 					});
 					state.userAdminGroupsView.delete(randomGroupId);
-					// TODO:// set as invitation, handle error
-					//enqueueSnackbar('Wystąpił problem z dodaniem notatki', { variant: 'error' })
+					// If user have email - not exists
+					console.log("If email, err", value.users)
 				}
 			}
 
 			if(updates.has("NEW-USERS-ID")) {
 				console.log("NEW-USERS-ID", updates.get("NEW-USERS-ID"));
-				// TODO:// set as invitation, handle error
 				for(const [key, value] of updates.get("NEW-USERS-ID").entries()) {
 					let groupId = key;
 					state.userAdminGroupsView.get(groupId).users = new Map();
+					// If user have email - not exists
+					console.log("If email, err", value.users)
 				}
 			}
 
 			if(Array.from(state.userAdminGroupsView.keys()).length > 0) {
 				state.userAdminGroupsMembersView = state.userAdminGroupsView.get(Array.from(state.userAdminGroupsView.keys())[0])
 			} else state.userAdminGroupsMembersView = new Map();
-
-			setState({ ...state, userAdminGroupsView: state.userAdminGroupsView, userAdminGroupsMembersView: state.userAdminGroupsMembersView});
 		}
 
-		enqueueSnackbar('Operacja została wykonana pomyślnie', { variant: 'success' })
-
 		state.TMP_AdminGroupsNew = new Map()
-		setState({ ...state, TMP_AdminGroupsNew: state.TMP_AdminGroupsNew});
 		state.TMP_AdminGroupsEditInfo = new Map();
-		setState({ ...state, TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo});
 		state.TMP_AdminGroupsAddMembers = new Map()
-		setState({ ...state, TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers});
 		state.TMP_AdminGroupsRemoveMembers = new Map()
-		setState({ ...state, TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers});
-		setState({ ...state, TMP_AdminGroupsUndoList: []});
 		state.TMP_AdminDeleteGroups = new Map();
-		setState({ ...state, TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups});
+
+		setState({ 
+			...state,
+			userAdminGroupsView: state.userAdminGroupsView,
+			userAdminGroupsMembersView: state.userAdminGroupsMembersView,
+			TMP_AdminGroupsEditInfo: state.TMP_AdminGroupsEditInfo,
+			TMP_AdminGroupsAddMembers: state.TMP_AdminGroupsAddMembers,
+			TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers,
+			TMP_AdminGroupsUndoList: [],
+			TMP_AdminGroupsNew: state.TMP_AdminGroupsNew,
+			TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups
+		});
+
+		enqueueSnackbar('Operacja została wykonana pomyślnie', { variant: 'success' })
 	}
 
 	const undoUserGroupsChange = () => {
