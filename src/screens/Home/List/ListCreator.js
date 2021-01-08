@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import DeleteIcon from '@material-ui/icons/Delete';
-
+import IconButton from '@material-ui/core/IconButton';
+import CheckIcon from '@material-ui/icons/Check';
+import AddIcon from '@material-ui/icons/Add';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -31,54 +30,49 @@ function ListCardBtn(props) {
   );
 }
 
-export function ListCard(props) {
+export function ListCreator(props) {
 
-  const [state, setState] = useState({
-    isOpen: false
-  });
-
-  const ExpandLessInfo = (e) => {
-    console.log("Show less");
-    setState({ ...state, isOpen: false});
-  }
-
-  const ExpandMoreInfo = (e) => {
-    console.log("Show more");
-    setState({ ...state, isOpen: true});
-  }
-  const DeleteList = (e) => {
-    console.log("Delete List");
-  }
 
   return (
     <Container key={props.id}>
-      <Header>
-        <span>{props.title}</span><DeleteIconContainer onClick={DeleteList}> </DeleteIconContainer>
-        { state.isOpen === true &&
-          
-          <ExpandLessIconContainer onClick={ExpandLessInfo}> 
-          </ExpandLessIconContainer>
-        }
-        { state.isOpen === false &&
-          <ExpandMoreIconContainer onClick={ExpandMoreInfo}>
-          </ExpandMoreIconContainer>
-        }
-      </Header>
+
       
-      <Collapse in={state.isOpen} timeout={"auto"} style={{minWidth: '100%', margin: 0, padding: 0}}>
           <MoreContent>
 
             {/* TODO: MAP  */}
-
-            <ListCardBtn text="BTN 1" name="btn1" />
-            <ListCardBtn text="BTN 2" name="btn2" />
+            <MyTextInput  placeholder="Dodaj tytuł" color='#9C9083'></MyTextInput>
+            <MoreIconContainerTop>
+                <CheckIcon/>
+            </MoreIconContainerTop>
+            <MyTextField placeholder="Dodaj notatke"  />
+            <MyTextField placeholder="Dodaj notatke" />
+            <CheckBoxBtn name="xx" />
 
           </MoreContent>
-      </Collapse>
     </Container>
   )
 }
 
+const MyTextInput = styled.textarea`
+height: 100%;
+width: 100%;
+text-decoration:none;
+border: none;
+background:none;
+outline:none;
+color:#9C9083;
+resize: vertical;
+font-size:16px;
+`;
+const MyTextField = styled.input`
+height: 100%;
+width: 95%;
+  justify-content: flex-start;
+  margin-top: 8px;
+  border-radius: 12px;
+  background-color: #9C9083;
+  cursor: pointer;
+`;
 const CheckBoxText = styled.span`
   color: #FFFAF5;
   font-size: 16px;
@@ -97,34 +91,7 @@ const CheckBoxBtn = styled.div`
   width: 95%;
   cursor: pointer;
 `;
-const DeleteIconContainer = withStyles((theme) => ({
-  root: {
-    position: 'absolute',
-    top: 0,
-    right: 20,
-    color: '#73909C',
-    cursor: 'pointer',
-  },
-}))(DeleteIcon);
-const ExpandMoreIconContainer = withStyles((theme) => ({
-  root: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    color: '#73909C',
-    cursor: 'pointer',
-  },
-}))(ExpandMoreIcon);
 
-const ExpandLessIconContainer = withStyles((theme) => ({
-  root: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    color: '#73909C',
-    cursor: 'pointer',
-  },
-}))(ExpandLessIcon);
 
 const MoreContent = styled.div`
   min-width: 100%;
@@ -157,3 +124,19 @@ const Header = styled.div`
   position: relative;
   width: 100%
 `
+const MoreIconContainerTop = withStyles((theme) => ({
+    root: {
+        position: 'absolute',
+        top: 10,
+        right: 15,
+        color: 'rgba(0,0,0,.83)'
+    }
+}))(IconButton);
+
+const MoreIconContainerBottom = withStyles((theme) => ({
+    root: {
+        position: 'absolute',
+        right: 15,
+        color: 'rgba(0,0,0,.83)'
+    }
+}))(IconButton);

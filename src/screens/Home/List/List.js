@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import {ListCard} from './ListCard'
+import {ListCreator} from './ListCreator'
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -23,6 +24,7 @@ export function ListContainer() {
         </div>
       </Header>
       <List>
+        <ListCreator>dupa123</ListCreator>
         <ListCard title="Lista1" id="1"/>
         <ListCard title="Lista2" id="2"/>
       </List>
