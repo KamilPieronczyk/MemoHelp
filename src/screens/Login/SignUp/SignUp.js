@@ -37,6 +37,7 @@ export function Register(props) {
     const handleChange = (event) => {
         setState(!state);
     };
+    const [buttonDisabled, setButtonDisabled] = useState(false)
     const validateForm = () => {
         if(!validator.isEmail(mail))
             return false;
@@ -51,9 +52,11 @@ export function Register(props) {
         return true;
     }
     const reg = () => {
+        setButtonDisabled(true);
         if (!validateForm())
         {
             console.log("Błąd walidacji");
+            setButtonDisabled(false);
             return false;
         }
         firebase.auth().createUserWithEmailAndPassword(mail, password).then(({user})=>{
@@ -69,12 +72,14 @@ export function Register(props) {
             }).then(function(){
                 // history.push("/");
                 // window.location.reload();
+                setButtonDisabled(false);
             });
         }).catch(function(error) {
             // Handle Errors here.
             //var errorCode = error.code;
             var errorMessage = error.message;
             console.log("firebase auth:",errorMessage);
+            setButtonDisabled(false);
             // ...
           });
         
@@ -132,6 +137,7 @@ export function Register(props) {
 					}}
                     text="Zarejestruj się"
                     onClick={reg}
+                    disabled={buttonDisabled}
 				/>
             </Buttonscontainer>
         </LoginContainer>

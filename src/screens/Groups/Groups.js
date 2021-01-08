@@ -245,7 +245,8 @@ export default function Groups() {
 			if(state.TMP_AdminGroupsAddMembers.has(groupId))
 				state.TMP_AdminGroupsAddMembers.get(groupId).users.push(userData);
 			else {
-				state.TMP_AdminGroupsAddMembers.set(groupId, {users: [userData]});
+				let gName = state.userAdminGroupsMembersView.name;
+				state.TMP_AdminGroupsAddMembers.set(groupId, {name: gName, users: [userData]});
 			}
 				
 
