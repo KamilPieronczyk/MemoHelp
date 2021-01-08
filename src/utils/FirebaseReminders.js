@@ -1,3 +1,4 @@
+import { ContactSupportOutlined } from '@material-ui/icons';
 import firebase from 'firebase';
 import { atom } from 'recoil';
 
@@ -37,12 +38,17 @@ export class Reminder {
 	}
 
 	SendReminderToGroupCollection(groupID) {
-		firebase.firestore().collection('Groups').doc(groupID).collection('Reminders').add({
-			text       : this.textContent,
-			date       : this.date,
-			frequency  : this.frequency,
-			weekDays   : this.weekDays,
-			usersGroup : this.usersGroup
+		console.log(`SendReminderToGroupCollection( ${groupID} )`);
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('Groups').doc(groupID).collection('Reminders').add({
+				text       : this.textContent,
+				date       : this.date,
+				frequency  : this.frequency,
+				weekDays   : this.weekDays,
+				usersGroup : groupID
+			})
+			.then(() => resolve())
+			.catch(() => reject());
 		});
 	}
 }
@@ -76,3 +82,64 @@ export const typeState = atom({
 	key     : 'reminderType',
 	default : Reminder.reminderTypes.default
 });
+
+/**
+ * Function get all users group
+ * @return data.set(groupId, {selected: false, name: String, usersId: []});
+ */
+export async function getAllGroups() {
+    let data = new Map();
+
+	// TOOD let id
+	let userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+
+	var docRefAdmin = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Admins");
+	var docRefMember = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Members");
+    
+    try {
+
+		// Getting all arrays of groups id
+		var docGroupsAdmin = await docRefAdmin.get();
+		var docGroupsMember = await docRefMember.get();
+		let adminGroupsId;
+		let memberGroupsId;
+
+		if (docGroupsAdmin.exists) {
+			adminGroupsId = docGroupsAdmin.data().data;
+		}
+
+		if(docGroupsMember.exists) {
+			memberGroupsId = docGroupsMember.data().data;
+		}	
+		
+		var groupsIdArray = [...adminGroupsId, ...memberGroupsId]
+
+		for(let i = 0; i < groupsIdArray.length; i++) {
+			var groupId = groupsIdArray[i].trim(); 
+
+			// Create emtpy map - key is group id
+			data.set(groupId, {selected: false, name: "", usersId: []});
+
+			try {
+
+				let docGroupData = await firebase.firestore().collection("Groups").doc(groupId).get();
+
+				// Save admin and member id to array
+				if(docGroupData.exists) {
+					var tmp = [...docGroupData.data().admin, ...docGroupData.data().members]
+					data.get(groupId).usersId = tmp
+					data.get(groupId).name = docGroupData.data().name
+				}
+
+			} catch(e) {
+				console.log(e)
+			}
+
+		}
+
+    } catch(e) {
+        console.log(e);
+	}
+	
+    return data;
+}
