@@ -103,15 +103,40 @@ export function NewNotificationForm() {
 	const pushToFirestore = () => {
 		if(!validateTextInput()) return
 		if(!validateDate()) return
+
+		let sendToGroupReminder = false;
 		setButtonDisabled(true)
-		reminder.SendReminderToUserCollection().then(()=>{
-			enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
+
+		for(const [key, value] of groupsData.entries()) {
+			if(value.selected) {
+				reminder.SendReminderToGroupCollection(key).then(()=>{
+					enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
+					setButtonDisabled(false)
+				}).catch(()=>{
+					enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
+					setButtonDisabled(false)
+				})
+				groupsData.get(key).selected = false;
+				sendToGroupReminder = true;
+			}
+		}
+
+		if(sendToGroupReminder == false) {
+			reminder.SendReminderToUserCollection().then(()=>{
+				enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
+				clearForm()
+				setButtonDisabled(false)
+			}).catch(()=>{
+				enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
+				setButtonDisabled(false)
+			})
+			console.log("Send to reminder");
+		} else {
 			clearForm()
 			setButtonDisabled(false)
-		}).catch(()=>{
-			enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
-			setButtonDisabled(false)
-		})
+			console.log("Send to groups reminder collections");
+		}
+
 	}
 
 	const validateTextInput = () => {
@@ -205,7 +230,7 @@ export function NewNotificationForm() {
 												<Checkbox
 													checked={item.seleced}
 													onChange={() => {
-														groupsData.get(key).seleced = true;
+														groupsData.get(key).selected = true;
 													}}
 													name="checkedB"
 													color="primary"

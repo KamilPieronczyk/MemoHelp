@@ -38,12 +38,13 @@ export class Reminder {
 	}
 
 	SendReminderToGroupCollection(groupID) {
+		console.log(`SendReminderToGroupCollection( ${groupID} )`);
 		firebase.firestore().collection('Groups').doc(groupID).collection('Reminders').add({
 			text       : this.textContent,
 			date       : this.date,
 			frequency  : this.frequency,
 			weekDays   : this.weekDays,
-			usersGroup : this.usersGroup
+			usersGroup : groupID
 		});
 	}
 }
