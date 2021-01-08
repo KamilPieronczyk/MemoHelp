@@ -39,12 +39,16 @@ export class Reminder {
 
 	SendReminderToGroupCollection(groupID) {
 		console.log(`SendReminderToGroupCollection( ${groupID} )`);
-		firebase.firestore().collection('Groups').doc(groupID).collection('Reminders').add({
-			text       : this.textContent,
-			date       : this.date,
-			frequency  : this.frequency,
-			weekDays   : this.weekDays,
-			usersGroup : groupID
+		return new Promise((resolve, reject) => {
+			firebase.firestore().collection('Groups').doc(groupID).collection('Reminders').add({
+				text       : this.textContent,
+				date       : this.date,
+				frequency  : this.frequency,
+				weekDays   : this.weekDays,
+				usersGroup : groupID
+			})
+			.then(() => resolve())
+			.catch(() => reject());
 		});
 	}
 }
