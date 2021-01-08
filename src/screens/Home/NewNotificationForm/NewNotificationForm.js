@@ -12,7 +12,7 @@ import {CheckBoxButton} from './CheckBoxButton'
 import {CollapseButton} from './CollapseButton'
 import {makeStyles} from '@material-ui/core';
 import {useRecoilState, useRecoilValue} from 'recoil'
-import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState } from '../../../utils/FirebaseReminders'
+import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState, getAllGroups } from '../../../utils/FirebaseReminders'
 import {useSnackbar} from 'notistack'
 
 const useStyles = makeStyles((theme) => ({
@@ -59,6 +59,8 @@ export function NewNotificationForm() {
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const [datePickerVersion, setDatePickerVersion] = useState(true)
 	const [buttonDisabled, setButtonDisabled] = useState(false)
+
+	getAllGroups();
 
 	const autoGrowContentInput = (element) => {
 		console.log(textContent);

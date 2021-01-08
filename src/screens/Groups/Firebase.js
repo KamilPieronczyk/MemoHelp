@@ -142,7 +142,7 @@ async function removeGroupsFromFirebase(mp) {
         await docGroupsRef.get().then(function(doc) {
             if(doc.exists) {
                 for(let i = 0; i < doc.data().admin.length; i++) {
-                    let id = doc.data().admin[i].id;
+                    let id = doc.data().admin[i];
 
                     db.firestore().collection("Users").doc(id).collection("Groups").doc("Admins").update({
                         data: db.firestore.FieldValue.arrayRemove(groupId)
@@ -203,7 +203,7 @@ async function sendToFirebaseNewGroupsData(mp) {
             name: item[1].name,
             members: [],
             invitations: [],
-            admin: [{id: userId}],
+            admin: [userId],
         })
         .then(async function(docRef) {
             var groupId = docRef.id;
