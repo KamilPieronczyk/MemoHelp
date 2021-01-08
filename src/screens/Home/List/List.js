@@ -6,7 +6,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 
 export function ListContainer() {
-  
+  const [myArray, setMyArray] = useState(new Array());
+
   const Add = () => {
     console.log("Click add");
   }
@@ -24,9 +25,10 @@ export function ListContainer() {
         </div>
       </Header>
       <List>
-        <ListCreator>dupa123</ListCreator>
-        <ListCard title="Lista1" id="1"/>
-        <ListCard title="Lista2" id="2"/>
+        <ListCreator setMyArray={setMyArray}>dupa123</ListCreator>
+        
+        <ListCard title="Lista1" id="1" myArray={myArray}/>
+        <ListCard title="Lista2" id="2" myArray={myArray}/>
       </List>
     </Container>
   )

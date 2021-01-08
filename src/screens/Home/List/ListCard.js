@@ -32,7 +32,7 @@ function ListCardBtn(props) {
 }
 
 export function ListCard(props) {
-
+  const [myArray, setMyArray] = useState(new Array());
   const [state, setState] = useState({
     isOpen: false
   });
@@ -44,6 +44,7 @@ export function ListCard(props) {
 
   const ExpandMoreInfo = (e) => {
     console.log("Show more");
+    setMyArray(props.myArray)
     setState({ ...state, isOpen: true});
   }
   const DeleteList = (e) => {
@@ -69,9 +70,8 @@ export function ListCard(props) {
           <MoreContent>
 
             {/* TODO: MAP  */}
-
-            <ListCardBtn text="BTN 1" name="btn1" />
-            <ListCardBtn text="BTN 2" name="btn2" />
+            {myArray}
+            {/* <ListCardBtn text="BTN 1" name="btn1" /> */}
 
           </MoreContent>
       </Collapse>

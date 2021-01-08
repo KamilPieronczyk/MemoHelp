@@ -6,6 +6,9 @@ import AddIcon from '@material-ui/icons/Add';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { useUser } from '../../../utils';
+import firebase from 'firebase';
+import {useSnackbar} from 'notistack'
 
 function ListCardBtn(props) {
   const [state, setState] = useState({
@@ -31,23 +34,85 @@ function ListCardBtn(props) {
 }
 
 export function ListCreator(props) {
+    const [myArray, setMyArray] = useState(new Array());
+    const [textContent, handleTextChange] = useState('');
+    const [listContent, handleListChange] = useState('');
 
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const {user}=useUser();
+    const [state, setState] = useState({
+        checked: false
+      });
+    const ChangeCheckbox = (e) => {
+        console.log("Change checkbox 1");
+        let b = state.checked;
+        setState({ ...state, checked: !b});
+      }
+    const pushToFirestore = () => {
+        if (!validateTextInput()) return
+        firebase
+            .firestore()
+            .collection('Users')
+            .doc(user.uid)
+            .collection('Lists')
+            .add({
+                // title: textContent,
+                // myList: myArray
+            }).then(() => {
+            enqueueSnackbar('Lista została dodana', { variant: 'success' })
+            clearForm()
+        }).catch(() => {
+            enqueueSnackbar('Wystąpił problem z dodaniem listy', { variant: 'error' })
+        })
+    }
+    const validateTextInput = () => {
+        if (textContent == "") {
+            enqueueSnackbar('Treść Listy nie może być pusta', { variant: 'error' })
+            return false
+        }
+        return true
+    }
+    const clearForm = () => {
+        handleTextChange("")
+    }
+    const clearList = () => {
+        handleListChange("")
+    }
+    const addToArray=(event) =>{
+        if(event.key!='Enter')
+        return
+        var temp = listContent
+        myArray.push(
+        <CheckBoxBtn onClick={ChangeCheckbox}>
+      <Checkbox style={{color: '#323232'}}/>
+      <CheckBoxText>{temp}</CheckBoxText>
+    </CheckBoxBtn>)
+        // myArray.push(<MyTextField value={temp}></MyTextField>)
+        setMyArray(Array.from(myArray))
+        clearList()
+    }
+    const CreateNewList=() =>{
+        props.setMyArray(Array.from(myArray))
+        console.log("Create new list")
+        console.log(props.myArray)
 
+    }
   return (
     <Container key={props.id}>
 
-      
           <MoreContent>
 
             {/* TODO: MAP  */}
-            <MyTextInput  placeholder="Dodaj tytuł" color='#9C9083'></MyTextInput>
+            <MyTextInput value={textContent} placeholder="Dodaj tytuł"  color='#9C9083'onChange={e => { handleTextChange(e.target.value); }}></MyTextInput>
+            {myArray}
             <MoreIconContainerTop>
-                <CheckIcon/>
+                <CheckIcon onClick={CreateNewList}/>
             </MoreIconContainerTop>
-            <MyTextField placeholder="Dodaj notatke"  />
-            <MyTextField placeholder="Dodaj notatke" />
-            <CheckBoxBtn name="xx" />
-
+            <CheckBoxBtn onClick={ChangeCheckbox}>
+                <Checkbox style={{color: '#323232'}}/>
+                <MyTextField value={listContent} placeholder="Dodaj notatke" color="#FFFAF5"  onChange={e => { handleListChange(e.target.value); }} onKeyDown={addToArray}/> 
+            </CheckBoxBtn>
+            {/* <MyTextField value={listContent} placeholder="Dodaj notatke"  onChange={e => { handleListChange(e.target.value); }} onKeyDown={addToArray}/>  */}
           </MoreContent>
     </Container>
   )
@@ -65,12 +130,16 @@ resize: vertical;
 font-size:16px;
 `;
 const MyTextField = styled.input`
-height: 100%;
-width: 95%;
+  height: 90%;
+  width: 95%;
+  text-decoration:none;
+  border: none;
+  background:none;
+  outline:none;
   justify-content: flex-start;
-  margin-top: 8px;
   border-radius: 12px;
   background-color: #9C9083;
+  color: #FFFAF5;
   cursor: pointer;
 `;
 const CheckBoxText = styled.span`
