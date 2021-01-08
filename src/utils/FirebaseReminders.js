@@ -80,7 +80,7 @@ export const typeState = atom({
 
 /**
  * Function get all users group
- * @return data.set(groupId, {usersId: []});
+ * @return data.set(groupId, {selected: false, name: String, usersId: []});
  */
 export async function getAllGroups() {
     let data = new Map();
@@ -113,7 +113,7 @@ export async function getAllGroups() {
 			var groupId = groupsIdArray[i].trim(); 
 
 			// Create emtpy map - key is group id
-			data.set(groupId, {usersId: []});
+			data.set(groupId, {selected: false, name: "", usersId: []});
 
 			try {
 
@@ -123,6 +123,7 @@ export async function getAllGroups() {
 				if(docGroupData.exists) {
 					var tmp = [...docGroupData.data().admin, ...docGroupData.data().members]
 					data.get(groupId).usersId = tmp
+					data.get(groupId).name = docGroupData.data().name
 				}
 
 			} catch(e) {
@@ -135,6 +136,5 @@ export async function getAllGroups() {
         console.log(e);
 	}
 	
-	console.log("RESULT", data);
     return data;
 }

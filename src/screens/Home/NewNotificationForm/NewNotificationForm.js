@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import DateFnsUtils from '@date-io/date-fns';
@@ -8,10 +8,12 @@ import Timelapse from '@material-ui/icons/Timelapse';
 import { Button } from '../../../components';
 import { Collapse } from '@material-ui/core';
 import RadioForm from './RadioForm'
+import Checkbox from '@material-ui/core/Checkbox';
 import {CheckBoxButton} from './CheckBoxButton'
 import {CollapseButton} from './CollapseButton'
 import {makeStyles} from '@material-ui/core';
 import {useRecoilState, useRecoilValue} from 'recoil'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState, getAllGroups } from '../../../utils/FirebaseReminders'
 import {useSnackbar} from 'notistack'
 
@@ -59,8 +61,18 @@ export function NewNotificationForm() {
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const [datePickerVersion, setDatePickerVersion] = useState(true)
 	const [buttonDisabled, setButtonDisabled] = useState(false)
+	const [groupsData, setGroupData] = useState(new Map())
+	const [load, setLoad ] = useState(true)
+	
+	useEffect(() => {
+		if(load === true) {
+			getAllGroups().then(async function(data) {
+				setGroupData(data);
+				setLoad(false);
+			});
+		} else console.log("STATE GROUP_DATA", groupsData);
+	});
 
-	getAllGroups();
 
 	const autoGrowContentInput = (element) => {
 		console.log(textContent);
@@ -182,7 +194,33 @@ export function NewNotificationForm() {
 				</div>
 				<div className={showMoreSettings ? styles.noCollapsedSecondColumn : styles.collapsedSecondColumn}>
 					<Collapse in={showMoreSettings} timeout={"auto"}>
-						elo
+						Wybierz grupę: 
+						<GroupsContainer>
+							{ groupsData.size > 0 &&
+								Array.from(groupsData.keys()).map(key => {
+									let item = groupsData.get(key);
+									return(
+										<FormControlLabel
+											control={
+												<Checkbox
+													checked={item.seleced}
+													onChange={() => {
+														groupsData.get(key).seleced = true;
+													}}
+													name="checkedB"
+													color="primary"
+												/>
+											}
+											label={item.name}
+										/>
+									)
+								})
+							}
+							{
+								groupsData.size <= 0 &&
+									<span> nie należysz do żadnych grup</span>
+							}
+						</GroupsContainer>
 					</Collapse>
 				</div>
 
@@ -216,6 +254,10 @@ export function NewNotificationForm() {
 		</FormContainer>
 	);
 }
+
+const GroupsContainer = styled.div`
+	padding: 15px;
+`;
 
 const FormContainer = styled.div`
 	grid-row: 1 / span 4;
