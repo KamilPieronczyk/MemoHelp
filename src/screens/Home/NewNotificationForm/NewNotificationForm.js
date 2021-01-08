@@ -101,6 +101,7 @@ export function NewNotificationForm() {
 	reminder.weekDays = days;
 
 	const pushToFirestore = () => {
+
 		if(!validateTextInput()) return
 		if(!validateDate()) return
 
@@ -108,15 +109,13 @@ export function NewNotificationForm() {
 		setButtonDisabled(true)
 
 		for(const [key, value] of groupsData.entries()) {
+			console.log("TRU", value);
 			if(value.selected) {
 				reminder.SendReminderToGroupCollection(key).then(()=>{
-					enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
-					setButtonDisabled(false)
+					enqueueSnackbar(`Powiadomienie zostało dodane dla grupy ${value.name}`, {variant: 'success'})
 				}).catch(()=>{
 					enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
-					setButtonDisabled(false)
 				})
-				groupsData.get(key).selected = false;
 				sendToGroupReminder = true;
 			}
 		}
@@ -158,7 +157,7 @@ export function NewNotificationForm() {
 		return true
 	}
 
-	const clearForm = () => {
+	async function clearForm() {
 		handleTextChange("")
 		setTextInputState(true)
 		setWeekDaysArr(new Array())
@@ -223,20 +222,20 @@ export function NewNotificationForm() {
 						<GroupsContainer>
 							{ groupsData.size > 0 &&
 								Array.from(groupsData.keys()).map(key => {
-									let item = groupsData.get(key);
 									return(
 										<FormControlLabel
 											control={
 												<Checkbox
-													checked={item.seleced}
+													checked={groupsData.get(key).seleced}
 													onChange={() => {
-														groupsData.get(key).selected = true;
+														groupsData.get(key).selected = !groupsData.get(key).selected
+														setGroupData(groupsData);
 													}}
 													name="checkedB"
 													color="primary"
 												/>
 											}
-											label={item.name}
+											label={groupsData.get(key).name}
 										/>
 									)
 								})
