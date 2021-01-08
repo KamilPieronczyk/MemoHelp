@@ -18,6 +18,7 @@ import {
   } from "react-router-dom";
 import {Button} from '../../../components';
 import { min } from 'date-fns';
+import {useSnackbar} from 'notistack'
 // const GreenCheckbox = withStyles({
 //     root: {
 //         color: green[400],
@@ -37,18 +38,29 @@ export function Register(props) {
     const handleChange = (event) => {
         setState(!state);
     };
-    const [buttonDisabled, setButtonDisabled] = useState(false)
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const validateForm = () => {
-        if(!validator.isEmail(mail))
+        if(!validator.isEmail(mail)){
+            enqueueSnackbar('Błędny adres email', {variant: 'error'});
             return false;
-        if(password!==password2)
+        }
+        if(password!==password2){
+            enqueueSnackbar('Hasła różnią się', {variant: 'error'});
             return false;
-        if (!validator.isLength(password,{min:6, max:30}))
+        }
+        if (!validator.isLength(password,{min:6, max:30})){
+            enqueueSnackbar('Hasło musi zawierać minimum 6 znaków', {variant: 'error'});
             return false;
-        if (!validator.isLength(name,{min:4, max:30}))
+        }
+        if (!validator.isLength(name,{min:4, max:30})){
+            enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
             return false;
-        if (!state)
+        }
+        if (!state){
+            enqueueSnackbar('Wymagane jest zaakceptowanie regulaminu', {variant: 'error'});
             return false;
+        }
         return true;
     }
     const reg = () => {
@@ -79,6 +91,7 @@ export function Register(props) {
             //var errorCode = error.code;
             var errorMessage = error.message;
             console.log("firebase auth:",errorMessage);
+            enqueueSnackbar('Wystąpił błąd', {variant: 'error'});
             setButtonDisabled(false);
             // ...
           });

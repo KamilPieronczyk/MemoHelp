@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import DateFnsUtils from '@date-io/date-fns';
@@ -8,11 +8,13 @@ import Timelapse from '@material-ui/icons/Timelapse';
 import { Button } from '../../../components';
 import { Collapse } from '@material-ui/core';
 import RadioForm from './RadioForm'
+import Checkbox from '@material-ui/core/Checkbox';
 import {CheckBoxButton} from './CheckBoxButton'
 import {CollapseButton} from './CollapseButton'
 import {makeStyles} from '@material-ui/core';
 import {useRecoilState, useRecoilValue} from 'recoil'
-import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState } from '../../../utils/FirebaseReminders'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState, getAllGroups } from '../../../utils/FirebaseReminders'
 import {useSnackbar} from 'notistack'
 
 const useStyles = makeStyles((theme) => ({
@@ -59,6 +61,18 @@ export function NewNotificationForm() {
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const [datePickerVersion, setDatePickerVersion] = useState(true)
 	const [buttonDisabled, setButtonDisabled] = useState(false)
+	const [groupsData, setGroupData] = useState(new Map())
+	const [load, setLoad ] = useState(true)
+	
+	useEffect(() => {
+		if(load === true) {
+			getAllGroups().then(async function(data) {
+				setGroupData(data);
+				setLoad(false);
+			});
+		} else console.log("STATE GROUP_DATA", groupsData);
+	});
+
 
 	const autoGrowContentInput = (element) => {
 		console.log(textContent);
@@ -87,17 +101,41 @@ export function NewNotificationForm() {
 	reminder.weekDays = days;
 
 	const pushToFirestore = () => {
+
 		if(!validateTextInput()) return
 		if(!validateDate()) return
+
+		let sendToGroupReminder = false;
 		setButtonDisabled(true)
-		reminder.SendReminderToUserCollection().then(()=>{
-			enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
+
+		for(const [key, value] of groupsData.entries()) {
+			console.log("TRU", value);
+			if(value.selected) {
+				reminder.SendReminderToGroupCollection(key).then(()=>{
+					enqueueSnackbar(`Powiadomienie zostało dodane dla grupy ${value.name}`, {variant: 'success'})
+				}).catch(()=>{
+					enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
+				})
+				sendToGroupReminder = true;
+			}
+		}
+
+		if(sendToGroupReminder == false) {
+			reminder.SendReminderToUserCollection().then(()=>{
+				enqueueSnackbar('Powiadomienie zostało dodane', {variant: 'success'})
+				clearForm()
+				setButtonDisabled(false)
+			}).catch(()=>{
+				enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
+				setButtonDisabled(false)
+			})
+			console.log("Send to reminder");
+		} else {
 			clearForm()
 			setButtonDisabled(false)
-		}).catch(()=>{
-			enqueueSnackbar('Wystąpił problem z dodaniem przypomnienia', {variant: 'error'})
-			setButtonDisabled(false)
-		})
+			console.log("Send to groups reminder collections");
+		}
+
 	}
 
 	const validateTextInput = () => {
@@ -119,7 +157,7 @@ export function NewNotificationForm() {
 		return true
 	}
 
-	const clearForm = () => {
+	async function clearForm() {
 		handleTextChange("")
 		setTextInputState(true)
 		setWeekDaysArr(new Array())
@@ -180,7 +218,33 @@ export function NewNotificationForm() {
 				</div>
 				<div className={showMoreSettings ? styles.noCollapsedSecondColumn : styles.collapsedSecondColumn}>
 					<Collapse in={showMoreSettings} timeout={"auto"}>
-						elo
+						Wybierz grupę: 
+						<GroupsContainer>
+							{ groupsData.size > 0 &&
+								Array.from(groupsData.keys()).map(key => {
+									return(
+										<FormControlLabel
+											control={
+												<Checkbox
+													checked={groupsData.get(key).seleced}
+													onChange={() => {
+														groupsData.get(key).selected = !groupsData.get(key).selected
+														setGroupData(groupsData);
+													}}
+													name="checkedB"
+													color="primary"
+												/>
+											}
+											label={groupsData.get(key).name}
+										/>
+									)
+								})
+							}
+							{
+								groupsData.size <= 0 &&
+									<span> nie należysz do żadnych grup</span>
+							}
+						</GroupsContainer>
 					</Collapse>
 				</div>
 
@@ -214,6 +278,10 @@ export function NewNotificationForm() {
 		</FormContainer>
 	);
 }
+
+const GroupsContainer = styled.div`
+	padding: 15px;
+`;
 
 const FormContainer = styled.div`
 	grid-row: 1 / span 4;
