@@ -12,11 +12,12 @@ import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 import Groups from './screens/Groups/Groups'
 import browserHistory from './history';
-import {AuthProvider, AuthGuard} from './utils'
+import {AuthProvider, AuthGuard, NotificationsProvider} from './utils'
 
 function App() {
   return (
     <AuthProvider>
+      <NotificationsProvider />
       <Body>
         <Router history={browserHistory}>
           <AuthGuard>
