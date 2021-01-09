@@ -15,11 +15,17 @@ export function AuthProvider(props){
   const [user, setUser] = useState(null)
 
   useEffect(()=>{
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       console.log('authprovider', isLoggedIn, loading, user)
       if(user != null) {
+        try {
+          let userData = await getUserDataFromFirestore(user.uid)
+          setUser({...user, ...userData})
+        } catch (error) {
+          console.error(error)
+          setUser(user)
+        }
         setIsLoggedIn(true)
-        setUser(user)
       } else {
         setIsLoggedIn(false)
         setUser(null)
@@ -40,4 +46,17 @@ export function AuthProvider(props){
       {props.children}
     </AuthContext.Provider>
   );
+}
+
+const getUserDataFromFirestore = (userId) => {
+  return new Promise((resolve, reject)=>{
+    firebase.firestore().collection('Users').doc(userId).get().then((snap) => {
+      if(snap.exists)
+        resolve(snap.data())
+      else
+        reject("Users doesn't exists in the firestore")
+    }).catch((e)=>{
+      reject(e)
+    })
+  })
 }
