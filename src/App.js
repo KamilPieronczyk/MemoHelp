@@ -46,12 +46,15 @@ function App() {
   );
 }
 
+const baseURL = window.location.hostname
+const protocol = window.location.protocol
+const port = window.location.port
 const Body = styled.div`
   min-width: 95vw;
   min-height: 100vh;
   padding: 0 120px 0 120px;
   box-sizing: border-box;
-  background-image: url("./assets/background.png");
+  background-image: url("${protocol}//${baseURL}:${port}/assets/background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
