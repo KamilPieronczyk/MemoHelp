@@ -9,6 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { useUser } from '../../../utils';
 import firebase from 'firebase';
 import {useSnackbar} from 'notistack'
+import { MemorySharp } from '@material-ui/icons';
 
 function ListCardBtn(props) {
   const [state, setState] = useState({
@@ -34,7 +35,10 @@ function ListCardBtn(props) {
 }
 
 export function ListCreator(props) {
+    
+    const [tableID, setTableID] = useState(0);
     const [myArray, setMyArray] = useState(new Array());
+    const [myMap, setMyMap] = useState(new Map());
     const [textContent, handleTextChange] = useState('');
     const [listContent, handleListChange] = useState('');
 
@@ -92,9 +96,17 @@ export function ListCreator(props) {
         clearList()
     }
     const CreateNewList=() =>{
-        props.setMyArray(Array.from(myArray))
-        console.log("Create new list")
-        console.log(props.myArray)
+        var oldMap= new Map()
+        //var newMap= new Map()
+        oldMap=props.myMap
+        oldMap.set(tableID, {title: textContent, values: Array.from(myArray)})
+        setTableID(tableID+1)
+        setMyArray(new Array())
+        handleTextChange("")
+       // setMyMap(tempMap)
+       console.log(oldMap)
+        props.setMyMap(new Map([...oldMap]))
+        console.log(myMap)
 
     }
   return (

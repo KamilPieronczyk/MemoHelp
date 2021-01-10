@@ -7,6 +7,12 @@ import AddIcon from '@material-ui/icons/Add';
 
 export function ListContainer() {
   const [myArray, setMyArray] = useState(new Array());
+  const [myArrayName, setMyArrayName] = useState(" ");
+  const [myMap, setMyMap] = useState(new Map());
+  //const [myArrayName, setMyArrayName] = useState(" ");
+
+  
+
 
   const Add = () => {
     console.log("Click add");
@@ -25,10 +31,8 @@ export function ListContainer() {
         </div>
       </Header>
       <List>
-        <ListCreator setMyArray={setMyArray}>dupa123</ListCreator>
-        
-        <ListCard title="Lista1" id="1" myArray={myArray}/>
-        <ListCard title="Lista2" id="2" myArray={myArray}/>
+        <ListCreator setMyMap={setMyMap} myMap={myMap}>dupa123</ListCreator>
+        {Array.from(myMap).map(([key,values]) => (<ListCard title={values.title} myArray={values.values}/>))}
       </List>
     </Container>
   )
