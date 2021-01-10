@@ -142,6 +142,7 @@ export function LoginForm() {
                     <span style={{ paddingTop: 16, paddingBottom: 16, paddingLeft: 20 }}>Zaloguj się</span>
                 </Google> */}
 				<Button
+					color="#fff"
 					type="contained"
 					style={{
 						width : '48%',
