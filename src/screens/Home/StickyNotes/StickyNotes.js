@@ -36,16 +36,9 @@ export function StickyNotes(props) {
     setList(array)
   }
   return (
-    <Container>
+    <React.Fragment>
       <StickyNoteCreator title="stworz notatke" />
-        {list}
-    </Container>
+      {list}
+    </React.Fragment>
   )
 }
-
-const Container = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  grid-gap: 15px;
-  align-self: stretch;
-`

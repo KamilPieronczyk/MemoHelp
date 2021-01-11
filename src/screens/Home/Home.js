@@ -14,8 +14,8 @@ export default function Home() {
         <NewNotificationForm />
         <ListContainer />
         <InvitationList />
+        <StickyNotes />
       </WidgetContainer>
-      <StickyNotes />
     </Container>
   )
 }
@@ -36,5 +36,6 @@ const WidgetContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   grid-gap: 15px;
+  grid-auto-flow: dense;
 `
 

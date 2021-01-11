@@ -24,6 +24,7 @@ export function StickyNote(props) {
 
 const Container = styled.div`
 	width: 100%;
+	height: fit-content;
 	background-color: #fffaf5;
 	border-radius: 12px;
 	box-sizing: border-box;
