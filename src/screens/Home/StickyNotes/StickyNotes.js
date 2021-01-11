@@ -44,10 +44,8 @@ export function StickyNotes(props) {
 }
 
 const Container = styled.div`
-  grid-column: 1 / span 2;
-  grid-row: 5 / span 2;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-gap: 15px;
   align-self: stretch;
 `

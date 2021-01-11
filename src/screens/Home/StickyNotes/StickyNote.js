@@ -23,7 +23,7 @@ export function StickyNote(props) {
 
 
 const Container = styled.div`
-	width: calc(100% / 2 - 10px);
+	width: 100%;
 	background-color: #fffaf5;
 	border-radius: 12px;
 	box-sizing: border-box;

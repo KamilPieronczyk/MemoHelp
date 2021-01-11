@@ -5,33 +5,36 @@ import {InvitationList} from './InvitationList/InvitationList'
 import {ListContainer} from './List/List'
 import {StickyNotes} from './StickyNotes/StickyNotes'
 import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
-
+import {atom} from 'recoil'
 export default function Home() {
   return (
     <Container>
       <WidgetContainer>
         <NotificationsList />
-        <StickyNotes />
         <NewNotificationForm />
         <ListContainer />
         <InvitationList />
-        <div style={{gridArea: '4 / 5', gridRow: '1 / span 4'}}></div>
       </WidgetContainer>
+      <StickyNotes />
     </Container>
   )
 }
 
+export const isFormOpened = atom({
+  key: 'ReminderFormOpenState',
+  default: false
+})
+
 const Container = styled.div`
   width: 100%;
-  height: calc(100vh - 200px);
+  min-height: 100%;
   position: relative;
 `
 
 const WidgetContainer = styled.div`
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
+  height: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   grid-gap: 15px;
 `
+

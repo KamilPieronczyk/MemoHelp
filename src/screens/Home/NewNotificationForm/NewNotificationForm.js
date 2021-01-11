@@ -16,19 +16,21 @@ import {useRecoilState, useRecoilValue} from 'recoil'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Reminder, textContentState, dateState, timeState, weekDaysState, frequencyState, typeState, getAllGroups } from '../../../utils/FirebaseReminders'
 import {useSnackbar} from 'notistack'
+import {isFormOpened} from '../Home'
 
 const useStyles = makeStyles((theme) => ({
 		openedContainer: {
-			gridColumn: '2 / 4'
+			gridColumn: 'span 2'
 		},
 		noOpenedContainer: {
-			gridColumn: '2 / 3'
+			gridColumn: 'span 1'
 		},
 		firstColumn: {
 			flex: 1
 		},
 		collapsedSecondColumn: {
-			flex: 0
+			flex: 0,
+			display: 'none'
 		},
 		noCollapsedSecondColumn: {
 			flex: 1
@@ -52,11 +54,12 @@ export function NewNotificationForm() {
 	const styles = useStyles();
 	const [selectedDate, handleDateChange] = useRecoilState(dateState);
 	const [selectedTime, handleTimeChange] = useRecoilState(timeState);
+	const [isFormOpenedState, setIsFormOpenedState] = useRecoilState(isFormOpened);
 	const [textContent, handleTextChange] = useRecoilState(textContentState);
 	const [weekDaysArr, setWeekDaysArr] = useRecoilState(weekDaysState)
 	const [frequency, setFrequency] = useRecoilState(frequencyState)
   const [type, setType] = useRecoilState(typeState);
-	const [showMoreSettings, setShowMoreSettings] = useState(true);
+	const [showMoreSettings, setShowMoreSettings] = useState(false);
 	const [textInputState, setTextInputState] = useState(true);
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const [datePickerVersion, setDatePickerVersion] = useState(true)
@@ -84,6 +87,7 @@ export function NewNotificationForm() {
 
 	const toggleMoreSettings = () => {
 		setShowMoreSettings(state => !state);
+		setIsFormOpenedState(state => !state)
 		if(showMoreSettings){
 			setType(Reminder.reminderTypes.default)
 		}
@@ -284,7 +288,8 @@ const GroupsContainer = styled.div`
 `;
 
 const FormContainer = styled.div`
-	grid-row: 1 / span 4;
+	//grid-row: span 4;
+  min-height: 400px;
 	display: flex;
 	flex-direction: column;
 	align-self: stretch;
@@ -292,6 +297,7 @@ const FormContainer = styled.div`
 `;
 
 const Container = styled.div`
+	background-color: #ccc;
 	background-color: #fffaf5;
 	position: relative;
 	padding: 15px;
