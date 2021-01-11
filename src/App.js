@@ -12,11 +12,12 @@ import {Home} from './screens'
 import Settings from './screens/Settings/Settings'
 import Groups from './screens/Groups/Groups'
 import browserHistory from './history';
-import {AuthProvider, AuthGuard} from './utils'
+import {AuthProvider, AuthGuard, NotificationsProvider} from './utils'
 
 function App() {
   return (
     <AuthProvider>
+      <NotificationsProvider />
       <Body>
         <Router history={browserHistory}>
           <AuthGuard>
@@ -45,12 +46,15 @@ function App() {
   );
 }
 
+const baseURL = window.location.hostname
+const protocol = window.location.protocol
+const port = window.location.port
 const Body = styled.div`
   min-width: 95vw;
   min-height: 100vh;
   padding: 0 120px 0 120px;
   box-sizing: border-box;
-  background-image: url("./assets/background.png");
+  background-image: url("${protocol}//${baseURL}:${port}/assets/background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

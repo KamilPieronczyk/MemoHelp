@@ -1,5 +1,4 @@
 import db from 'firebase'
-
 /**
  * Function get from firestore all groups data
  * @param {if you want get all data group which user is admin type TRUE, otherwise false} admin
@@ -10,8 +9,9 @@ async function _getUserGroupsData(admin) {
     let mainDoc = "Members";
     if(admin) mainDoc = "Admins"
 
-    var docRef = db.firestore().collection("Users")
-                .doc("sQpA99mVpXQnvC0D1IcmNNhlPyr2").collection("Groups").doc(mainDoc);
+    let id = await db.auth().currentUser.uid;
+
+    var docRef = db.firestore().collection("Users").doc(id).collection("Groups").doc(mainDoc);
     
     try {
         // Getting all arrays of groups id
@@ -188,7 +188,7 @@ async function removeGroupsFromFirebase(mp) {
  */
 async function sendToFirebaseNewGroupsData(mp) {
     // TODO user ID
-    var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+    var userId = await db.auth().currentUser.uid;
 
     let updats = new Map();
 
@@ -301,12 +301,19 @@ async function _sendInvitations(groupId, groupName, email) {
         email: email
     }
 
+    let adminId = await db.auth().currentUser.uid;
+    let adminUserName = await db.firestore().collection("Users").doc(adminId).get().then(doc => {
+        if(doc.exists) {
+            return doc.data().userName;
+        } else return "NO_FOUND_NAME";
+    });
+
     await db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
 
             let invitation = {
                 id: groupId,
-                msg: `Jan Kowalski zaprosił się do grupy ${groupName}`
+                msg: `${adminUserName} zaprosił się do grupy ${groupName}`
             }
 
             try {
@@ -370,7 +377,7 @@ const removeFromFirebaseGroupsMembers = (mp) => {
  */
 export async function firebaseLeftFromGroups(arr) {
     // TODO user ID
-    var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+    var userId = await db.auth().currentUser.uid;
 
     if(arr.length > 0) {
 

@@ -4,6 +4,8 @@ import {ListCard} from './ListCard'
 import {ListCreator} from './ListCreator'
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
+import {isFormOpened} from '../Home'
+import {useRecoilValue} from 'recoil'
 
 export function ListContainer() {
   const [myArray, setMyArray] = useState(new Array());
@@ -14,6 +16,7 @@ export function ListContainer() {
   
 
 
+  const isReminderFormOpened = useRecoilValue(isFormOpened)
   const Add = () => {
     console.log("Click add");
   }
@@ -21,6 +24,8 @@ export function ListContainer() {
   const Delete = () => {
     console.log("Click remove");
   }
+
+  if(isReminderFormOpened) return null
 
   return (
     <Container>
@@ -40,8 +45,8 @@ export function ListContainer() {
 
 
 const Container = styled.div`
-  grid-Column: 3 / 4;
-  grid-row: 1 / span 4;
+  //grid-Column: 3 / 4;
+  min-height: 400px;
   border: #73909C solid 2px;
   border-radius: 12px;
   box-sizing: border-box;

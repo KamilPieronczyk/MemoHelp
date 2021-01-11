@@ -7,7 +7,7 @@ export function InvitationList() {
   const [invitationList, setList] = useState(new Array())
 
   useEffect(() => {
-    const invitations = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection("GroupsInvitations");
+    const invitations = firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection("GroupsInvitations");
     const invitationsSubscription = invitations.onSnapshot(snapshot => {
       renderList(snapshot)
     })
@@ -45,8 +45,9 @@ export function InvitationList() {
 
 
 const Container = styled.div`
-  grid-area: 1 / span 1;
-  grid-row: 1 / span 4;
+  //grid-area: span 1;
+  //grid-row: span 4;
+  min-height: 400px;
   border: #73909C solid 2px;
   border-radius: 12px;
   box-sizing: border-box;

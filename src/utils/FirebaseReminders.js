@@ -23,7 +23,7 @@ export class Reminder {
 			firebase
 				.firestore()
 				.collection('Users')
-				.doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2')
+				.doc(firebase.auth().currentUser.uid)
 				.collection('Reminders')
 				.add({
 					text      : this.textContent,
