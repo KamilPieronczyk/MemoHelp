@@ -36,18 +36,9 @@ export function StickyNotes(props) {
     setList(array)
   }
   return (
-    <Container>
+    <React.Fragment>
       <StickyNoteCreator title="stworz notatke" />
-        {list}
-    </Container>
+      {list}
+    </React.Fragment>
   )
 }
-
-const Container = styled.div`
-  grid-column: 1 / span 2;
-  grid-row: 5 / span 2;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-self: stretch;
-`

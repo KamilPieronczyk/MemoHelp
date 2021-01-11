@@ -45,8 +45,9 @@ export function InvitationList() {
 
 
 const Container = styled.div`
-  grid-area: 1 / span 1;
-  grid-row: 1 / span 4;
+  //grid-area: span 1;
+  //grid-row: span 4;
+  min-height: 400px;
   border: #73909C solid 2px;
   border-radius: 12px;
   box-sizing: border-box;
