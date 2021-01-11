@@ -9,8 +9,9 @@ async function _getUserGroupsData(admin) {
     let mainDoc = "Members";
     if(admin) mainDoc = "Admins"
 
-    var docRef = db.firestore().collection("Users")
-                .doc(db.auth().currentUser.uid).collection("Groups").doc(mainDoc);
+    let id = await db.auth().currentUser.uid;
+
+    var docRef = db.firestore().collection("Users").doc(id).collection("Groups").doc(mainDoc);
     
     try {
         // Getting all arrays of groups id
