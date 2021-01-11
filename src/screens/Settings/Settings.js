@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import styles from './Settings.module.css';
 import {Button} from '../../components/index';
 import Switch from '@material-ui/core/Switch';
+import styled from 'styled-components';
+import firebase from 'firebase';
+import { useSnackbar } from 'notistack';
+import validator from 'validator';
+
 
 function Settings() {
     const user = {
@@ -22,9 +27,10 @@ function Settings() {
     const general = {
         name: 'Ogólne',
         elements: [
+            {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'},
             {id: 'email', name: "Zmień email", fun: updateEmail, warningState: state.emailWarning, warning: 'Na nowy email został wysłany link aktywacyjny'},
-            {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'},
-         {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'}
+            {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'}
+         
         ]
     };
 
@@ -34,6 +40,131 @@ function Settings() {
             {id: 'push', name: "Push", state: state.notifyPush},
             {id: 'email', name: "Email", state: state.notifyEmail}
         ]
+    };
+
+    const [ mail, setMail ] = useState('');
+    const [ password, setPassword ] = useState('');
+    const [ password2, setPassword2 ] = useState('');
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+    //nie zmienia/usuwa danych z bazy danych!
+    const apply = () => {
+        var email = mail;
+        var oldPass = password;
+        var newPass = password2;
+        var user = firebase.auth().currentUser;
+        var credential=firebase.auth.EmailAuthProvider.credential(
+            user.email,
+            oldPass
+        );
+        //empty
+        if(!(email || oldPass || newPass))
+        {
+            console.log("puste pola");
+            return;
+        }
+        //change password
+        if((!email) && oldPass && newPass)
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                user.updatePassword(newPass).then(function() {
+                    // Update successful.
+                    console.log("haslo zaktualizowane");
+                    enqueueSnackbar('Hasło zostało zaktualizowane', {variant: 'success'});
+                  }).catch(function(error) {
+                    // An error happened.
+                    console.log("blad zmiany hasla");
+                    enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+        //change email
+        if((email) && oldPass && (!newPass))
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                if(!validator.isEmail(email)){
+                    enqueueSnackbar('Błędny adres email', {variant: 'error'});
+                    return;
+                }
+                user.updateEmail(email).then(function() {
+                    // Update successful.
+                    enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
+                  }).catch(function(error) {
+                    // An error happened.
+                    enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+        //email and password
+        if((email) && oldPass && (newPass))
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                if(!validator.isEmail(email)){
+                    enqueueSnackbar('Błędny adres email', {variant: 'error'});
+                    return;
+                }
+                user.updateEmail(email).then(function() {
+                    // Update successful.
+                    //enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
+                    user.updatePassword(newPass).then(function() {
+                        // Update successful.
+                        console.log("haslo zaktualizowane");
+                        enqueueSnackbar('Hasło i email zostały zaktualizowane', {variant: 'success'});
+                      }).catch(function(error) {
+                        // An error happened.
+                        console.log("blad zmiany hasla");
+                        enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                      });
+                  }).catch(function(error) {
+                    // An error happened.
+                    enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+    };
+
+    const deleteUser = () => {
+        var user = firebase.auth().currentUser;
+        var psw = password;
+        var credential=firebase.auth.EmailAuthProvider.credential(
+            user.email,
+            psw
+        );
+        user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala!");
+                user.delete().then(function() {
+                    // User deleted.
+                    console.log("bye bye");
+                  }).catch(function(error) {
+                    // An error happened.
+                    console.log("error when removing user");
+                    enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        
     };
     return (
     <div className={styles.container}>
@@ -53,7 +184,7 @@ function Settings() {
                         <span>{general.name}</span>
                     </div>
                     <div className={styles.settingsContentBox}>
-                        {general.elements.map(item => {
+                        {/* {general.elements.map(item => {
                             return (
                                 <div key={item.name}>
                                     <div className={styles.settingsOption}>
@@ -71,7 +202,10 @@ function Settings() {
                                     }
                                 </div>
                             )
-                        })}
+                        })} */}
+                        <MyInput type="email" id="fname" name="fname" placeholder="podaj nowy adres email" onChange={(e) => setMail(e.target.value)} />
+                        <MyInput type="password2" id="pname2" name="pname2" placeholder="podaj nowe hasło" onChange={(p2) => setPassword2(p2.target.value)} />
+                        <MyInput type="password" id="pname" name="pname" placeholder="podaj stare hasło" onChange={(p) => setPassword(p.target.value)} />
                         <div className={styles.settingsOption}>
                             <div style={{width: '25%'}}>
                                 <label htmlFor="language">Język</label>
@@ -113,7 +247,7 @@ function Settings() {
                 </div>
             </div>
             <div className={styles.buttons}>
-                <Button text={"Zamknij konto"} onClick={closeAccount} 
+                <Button text={"Zamknij konto"} onClick={deleteUser} 
                 type='outlined'
                 color="#73909C"
                 style={{
@@ -121,7 +255,7 @@ function Settings() {
                     color: '#73909C',
                 }}
                 />
-                <Button text={"Zatwierdź zmiany"} onClick={applySettings} 
+                <Button text={"Zatwierdź zmiany"} onClick={apply} 
                 type='contained'
                 color="#73909C"
                 style={{
@@ -180,3 +314,25 @@ function Settings() {
 }
 
 export default Settings;
+
+const MyInput = styled.input`
+	border: 2px solid #73909c;
+	//min-height:50px;
+	margin: 10px;
+	font-family: 'Roboto', sans-serif;
+	color: #73909c;
+	font-size: 12px;
+	border-radius: 10px;
+	padding: 12px;
+	background-color: transparent;
+	&:focus {
+		border-radius: 10px;
+		border-color: #73909c;
+		outline: none;
+	}
+	&:active {
+		border-radius: 10px;
+		border-color: #73909c;
+		outline: none;
+	}
+`;
