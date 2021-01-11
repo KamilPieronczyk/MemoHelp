@@ -7,7 +7,7 @@ export function InvitationList() {
   const [invitationList, setList] = useState(new Array())
 
   useEffect(() => {
-    const invitations = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection("GroupsInvitations");
+    const invitations = firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection("GroupsInvitations");
     const invitationsSubscription = invitations.onSnapshot(snapshot => {
       renderList(snapshot)
     })

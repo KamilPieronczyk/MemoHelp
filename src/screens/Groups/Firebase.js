@@ -1,5 +1,4 @@
 import db from 'firebase'
-
 /**
  * Function get from firestore all groups data
  * @param {if you want get all data group which user is admin type TRUE, otherwise false} admin
@@ -11,7 +10,7 @@ async function _getUserGroupsData(admin) {
     if(admin) mainDoc = "Admins"
 
     var docRef = db.firestore().collection("Users")
-                .doc("sQpA99mVpXQnvC0D1IcmNNhlPyr2").collection("Groups").doc(mainDoc);
+                .doc(db.auth().currentUser.uid).collection("Groups").doc(mainDoc);
     
     try {
         // Getting all arrays of groups id
@@ -188,7 +187,7 @@ async function removeGroupsFromFirebase(mp) {
  */
 async function sendToFirebaseNewGroupsData(mp) {
     // TODO user ID
-    var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+    var userId = await db.auth().currentUser.uid;
 
     let updats = new Map();
 
@@ -370,7 +369,7 @@ const removeFromFirebaseGroupsMembers = (mp) => {
  */
 export async function firebaseLeftFromGroups(arr) {
     // TODO user ID
-    var userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+    var userId = await db.auth().currentUser.uid;
 
     if(arr.length > 0) {
 
