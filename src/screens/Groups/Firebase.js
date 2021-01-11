@@ -301,12 +301,19 @@ async function _sendInvitations(groupId, groupName, email) {
         email: email
     }
 
+    let adminId = await db.auth().currentUser.uid;
+    let adminUserName = await db.firestore().collection("Users").doc(adminId).get().then(doc => {
+        if(doc.exists) {
+            return doc.data().userName;
+        } else return "NO_FOUND_NAME";
+    });
+
     await db.firestore().collection("Users").where("email", "==", email).get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
 
             let invitation = {
                 id: groupId,
-                msg: `Jan Kowalski zaprosił się do grupy ${groupName}`
+                msg: `${adminUserName} zaprosił się do grupy ${groupName}`
             }
 
             try {
