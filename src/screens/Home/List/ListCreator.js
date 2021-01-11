@@ -9,21 +9,19 @@ import { withStyles } from '@material-ui/core/styles';
 import { useUser } from '../../../utils';
 import firebase from 'firebase';
 import {useSnackbar} from 'notistack'
-import { MemorySharp } from '@material-ui/icons';
+import { MemorySharp, TextsmsSharp } from '@material-ui/icons';
 
 function ListCardBtn(props) {
-  const [state, setState] = useState({
-    checked: false
-  });
+  const [state, setState] = useState(false);
   const ChangeCheckbox = (e) => {
     console.log("Change checkbox 1");
-    let b = state.checked;
-    setState({ ...state, checked: !b});
+    let b = state
+    setState(!b);
   }
   return(
     <CheckBoxBtn onClick={ChangeCheckbox}>
       <Checkbox
-        checked={state.checked}
+        checked={state}
         name={props.name}
         style={{
           color: '#323232'
@@ -37,6 +35,7 @@ function ListCardBtn(props) {
 export function ListCreator(props) {
     
     const [tableID, setTableID] = useState(0);
+    const [productID, setProductID] = useState(0);
     const [myArray, setMyArray] = useState(new Array());
     const [myMap, setMyMap] = useState(new Map());
     const [textContent, handleTextChange] = useState('');
@@ -44,13 +43,11 @@ export function ListCreator(props) {
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const {user}=useUser();
-    const [state, setState] = useState({
-        checked: false
-      });
+    const [state, setState] = useState(false);
     const ChangeCheckbox = (e) => {
         console.log("Change checkbox 1");
-        let b = state.checked;
-        setState({ ...state, checked: !b});
+        let b = state;
+        setState(!b);
       }
     const pushToFirestore = () => {
         if (!validateTextInput()) return
@@ -85,18 +82,21 @@ export function ListCreator(props) {
     const addToArray=(event) =>{
         if(event.key!='Enter')
         return
-        var temp = listContent
+        var title = listContent
+        console.log(title)
         myArray.push(
-        <CheckBoxBtn onClick={ChangeCheckbox}>
-      <Checkbox style={{color: '#323232'}}/>
-      <CheckBoxText>{temp}</CheckBoxText>
-    </CheckBoxBtn>)
+        // <CheckBoxBtn onClick={ChangeCheckbox}>
+        //   <Checkbox style={{color: '#323232'}}/>
+        //   <CheckBoxText>{temp}</CheckBoxText>
+        // </CheckBoxBtn>
+        {id: productID, title: title, boxstate: state})
+        setProductID(productID+1)
+        console.log(myArray)
         // myArray.push(<MyTextField value={temp}></MyTextField>)
         setMyArray(Array.from(myArray))
         clearList()
     }
-    const CreateNewList=() =>{
-        var oldMap= new Map()
+    const CreateNewList=(oldMap) =>{
         //var newMap= new Map()
         oldMap=props.myMap
         oldMap.set(tableID, {title: textContent, values: Array.from(myArray)})
@@ -109,6 +109,11 @@ export function ListCreator(props) {
         console.log(myMap)
 
     }
+    const CreateListPushToFirestore=() =>{
+      var oldMap = new Map()
+      CreateNewList(oldMap)
+
+    }
   return (
     <Container key={props.id}>
 
@@ -116,9 +121,15 @@ export function ListCreator(props) {
 
             {/* TODO: MAP  */}
             <MyTextInput value={textContent} placeholder="Dodaj tytuł"  color='#9C9083'onChange={e => { handleTextChange(e.target.value); }}></MyTextInput>
-            {myArray}
+          {/* {myArray} */}
+            {myArray.map((index)=>
+              <CheckBoxBtn onClick={ChangeCheckbox}>
+              <Checkbox checked={index.boxstate.checked} style={{color: '#323232'}}/>
+              <CheckBoxText>{index.title}</CheckBoxText>
+            </CheckBoxBtn>)
+            }
             <MoreIconContainerTop>
-                <CheckIcon onClick={CreateNewList}/>
+                <CheckIcon onClick={CreateListPushToFirestore}/>
             </MoreIconContainerTop>
             <CheckBoxBtn onClick={ChangeCheckbox}>
                 <Checkbox style={{color: '#323232'}}/>

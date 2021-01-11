@@ -9,18 +9,16 @@ import { Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 function ListCardBtn(props) {
-  const [state, setState] = useState({
-    checked: false
-  });
+  const [state, setState] = useState(false);
   const ChangeCheckbox = (e) => {
     console.log("Change checkbox 1");
-    let b = state.checked;
-    setState({ ...state, checked: !b});
+    let b = state;
+    setState(!b);
   }
   return(
     <CheckBoxBtn onClick={ChangeCheckbox}>
       <Checkbox
-        checked={state.checked}
+        checked={state}
         name={props.name}
         style={{
           color: '#323232'
@@ -36,6 +34,17 @@ export function ListCard(props) {
   const [state, setState] = useState({
     isOpen: false
   });
+  const [stateBox, setStateBox] = useState({
+    checked: false
+  });
+  const ChangeCheckbox = (index) => {
+    console.log(index);
+    console.log(myArray)
+    console.log(myArray[index]);
+    var x=myArray[index].boxstate
+    myArray[index].boxstate=!x
+    setMyArray(Array.from(myArray))
+  }
 
   const ExpandLessInfo = (e) => {
     console.log("Show less");
@@ -45,6 +54,7 @@ export function ListCard(props) {
   const ExpandMoreInfo = (e) => {
     console.log("Show more");
     setMyArray(props.myArray)
+    console.log(props.myArray)
     setState({ ...state, isOpen: true});
   }
   const DeleteList = (e) => {
@@ -68,9 +78,13 @@ export function ListCard(props) {
       
       <Collapse in={state.isOpen} timeout={"auto"} style={{minWidth: '100%', margin: 0, padding: 0}}>
           <MoreContent>
-
+            {myArray.map((element,index)=>
+              <CheckBoxBtn onClick={()=>ChangeCheckbox(index)}>
+              <Checkbox checked={element.boxstate.checked} style={{color: '#323232'}}/>
+              <CheckBoxText>{element.title}</CheckBoxText>
+            </CheckBoxBtn>)}
             {/* TODO: MAP  */}
-            {myArray}
+            {/* {myArray} */}
             {/* <ListCardBtn text="BTN 1" name="btn1" /> */}
 
           </MoreContent>
