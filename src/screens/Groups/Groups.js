@@ -339,6 +339,10 @@ export default function Groups() {
 					state.userAdminGroupsView.delete(randomGroupId);
 					// If user have email - not exists
 					console.log("If email, err", value.users)
+					for(const [index, obj] of value.users.entries()) {
+						console.log(index, obj);
+						enqueueSnackbar(`Podany email ${obj.email} nie istnieje`, { variant: 'error' })
+					}
 				}
 			}
 
@@ -349,6 +353,10 @@ export default function Groups() {
 					state.userAdminGroupsView.get(groupId).users = new Map();
 					// If user have email - not exists
 					console.log("If email, err", value.users)
+					for(const [index, obj] of value.users.entries()) {
+						console.log(index, obj);
+						enqueueSnackbar(`Podany email ${obj.email} nie istnieje`, { variant: 'error' })
+					}
 				}
 			}
 
@@ -375,7 +383,7 @@ export default function Groups() {
 			TMP_AdminDeleteGroups: state.TMP_AdminDeleteGroups
 		});
 
-		enqueueSnackbar('Operacja została wykonana pomyślnie', { variant: 'success' })
+		enqueueSnackbar('Operacja została wykonana', { variant: 'success' })
 	}
 
 	const undoUserGroupsChange = () => {
@@ -431,7 +439,7 @@ export default function Groups() {
 							}
 							<FlexboxItem>
 								<AddButton>
-									<MyTextInput maxLength="20" placeholder="Dodaj grupe" color="#9C9083" 
+									<MyTextInput maxLength="150" placeholder="Dodaj grupe" color="#9C9083" 
 										onKeyDown={addNewGroup}
 									/>{' '}
 								</AddButton>
@@ -446,7 +454,7 @@ export default function Groups() {
 									</div>
 									<FlexboxItem>
 										<RightButton>
-											<MyTextInput maxLength="20" placeholder="Podaj email" color="#9C9083" 
+											<MyTextInput maxLength="150" placeholder="Podaj email" color="#9C9083" 
 												onKeyDown={addNewMember}
 											/>{' '}
 										</RightButton>
