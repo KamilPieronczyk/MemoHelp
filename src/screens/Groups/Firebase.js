@@ -61,6 +61,32 @@ async function _getUserGroupsData(admin) {
                                 console.log(e);
                             }
                         }
+
+                        // Getting user invitations data from firestore
+                        for(let i = 0; i < docGroupData.data().invitations.length; i++) {
+
+                            var userId = docGroupData.data().invitations[i].trim();
+
+                            try{
+
+                                let docUserData = await db.firestore().collection("Users").doc(userId).get();
+
+                                if(docUserData.exists){
+                                    if(admin) {
+                                        data.get(groupId).users.set(userId, {
+                                            id: userId, userName: docUserData.data().userName, invitations: true
+                                        })
+                                    } else {
+                                        data.get(groupId).users.push({
+                                            id: userId, userName: docUserData.data().userName, invitations: true
+                                        })
+                                    }
+                                }
+
+                            } catch(e) {
+                                console.log(e);
+                            }
+                        }
                     }
                 } catch(e) {
                     console.log(e)

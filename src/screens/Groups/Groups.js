@@ -19,16 +19,21 @@ function UserAdminGroupsShowMembers(props) {
 		<div>
 			{Array.from(props.groupDetails.users.keys()).map(key => {
 				let id = props.groupDetails.users.get(key).id;
-				let userName = props.groupDetails.users.get(key).userName;
 				let email = props.groupDetails.users.get(key).email;
+				let userName = props.groupDetails.users.get(key).userName;
+				let invitations = props.groupDetails.users.get(key).invitations
 				var text;
 				if(userName === undefined)
 					text = email
-				else text = userName
+				else {
+					if(invitations === true)
+						text = "? "+ userName
+					else text = userName
+				}
 				return(
 				<FlexboxItem key={id}>
 					<RightButton id={id}>
-						{text} <Close 
+						{text}<Close 
 							onClick={() => props.fun(groupId, id)}
 						/>
 					</RightButton>
@@ -43,9 +48,13 @@ function UserGroupsShowMembers(props) {
 	return(
 		<div>
 			{props.groupDetails.users.map(person => {
+				console.log(person)
+				let text;
+				if(person.invitations === true) text = "? " + person.userName
+				else text = person.userName;
 				return(
 					<FlexboxItem key={`${person.id}`}>
-						<RightButton>{person.name} {person.surname}</RightButton>
+						<RightButton>{text}</RightButton>
 					</FlexboxItem>
 				)
 			})}
@@ -97,6 +106,8 @@ export default function Groups() {
 
 	const removeUserFromGroupTemp = (groupId, personId) => {
 
+		console.log(`removeUserFromGroupTemp = (${groupId}, ${personId})`);
+
 		let user = state.userAdminGroupsView.get(groupId).users.get(personId)
 
 		state.TMP_AdminGroupsUndoList.push({
@@ -125,7 +136,13 @@ export default function Groups() {
 		setState({
 			...state,
 			userAdminGroupsView: state.userAdminGroupsView.get(groupId).users.delete(personId),
+		});
+		setState({
+			...state,
 			userAdminGroupsMembersView: state.userAdminGroupsMembersView,
+		});
+		setState({
+			...state,
 			TMP_AdminGroupsRemoveMembers: state.TMP_AdminGroupsRemoveMembers,
 		});
 	}
@@ -341,7 +358,13 @@ export default function Groups() {
 					console.log("If email, err", value.users)
 					for(const [index, obj] of value.users.entries()) {
 						console.log(index, obj);
-						enqueueSnackbar(`Podany email ${obj.email} nie istnieje`, { variant: 'error' })
+						if(obj.userName === undefined)
+							enqueueSnackbar(`Podany email ${obj.email} nie istnieje`, { variant: 'error' })
+						else  state.userAdminGroupsView.get(firebaseGroupId).users.set(obj.id, {
+							id: obj.id,
+							userName: obj.userName,
+							invitations: true
+						})
 					}
 				}
 			}
@@ -350,12 +373,22 @@ export default function Groups() {
 				console.log("NEW-USERS-ID", updates.get("NEW-USERS-ID"));
 				for(const [key, value] of updates.get("NEW-USERS-ID").entries()) {
 					let groupId = key;
-					state.userAdminGroupsView.get(groupId).users = new Map();
+					//state.userAdminGroupsView.get(groupId).users = new Map();
 					// If user have email - not exists
 					console.log("If email, err", value.users)
 					for(const [index, obj] of value.users.entries()) {
 						console.log(index, obj);
-						enqueueSnackbar(`Podany email ${obj.email} nie istnieje`, { variant: 'error' })
+						if(obj.userName === undefined) {
+							enqueueSnackbar(`Podany email ${obj.email} nie istnieje`, { variant: 'error' })
+						}
+						else {
+							state.userAdminGroupsView.get(groupId).users.set(obj.id, {
+								id: obj.id,
+								userName: obj.userName,
+								invitations: true
+							})
+						}
+						state.userAdminGroupsView.get(groupId).users.delete(index);
 					}
 				}
 			}
