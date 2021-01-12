@@ -443,7 +443,7 @@ export default function Groups() {
 					<CreateGroups>
 						<CreateGroupsLeft>
 							<div>Zarządzaj swoimi grupami</div>
-							
+
 							{state.userAdminGroupsView.size > 0 &&
 								Array.from(state.userAdminGroupsView.keys()).map(key => {
 									if(key !== "Friends") {
@@ -632,6 +632,7 @@ margin-bottom: 30px;
 flex-direction: row;
 overflow: auto;
 max-height: 80vh;
+border-radius: 15px;
 `
 const CreateGroups = styled.div`
 	display: flex;
@@ -797,7 +798,7 @@ const FlexboxDivider = styled.div`
 const FlexboxContainerContainer = styled.div`
     display: flex;
     //justify-content: space-around;
-    //align-items: center;
+    align-items: center;
     //align-content: center;
     flex-direction: column;
 `
@@ -805,8 +806,9 @@ const FlexboxContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content:space-around;
-    align-items:center;
-    flex-direction: row;
+    align-items:stretch;
+		width: fit-content;
+    flex-direction: column;
 `
 
 const Img=styled.img`

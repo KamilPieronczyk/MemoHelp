@@ -107,6 +107,12 @@ export function LoginForm() {
 						userName : userName
 					})
 					.then(function() {
+						firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Admins").set({
+							data: []
+						})
+						firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Members").set({
+							data: []
+						})
 						setButtonDisabled(false);
 					});
 			})
