@@ -91,7 +91,7 @@ export async function getAllGroups() {
     let data = new Map();
 
 	// TOOD let id
-	let userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2";
+	let userId = firebase.auth().currentUser.uid;
 
 	var docRefAdmin = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Admins");
 	var docRefMember = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Members");
