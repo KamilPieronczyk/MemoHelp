@@ -4,15 +4,17 @@ import {InvitationCard} from './InvitationCard'
 import firebase from 'firebase'
 
 export function InvitationList() {
-  const [invitationList, setList] = useState(new Array())
+  const [invitationList, setList] = useState(new Array());
 
-  useEffect(() => {
-    const invitations = firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection("GroupsInvitations");
-    const invitationsSubscription = invitations.onSnapshot(snapshot => {
-      renderList(snapshot)
-    })
-    return () => {
-      invitationsSubscription()
+  useEffect(async () => {
+    if(firebase.auth().currentUser !== null) {
+      const invitations = firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection("GroupsInvitations");
+      const invitationsSubscription = invitations.onSnapshot(snapshot => {
+        renderList(snapshot)
+      })
+      return () => {
+        invitationsSubscription()
+      }
     }
   }, [])
 

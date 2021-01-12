@@ -2,13 +2,18 @@ import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {NotificationCard} from './NotificationCard'
 import firebase from 'firebase'
-import {useUser} from '../../../utils'
+import {useUser, getGroupsIds} from '../../../utils'
 
 export function NotificationsList() {
   const [list, setList] = useState(new Array())
   const {user} = useUser()
 
-  useEffect(() => {
+  useEffect(async () =>  {
+    // const groupsIds = await getGroupsIds();
+    // let remindersGroups = [];
+    // for(let i = 0; i < groupsIds.length; i++) {
+    //   remindersGroups.push(firebase.firestore().collection('Groupss').doc(groupsIds[i]).collection('Reminders'));
+    // }
     const reminders = firebase.firestore().collection('Users').doc(user.uid).collection('Reminders')
     const query = reminders.limit(7).orderBy('date', 'asc')
     const remindersSubscription = query.onSnapshot(snapshot => {
