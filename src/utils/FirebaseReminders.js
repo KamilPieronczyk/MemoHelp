@@ -90,6 +90,8 @@ export const typeState = atom({
 export async function getAllGroups() {
     let data = new Map();
 
+	if(firebase.auth().currentUser === null) return data;
+
 	// TOOD let id
 	let userId = firebase.auth().currentUser.uid;
 

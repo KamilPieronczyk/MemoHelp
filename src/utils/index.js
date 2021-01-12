@@ -3,6 +3,7 @@ import {IsLoggedIn} from './Authorization'
 import {AuthContext, AuthProvider, useUser} from './AuthProvider'
 import {AuthGuard} from './AuthGuard'
 import {NotificationsProvider} from './NotificationsProvider'
+import {getAllGroups} from './FirebaseReminders'
 
 export {
     IsAuthorized,
@@ -11,5 +12,6 @@ export {
     AuthContext,
     useUser,
     AuthGuard,
-    NotificationsProvider
+    NotificationsProvider,
+    getAllGroups
 }
