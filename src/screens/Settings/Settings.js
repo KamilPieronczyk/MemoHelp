@@ -9,6 +9,9 @@ import validator from 'validator';
 
 
 function Settings() {
+
+   
+
     const user = {
         userName: 'Jan',
         imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
@@ -48,6 +51,8 @@ function Settings() {
     const [ password2, setPassword2 ] = useState('');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [ name, setName ] = useState('');
+
+    
 
     const apply = () => {
         var email = mail;
@@ -332,12 +337,12 @@ function Settings() {
     <div className={styles.container}>
         <div className={styles.content}>
             <div className={styles.header}>
-                <div style={{backgroundImage: `url(${state.imgUri})`}}>
+                {/* <div style={{backgroundImage: `url(${state.imgUri})`}}>
                     <label htmlFor="image">
                         <span aria-hidden="true">Zmień avatar</span>
                         <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
                     </label>
-                </div>
+                </div> */}
                 <span>{user.userName}</span>
             </div>
             <div className={styles.settings}>
@@ -369,17 +374,6 @@ function Settings() {
                         <MyInput type="email" id="fname" name="fname" placeholder="podaj nowy adres email" onChange={(e) => setMail(e.target.value)} />
                         <MyInput type="password" id="pname2" name="pname2" placeholder="podaj nowe hasło" onChange={(p2) => setPassword2(p2.target.value)} />
                         <MyInput type="password" id="pname" name="pname" placeholder="podaj stare hasło" onChange={(p) => setPassword(p.target.value)} />
-                        <div className={styles.settingsOption}>
-                            <div style={{width: '25%'}}>
-                                <label htmlFor="language">Język</label>
-                            </div>
-                            <div className={styles.htmlType}>
-                                <select name="language" onChange={updateLang}>
-                                    <option value="english">English</option>
-                                    <option value="polish">Polski</option>
-                                </select>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div>
