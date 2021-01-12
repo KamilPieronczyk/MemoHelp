@@ -7,13 +7,14 @@ const dayNames = ['pon', 'wto', 'śro', 'czw', 'pią', 'sob', 'nie'];
 const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
 var now = new Date();
 
-var user = 'sQpA99mVpXQnvC0D1IcmNNhlPyr2';
-
 var wheelListener = false;
 var startingDate = new Date(now.setDate(1));
-var calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
+//var calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 1));
+
+var calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - (startingDate.getDay() - 1)))
 
 var remindersList = new Array();
+var monthReminders = new Array();
 
 async function LoadReminders(currentMonth, callback) {
     if (remindersList.length == 0) {
@@ -28,11 +29,15 @@ async function LoadReminders(currentMonth, callback) {
                 var date = new Date(doc.data().date.seconds * 1000);
                 console.log("Date: ", date);
                 remindersList.push({
+                    date: date,
                     day: date.getDate(),
                     month: date.getMonth() + 1,
                     year: date.getFullYear(),
                     time: date.getHours() + ':' + date.getMinutes(),
-                    text: doc.data().text
+                    text: doc.data().text,
+                    frequency: doc.data().frequency,
+                    type: doc.data().type,
+                    weekDays: doc.data().weekDays
                 });
             });
         } else {
@@ -66,7 +71,7 @@ export function Calendar() {
     }, []);
 
     startingDate = new Date(now.setDate(1));
-    calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - ((startingDate.getDay() + 7) % 8) + 0));
+    calendarStartingDate = new Date(startingDate.setDate(startingDate.getDate() - (startingDate.getDay() - 1)));
 
     return (
         <CalendarDiv ref={calendarDivRef}>
@@ -94,12 +99,23 @@ class PrepareCalendarDays extends React.Component {
             var reminders = new Array;
 
             for (var j = 0; j < remindersList.length; j++) {
-                if (calendarStartingDate.getMonth() + 1 == remindersList[j].month && monthDays[i] == remindersList[j].day) {
-                    // console.error("reminder: ", remindersList[j]);
-                    reminders.push(
-                        remindersList[j]
-                    );
+                switch(remindersList[j].type){
+                    case "DEFAULT":
+                        if (calendarStartingDate.getMonth() + 1 == remindersList[j].month && monthDays[i] == remindersList[j].day) {
+                            // console.error("reminder: ", remindersList[j]);
+                            reminders.push(
+                                remindersList[j]
+                            );
+                        }
+                        break;
+                    case "CYCLICAL":
+                        cyclicalReminderManager(remindersList[j], reminders, calendarStartingDate, i, monthDays);
+                        break;
+                    case "SPECIAL":
+                        specialReminderManager(remindersList[j], reminders, calendarStartingDate);
+                        break;
                 }
+                 
             }
 
             days.push(
@@ -107,6 +123,49 @@ class PrepareCalendarDays extends React.Component {
             );
         }
         return days;
+    }
+}
+
+const days = new Array('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun');
+
+function specialReminderManager(reminder, reminders, calendarStartingDate){
+    if(reminder.weekDays.includes(days[calendarStartingDate.getDay() - 2])){
+        reminders.push(
+            reminder
+        );
+    }
+}
+
+function cyclicalReminderManager(reminder, reminders, calendarStartingDate, i, monthDays){
+    switch(reminder.frequency){
+        case "everyDay":
+            reminders.push(
+                reminder
+            );
+            break;
+        case "everyWeek":
+            // console.log("dzien: "+ calendarStartingDate.getDay() + " reminder dzien: " + (reminder.date.getDay()+1));
+            if(calendarStartingDate.getDay() == (reminder.date.getDay()+1)){
+                reminders.push(
+                    reminder
+                );
+            }
+            break;
+        case "everyMonth":
+            // console.log("dzien: " + monthDays[i] + " reminder: " + reminder.day);
+            if (monthDays[i] == reminder.day) {
+                reminders.push(
+                    reminder
+                );
+            }
+            break;
+        case "everyYear":
+            if (calendarStartingDate.getMonth() + 1 == reminder.month && monthDays[i] == reminder.day) {
+                reminders.push(
+                    reminder
+                );
+            }
+            break
     }
 }
 

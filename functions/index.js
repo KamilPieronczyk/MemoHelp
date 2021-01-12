@@ -81,6 +81,9 @@ exports.handleReminderAction = functions.https.onRequest(async (req, res) => {
         }
 
        manageReminderType(reminder, userId);
+       if(reminder.data().type != "DEFAULT"){
+            deleteReminder(userId,reminderId);
+       }
     });
 });
 
@@ -165,6 +168,11 @@ function addReminder(userId, reminder, date){
 				.then(() => resolve())
                 .catch((e) => reject(e))
     );
+}
+
+function deleteReminder(userId,reminderId){
+console.log("Deleting reminder");
+admin.firestore().collection('Users').doc(userId).collection('Reminders').doc(reminderId).delete()
 }
 
 function showNotification(token, title, message) {
