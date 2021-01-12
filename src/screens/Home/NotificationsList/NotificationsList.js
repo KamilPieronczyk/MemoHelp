@@ -2,12 +2,14 @@ import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {NotificationCard} from './NotificationCard'
 import firebase from 'firebase'
+import {useUser} from '../../../utils'
 
 export function NotificationsList() {
   const [list, setList] = useState(new Array())
+  const {user} = useUser()
 
   useEffect(() => {
-    const reminders = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('Reminders')
+    const reminders = firebase.firestore().collection('Users').doc(user.uid).collection('Reminders')
     const query = reminders.limit(7).orderBy('date', 'asc')
     const remindersSubscription = query.onSnapshot(snapshot => {
       renderList(snapshot)
