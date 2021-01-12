@@ -208,3 +208,7 @@ function sendMail(destination, subject, msg, res) {
 
 
 }
+
+exports.removeUser = functions.auth.user().onDelete(user => {
+    admin.firestore().collection('Users').doc(user.uid).delete();
+});

@@ -10,10 +10,11 @@ import validator from 'validator';
 
 function Settings() {
     const user = {
-        name: 'Jan',
-        surname: 'Kowalski',
+        userName: 'Jan',
         imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
     };
+
+    
     
     const [state, setState] = useState({
         emailWarning: false,
@@ -46,30 +47,39 @@ function Settings() {
     const [ password, setPassword ] = useState('');
     const [ password2, setPassword2 ] = useState('');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const [ name, setName ] = useState('');
 
-    //nie zmienia/usuwa danych z bazy danych!
     const apply = () => {
         var email = mail;
         var oldPass = password;
         var newPass = password2;
+        var newName = name;
         var user = firebase.auth().currentUser;
         var credential=firebase.auth.EmailAuthProvider.credential(
             user.email,
             oldPass
         );
-        var userName = user.displayName;
-        //empty
-        if(!(email || oldPass || newPass))
+        var userName = user.userName;
+        var oldMail = user.email;
+        /////////////////////////////////////
+        //PRZEPISANE NA NOWO
+        /////////////////////////////////////
+        if(!(email || oldPass || newPass || newName))
         {
             console.log("puste pola");
             return;
         }
-        //change password
-        if((!email) && oldPass && newPass)
+        //PASSWORD
+        if((!email) && oldPass && newPass && (!newName))
         {
+            
             user.reauthenticateWithCredential(credential).then(function() {
                 // User re-authenticated.
                 console.log("dziala weryfikacja");
+                if (!validator.isLength(newPass,{min:6, max:30})){
+                    enqueueSnackbar('Nowe hasło musi zawierać minimum 6 znaków', {variant: 'error'});
+                    return;
+                }
                 user.updatePassword(newPass).then(function() {
                     // Update successful.
                     console.log("haslo zaktualizowane");
@@ -85,8 +95,8 @@ function Settings() {
                 enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
             });
         }
-        //change email
-        if((email) && oldPass && (!newPass))
+        //MAIL
+        if((email) && oldPass && (!newPass) && (!newName))
         {
             user.reauthenticateWithCredential(credential).then(function() {
                 // User re-authenticated.
@@ -113,8 +123,8 @@ function Settings() {
                 enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
             });
         }
-        //email and password
-        if((email) && oldPass && (newPass))
+        //MAIL AND PASSWORD
+        if((email) && oldPass && (newPass) && (!newName))
         {
             user.reauthenticateWithCredential(credential).then(function() {
                 // User re-authenticated.
@@ -123,9 +133,12 @@ function Settings() {
                     enqueueSnackbar('Błędny adres email', {variant: 'error'});
                     return;
                 }
+                if (!validator.isLength(newPass,{min:6, max:30})){
+                    enqueueSnackbar('Nowe hasło musi zawierać minimum 6 znaków', {variant: 'error'});
+                    return;
+                }
                 user.updateEmail(email).then(function() {
                     // Update successful.
-                    //enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
                     user.updatePassword(newPass).then(function() {
                         // Update successful.
                         console.log("haslo zaktualizowane");
@@ -133,12 +146,155 @@ function Settings() {
                       }).catch(function(error) {
                         // An error happened.
                         console.log("blad zmiany hasla");
-                        enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                        enqueueSnackbar('Wystąpił błąd przy zmianie hasła', { variant: 'error' });
                       });
+                  }).catch(function(error) {
+                    // An error happened.
+                    enqueueSnackbar('Wystąpił błąd przy zmianie adresu email', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+        //MAIL AND USERNAME
+        if((email) && oldPass && (!newPass) && (newName))
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                if(!validator.isEmail(email)){
+                    enqueueSnackbar('Błędny adres email', {variant: 'error'});
+                    return;
+                }
+                if (!validator.isLength(newName,{min:4, max:30})){
+                    enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
+                    return;
+                }
+                user.updateEmail(email).then(function() {
+                    // Update successful.
+                    firebase.firestore().collection('Users').doc(user.uid).set({
+                        email: email,
+                        userName: newName
+                    }).then(function(){
+                        enqueueSnackbar('Adres email i nazwa zostały zaktualizowane', {variant: 'success'});
+                    })
                   }).catch(function(error) {
                     // An error happened.
                     enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
                   });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+        //MAIL AND PASSWORD AND USERNAME
+        if((email) && oldPass && (newPass) && (newName))
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                if(!validator.isEmail(email)){
+                    enqueueSnackbar('Błędny adres email', {variant: 'error'});
+                    return;
+                }
+                if (!validator.isLength(newPass,{min:6, max:30})){
+                    enqueueSnackbar('Nowe hasło musi zawierać minimum 6 znaków', {variant: 'error'});
+                    return;
+                }
+                if (!validator.isLength(newName,{min:4, max:30})){
+                    enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
+                    return;
+                }
+                user.updateEmail(email).then(function() {
+                    // Update successful.
+                    firebase.firestore().collection('Users').doc(user.uid).set({
+                        email: email,
+                        userName: newName
+                    }).then(function(){
+                    user.updatePassword(newPass).then(function() {
+                        // Update successful.
+                        console.log("haslo zaktualizowane");
+                        enqueueSnackbar('Dane zostały zaktualizowane', {variant: 'success'});
+                      }).catch(function(error) {
+                        // An error happened.
+                        console.log("blad zmiany hasla");
+                        enqueueSnackbar('Wystąpił błąd przy zmianie hasła', { variant: 'error' });
+                      });
+                    });
+                  }).catch(function(error) {
+                    // An error happened.
+                    enqueueSnackbar('Wystąpił błąd przy zmianie adresu email', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+        //NO PASSWORD
+        if((newPass || newName || email) && (!oldPass))
+        {
+            enqueueSnackbar('Aby wprowadzić zmiany musisz podać hasło', { variant: 'error' });
+            return;
+        }
+        //PASSWORD AND USERNAME
+        if((!email) && newPass && newName && oldPass)
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                if (!validator.isLength(newPass,{min:6, max:30})){
+                    enqueueSnackbar('Nowe hasło musi zawierać minimum 6 znaków', {variant: 'error'});
+                    return;
+                }
+                if (!validator.isLength(newName,{min:4, max:30})){
+                    enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
+                    return;
+                }
+                user.updatePassword(newPass).then(function() {
+                    // Update successful.
+                    console.log("haslo zaktualizowane");
+                    //enqueueSnackbar('Hasło zostało zaktualizowane', {variant: 'success'});
+                    firebase.firestore().collection('Users').doc(user.uid).set({
+                        email: oldMail,
+                        userName: newName
+                    }).then(function(){
+                        enqueueSnackbar('Dane zostały zaktualizowane', {variant: 'success'});
+                    });
+                  }).catch(function(error) {
+                    // An error happened.
+                    console.log("blad zmiany hasla");
+                    enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
+                  });
+            }).catch(function(error) {
+                // An error happened.
+                console.log("blad");
+                enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
+            });
+        }
+        //USERNAME
+        if((!email) && oldPass && (!newPass) && (newName))
+        {
+            user.reauthenticateWithCredential(credential).then(function() {
+                // User re-authenticated.
+                console.log("dziala weryfikacja");
+                if (!validator.isLength(newName,{min:4, max:30})){
+                    enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
+                    return;
+                }
+                firebase.firestore().collection('Users').doc(user.uid).set({
+                    email: oldMail,
+                    userName: newName
+                }).then(function(){
+                    enqueueSnackbar('Nazwa użytkownika została zaktualizowana', {variant: 'success'});
+                });
+              }).catch(function(error) {
+                // An error happened.
+                console.log("blad zmiany pseudonimu");
+                enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
             }).catch(function(error) {
                 // An error happened.
                 console.log("blad");
@@ -182,7 +338,7 @@ function Settings() {
                         <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
                     </label>
                 </div>
-                <span>{user.name} {user.surname}</span>
+                <span>{user.userName}</span>
             </div>
             <div className={styles.settings}>
                 <div>
@@ -209,8 +365,9 @@ function Settings() {
                                 </div>
                             )
                         })} */}
+                        <MyInput type="text" id="nname" name="nname" placeholder="podaj nowy pseudonim" onChange={(n) => setName(n.target.value)} />
                         <MyInput type="email" id="fname" name="fname" placeholder="podaj nowy adres email" onChange={(e) => setMail(e.target.value)} />
-                        <MyInput type="password2" id="pname2" name="pname2" placeholder="podaj nowe hasło" onChange={(p2) => setPassword2(p2.target.value)} />
+                        <MyInput type="password" id="pname2" name="pname2" placeholder="podaj nowe hasło" onChange={(p2) => setPassword2(p2.target.value)} />
                         <MyInput type="password" id="pname" name="pname" placeholder="podaj stare hasło" onChange={(p) => setPassword(p.target.value)} />
                         <div className={styles.settingsOption}>
                             <div style={{width: '25%'}}>
