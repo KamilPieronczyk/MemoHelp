@@ -65,6 +65,13 @@ export function Register(props) {
                 email: email,
                 userName: userName
             }).then(function(){
+                // Create empty collection of Groups with 2 doc (Admins and Members) that contains data = [];
+                firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Admins").set({
+                    data: []
+                })
+                firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Members").set({
+                    data: []
+                })
                 setButtonDisabled(false);
             });
         }).catch(function(error) {

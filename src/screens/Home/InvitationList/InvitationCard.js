@@ -9,7 +9,7 @@ export function InvitationCard(props) {
   let invitation = props.value;
   
   async function removeInvitation() {
-    let userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2"
+    let userId = await firebase.auth().currentUser.uid
     let groupId = invitation.id;
 
     try {
@@ -24,7 +24,7 @@ export function InvitationCard(props) {
   }
 
   async function handleAccept() {
-    let userId = "sQpA99mVpXQnvC0D1IcmNNhlPyr2"
+    let userId = await firebase.auth().currentUser.uid
     let groupId = invitation.id;
 
     try{

@@ -589,7 +589,8 @@ const MyTextInput = styled.input`
 const Flexhelper=styled.div`
 margin-bottom: 30px;
 flex-direction: row;
-
+overflow: auto;
+max-height: 80vh;
 `
 const CreateGroups = styled.div`
 	display: flex;

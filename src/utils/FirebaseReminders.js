@@ -12,7 +12,7 @@ export class Reminder {
 	textContent;
 	date;
 	time;
-	frequency;
+	frequency;						// everyDay, everyWeek, everyMonth, everyYear
 	weekDays;
 	usersGroup;
 

@@ -18,7 +18,7 @@ var remindersList = new Array();
 async function LoadReminders(currentMonth, callback) {
     if (remindersList.length == 0) {
         const db = firebase.firestore();
-        const remindersCollection = db.collection('Users').doc(user).collection("Reminders");
+        const remindersCollection = db.collection('Users').doc(firebase.auth().currentUser.uid).collection("Reminders");
         const snapshot = await remindersCollection.get();
 
         if (!remindersCollection.empty) {
