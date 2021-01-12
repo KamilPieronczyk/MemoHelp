@@ -2,23 +2,26 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import DeleteIcon from '@material-ui/icons/Delete';
+import firebase from 'firebase';
+
 import Checkbox from '@material-ui/core/Checkbox';
 import { Collapse } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { useUser } from '../../../utils';
+import {useSnackbar} from 'notistack'
 
 function ListCardBtn(props) {
-  const [state, setState] = useState({
-    checked: false
-  });
+  const [state, setState] = useState(false);
   const ChangeCheckbox = (e) => {
     console.log("Change checkbox 1");
-    let b = state.checked;
-    setState({ ...state, checked: !b});
+    let b = state;
+    setState(!b);
   }
   return(
     <CheckBoxBtn onClick={ChangeCheckbox}>
       <Checkbox
-        checked={state.checked}
+        checked={state}
         name={props.name}
         style={{
           color: '#323232'
@@ -30,10 +33,40 @@ function ListCardBtn(props) {
 }
 
 export function ListCard(props) {
-
+  const [myArray, setMyArray] = useState(new Array());
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const {user}=useUser();
   const [state, setState] = useState({
     isOpen: false
   });
+  const [stateBox, setStateBox] = useState({
+    checked: false
+  });
+  const updateFirestore = (index) => {
+    firebase
+        .firestore()
+        .collection('Users')
+        .doc(user.uid)
+        .collection('Lists')
+        .doc(props.myArray[index].parentID)
+        .update({
+            myList: props.myArray})
+        .then(() => {
+        enqueueSnackbar('Lista została zmieniona', { variant: 'success' })
+    }).catch(() => {
+        enqueueSnackbar('blad updateu listy', { variant: 'error' })
+    })
+}
+  const ChangeCheckbox = (index) => {
+    console.log('todlugie',props.myMap.get(props.myArray[index].parentID).values[index].boxstate)
+
+    props.myMap.get(props.myArray[index].parentID).values[index].boxstate=!props.myMap.get(props.myArray[index].parentID).values[index].boxstate
+    console.log('mapa',props.myMap)
+
+    setMyArray(Array.from(myArray))
+    props.setMyMap(new Map([...props.myMap]))
+    updateFirestore(index)
+  }
 
   const ExpandLessInfo = (e) => {
     console.log("Show less");
@@ -42,15 +75,21 @@ export function ListCard(props) {
 
   const ExpandMoreInfo = (e) => {
     console.log("Show more");
+    // setMyArray(props.myArray)
+    // console.log(props.myArray)
     setState({ ...state, isOpen: true});
+  }
+  const DeleteList = (e) => {
+    props.listRef.delete()
+    console.log("Delete List");
   }
 
   return (
     <Container key={props.id}>
       <Header>
-        <span>{props.title}</span>
+        <span>{props.title}</span><DeleteIconContainer onClick={DeleteList}> </DeleteIconContainer>
         { state.isOpen === true &&
-          <ExpandLessIconContainer onClick={ExpandLessInfo}>
+          <ExpandLessIconContainer onClick={ExpandLessInfo}> 
           </ExpandLessIconContainer>
         }
         { state.isOpen === false &&
@@ -61,11 +100,14 @@ export function ListCard(props) {
       
       <Collapse in={state.isOpen} timeout={"auto"} style={{minWidth: '100%', margin: 0, padding: 0}}>
           <MoreContent>
-
+            {props.myArray.map((element,index)=>
+              <CheckBoxBtn onClick={()=>ChangeCheckbox(index)}>
+              <Checkbox checked={element.boxstate} style={{color: '#323232'}}/>
+              <CheckBoxText>{element.title}</CheckBoxText>
+            </CheckBoxBtn>)}
             {/* TODO: MAP  */}
-
-            <ListCardBtn text="BTN 1" name="btn1" />
-            <ListCardBtn text="BTN 2" name="btn2" />
+            {/* {myArray} */}
+            {/* <ListCardBtn text="BTN 1" name="btn1" /> */}
 
           </MoreContent>
       </Collapse>
@@ -91,7 +133,15 @@ const CheckBoxBtn = styled.div`
   width: 95%;
   cursor: pointer;
 `;
-
+const DeleteIconContainer = withStyles((theme) => ({
+  root: {
+    position: 'absolute',
+    top: 0,
+    right: 20,
+    color: '#73909C',
+    cursor: 'pointer',
+  },
+}))(DeleteIcon);
 const ExpandMoreIconContainer = withStyles((theme) => ({
   root: {
     position: 'absolute',
