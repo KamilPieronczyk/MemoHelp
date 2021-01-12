@@ -12,7 +12,7 @@ export function StickyNotes(props) {
 
   useEffect(() => {
     const stickyNote = firebase.firestore().collection('Users').doc(user.uid).collection('StickyNotes')
-    const query = stickyNote.limit(5)
+    const query = stickyNote
     const stickyNoteSubscription = query.onSnapshot(snapshot => {
       renderList(snapshot)
     })

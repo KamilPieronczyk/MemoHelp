@@ -57,22 +57,31 @@ export function ListCreator(props) {
             .doc(user.uid)
             .collection('Lists')
             .add({
-                // title: textContent,
-                // myList: myArray
+                 title: textContent,
+                 myList: [...myArray]
             }).then(() => {
             enqueueSnackbar('Lista została dodana', { variant: 'success' })
             clearForm()
+            clearList()
+            setMyArray(new Array())
         }).catch(() => {
             enqueueSnackbar('Wystąpił problem z dodaniem listy', { variant: 'error' })
         })
     }
     const validateTextInput = () => {
-        if (textContent == "") {
-            enqueueSnackbar('Treść Listy nie może być pusta', { variant: 'error' })
+        if (myArray.length == 0) {
+            enqueueSnackbar('Zawartość Listy nie może być pusta', { variant: 'error' })
             return false
         }
         return true
     }
+    const validateTextTitle = () => {
+      if (textContent == "") {
+          enqueueSnackbar('Tytuł Listy nie może być pusty', { variant: 'error' })
+          return false
+      }
+      return true
+  }
     const clearForm = () => {
         handleTextChange("")
     }
@@ -84,36 +93,13 @@ export function ListCreator(props) {
         return
         var title = listContent
         console.log(title)
-        myArray.push(
-        // <CheckBoxBtn onClick={ChangeCheckbox}>
-        //   <Checkbox style={{color: '#323232'}}/>
-        //   <CheckBoxText>{temp}</CheckBoxText>
-        // </CheckBoxBtn>
-        {id: productID, title: title, boxstate: state})
+        myArray.push({id: productID, title: title, boxstate: state, parentID: 0})
         setProductID(productID+1)
         console.log(myArray)
-        // myArray.push(<MyTextField value={temp}></MyTextField>)
         setMyArray(Array.from(myArray))
         clearList()
     }
-    const CreateNewList=(oldMap) =>{
-        //var newMap= new Map()
-        oldMap=props.myMap
-        oldMap.set(tableID, {title: textContent, values: Array.from(myArray)})
-        setTableID(tableID+1)
-        setMyArray(new Array())
-        handleTextChange("")
-       // setMyMap(tempMap)
-       console.log(oldMap)
-        props.setMyMap(new Map([...oldMap]))
-        console.log(myMap)
 
-    }
-    const CreateListPushToFirestore=() =>{
-      var oldMap = new Map()
-      CreateNewList(oldMap)
-
-    }
   return (
     <Container key={props.id}>
 
@@ -129,7 +115,7 @@ export function ListCreator(props) {
             </CheckBoxBtn>)
             }
             <MoreIconContainerTop>
-                <CheckIcon onClick={CreateListPushToFirestore}/>
+                <CheckIcon onClick={pushToFirestore}/>
             </MoreIconContainerTop>
             <CheckBoxBtn onClick={ChangeCheckbox}>
                 <Checkbox style={{color: '#323232'}}/>

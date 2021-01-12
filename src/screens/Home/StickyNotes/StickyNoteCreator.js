@@ -7,17 +7,19 @@ import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import firebase from 'firebase';
 import {useSnackbar} from 'notistack'
+import { useUser } from '../../../utils';
 
 export function StickyNoteCreator(props) {
     const [textContent, handleTextChange] = useState('');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const {user}=useUser();
 
     const pushToFirestore = () => {
         if (!validateTextInput()) return
         firebase
             .firestore()
             .collection('Users')
-            .doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2')
+            .doc(user.uid)
             .collection('StickyNotes')
             .add({
                 text: textContent
