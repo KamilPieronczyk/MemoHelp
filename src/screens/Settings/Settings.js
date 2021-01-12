@@ -57,6 +57,7 @@ function Settings() {
             user.email,
             oldPass
         );
+        var userName = user.displayName;
         //empty
         if(!(email || oldPass || newPass))
         {
@@ -96,7 +97,12 @@ function Settings() {
                 }
                 user.updateEmail(email).then(function() {
                     // Update successful.
-                    enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
+                    firebase.firestore().collection('Users').doc(user.uid).set({
+                        email: email,
+                        userName: userName
+                    }).then(function(){
+                        enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
+                    })
                   }).catch(function(error) {
                     // An error happened.
                     enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
