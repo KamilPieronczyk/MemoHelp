@@ -28,15 +28,15 @@ function Settings() {
         imgUri: user.imgUri
     });
     
-    const general = {
-        name: 'Ogólne',
-        elements: [
-            {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'},
-            {id: 'email', name: "Zmień email", fun: updateEmail, warningState: state.emailWarning, warning: 'Na nowy email został wysłany link aktywacyjny'},
-            {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'}
+    // const general = {
+    //     name: 'Ogólne',
+    //     elements: [
+    //         {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'},
+    //         {id: 'email', name: "Zmień email", fun: updateEmail, warningState: state.emailWarning, warning: 'Na nowy email został wysłany link aktywacyjny'},
+    //         {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'}
          
-        ]
-    };
+    //     ]
+    // };
 
     const notify = {
         name: 'Powiadomienia',
@@ -115,9 +115,9 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: email,
                         userName: userName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                         enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
-                    })
+                    });
                   }).catch(function(error) {
                     // An error happened.
                     enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
@@ -128,7 +128,7 @@ function Settings() {
                 enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
             });
         }
-        //MAIL AND PASSWORD
+        //MAIL AND PASSWORD UWAGA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if((email) && oldPass && (newPass) && (!newName))
         {
             user.reauthenticateWithCredential(credential).then(function() {
@@ -147,7 +147,12 @@ function Settings() {
                     user.updatePassword(newPass).then(function() {
                         // Update successful.
                         console.log("haslo zaktualizowane");
-                        enqueueSnackbar('Hasło i email zostały zaktualizowane', {variant: 'success'});
+                        firebase.firestore().collection('Users').doc(user.uid).set({
+                            email: email,
+                            userName: userName
+                        },{merge: true}).then(function(){
+                            enqueueSnackbar('Hasło i email zostały zaktualizowane', {variant: 'success'});
+                        });
                       }).catch(function(error) {
                         // An error happened.
                         console.log("blad zmiany hasla");
@@ -182,7 +187,7 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: email,
                         userName: newName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                         enqueueSnackbar('Adres email i nazwa zostały zaktualizowane', {variant: 'success'});
                     })
                   }).catch(function(error) {
@@ -218,7 +223,7 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: email,
                         userName: newName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                     user.updatePassword(newPass).then(function() {
                         // Update successful.
                         console.log("haslo zaktualizowane");
@@ -266,7 +271,7 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: oldMail,
                         userName: newName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                         enqueueSnackbar('Dane zostały zaktualizowane', {variant: 'success'});
                     });
                   }).catch(function(error) {
@@ -293,7 +298,7 @@ function Settings() {
                 firebase.firestore().collection('Users').doc(user.uid).set({
                     email: oldMail,
                     userName: newName
-                }).then(function(){
+                },{merge: true}).then(function(){
                     enqueueSnackbar('Nazwa użytkownika została zaktualizowana', {variant: 'success'});
                 });
               }).catch(function(error) {
@@ -333,6 +338,15 @@ function Settings() {
             });
         
     };
+
+    // const checkNotifications = () => {
+    //     var user = firebase.auth().currentUser;
+    //     if (email==true)
+    //     {
+
+    //     }
+    // };
+
     return (
     <div className={styles.container}>
         <div className={styles.content}>
@@ -343,12 +357,14 @@ function Settings() {
                         <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
                     </label>
                 </div> */}
-                <span>{user.userName}</span>
+                <div style={{fontSize: 48}}>
+                    <span>{user.userName}</span>
+                </div>
             </div>
             <div className={styles.settings}>
                 <div>
                     <div style={{fontSize: 20}}>
-                        <span>{general.name}</span>
+                        <span>Ogólne</span>
                     </div>
                     <div className={styles.settingsContentBox}>
                         {/* {general.elements.map(item => {
@@ -378,7 +394,7 @@ function Settings() {
                 </div>
                 <div>
                     <div style={{fontSize: 20, marginTop: 12}}>
-                        <span>{notify.name}</span>
+                        <span>Powiadomienia</span>
                     </div>
                     <div className={styles.settingsContentBox}>
                         {notify.elements.map(item => {
@@ -428,45 +444,60 @@ function Settings() {
     function notifySwitch(event) {
         console.log(`${event.target.id} ${event.target.checked}`);
         setState({ ...state, [event.target.id]: event.target.checked });
+        var user = firebase.auth().currentUser;
+        if (event.target.id=='email')
+        {
+            console.log('email notification');
+            firebase.firestore().collection('Users').doc(user.uid).set({
+                emailNotification: event.target.checked
+            },{merge:true});
+        }
+        if (event.target.id=='push')
+        {
+            console.log('push notification');
+            firebase.firestore().collection('Users').doc(user.uid).set({
+                pushNotification: event.target.checked
+            },{merge: true});
+        }
     };
 
-    function changeAvatar(event) {
-        console.log(`Avatar path: ${event.target.value}`);
-        setState({...state, imgUri: `https://avatarfiles.alphacoders.com/126/thumb-126644.gif`});
-    }
+//     function changeAvatar(event) {
+//         console.log(`Avatar path: ${event.target.value}`);
+//         setState({...state, imgUri: `https://avatarfiles.alphacoders.com/126/thumb-126644.gif`});
+//     }
 
-    function updateEmail(event) {
-        console.log(`Update email: ${event.target.value}`);
-        if(event.target.value !== "")
-            setState({...state, emailWarning: true});
-        else setState({...state, emailWarning: false});
-    }
+//     function updateEmail(event) {
+//         console.log(`Update email: ${event.target.value}`);
+//         if(event.target.value !== "")
+//             setState({...state, emailWarning: true});
+//         else setState({...state, emailWarning: false});
+//     }
 
-    function updatePasswd(event) {
-        console.log(`Update password: ${event.target.value}`);
-        if(event.target.value !== "")
-            setState({...state, newPasswdWarning: true});
-        else setState({...state, newPasswdWarning: false});
-    }
+//     function updatePasswd(event) {
+//         console.log(`Update password: ${event.target.value}`);
+//         if(event.target.value !== "")
+//             setState({...state, newPasswdWarning: true});
+//         else setState({...state, newPasswdWarning: false});
+//     }
 
-    function passwd(event) {
-        console.log(`Current password: ${event.target.value}`);
-        if(event.target.value !== "")
-            setState({...state, passwdWarning: true});
-        else setState({...state, passwdWarning: false});
-    }
+//     function passwd(event) {
+//         console.log(`Current password: ${event.target.value}`);
+//         if(event.target.value !== "")
+//             setState({...state, passwdWarning: true});
+//         else setState({...state, passwdWarning: false});
+//     }
 
-    function updateLang(event) {
-        console.log(`Update language: ${event.target.value}`);
-    }
+//     function updateLang(event) {
+//         console.log(`Update language: ${event.target.value}`);
+//     }
 
-    function applySettings() {
-        console.log("Click: save new settings");
-    }
+//     function applySettings() {
+//         console.log("Click: save new settings");
+//     }
 
-    function closeAccount() {
-        console.log("Click: close account");
-    }
+//     function closeAccount() {
+//         console.log("Click: close account");
+//     }
 
 }
 

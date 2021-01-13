@@ -104,7 +104,9 @@ export function LoginForm() {
 					.doc(user.uid)
 					.set({
 						email    : email,
-						userName : userName
+						userName : userName,
+						emailNotification: false,
+                		pushNotification: false
 					})
 					.then(function() {
 						firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Admins").set({
