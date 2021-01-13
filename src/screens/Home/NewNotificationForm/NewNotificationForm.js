@@ -177,19 +177,12 @@ export function NewNotificationForm() {
 				return;
 			}
 		}
-		console.log(date)
 		date.setDate(date.getDate() + 1)
-		console.log(date)
-		console.log(weekDaysArr)
-		console.log()
 		for (let i = 0; i < 6; i++) {
-			console.log(date.getDay(), daysNumbers, weekDaysArr)
 			let exists = weekDaysArr.find(day => date.getDay() == daysNumbers[day])
 			if(exists != undefined) break;
 			date.setDate(date.getDate() + 1)
-			console.log('for', date)
 		}
-		console.log('final', date)
 		reminder.date = datePickerVersion ? date : time;
 		handleDateChange(date)
 	}

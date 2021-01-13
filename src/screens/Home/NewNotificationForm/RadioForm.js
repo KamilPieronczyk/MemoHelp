@@ -35,13 +35,19 @@ export default function RadioForm() {
   }, [type])
 
   const handleChange = (event) => {
-    setType(Reminder.reminderTypes.cyclical)
-    setValue(event.target.value);
+    if(event.target.value == undefined) return;
+    if(value == event.target.value){
+      setType(Reminder.reminderTypes.default)
+      setValue("");
+    } else {
+      setType(Reminder.reminderTypes.cyclical)
+      setValue(event.target.value);
+    }
   };
 
   return (
     <FormControl component="fieldset">
-      <RadioGroup row aria-label="position" name="position" defaultValue="top" value={value} onChange={handleChange}>
+      <RadioGroup row aria-label="position" name="position" defaultValue="top" value={value} onClick={handleChange}>
         <MyLabel
           value="everyDay"
           control={<MyRadio />}
