@@ -34,10 +34,8 @@ function ListCardBtn(props) {
 
 export function ListCreator(props) {
     
-    const [tableID, setTableID] = useState(0);
     const [productID, setProductID] = useState(0);
     const [myArray, setMyArray] = useState(new Array());
-    const [myMap, setMyMap] = useState(new Map());
     const [textContent, handleTextChange] = useState('');
     const [listContent, handleListChange] = useState('');
 
@@ -51,6 +49,7 @@ export function ListCreator(props) {
       }
     const pushToFirestore = () => {
         if (!validateTextInput()) return
+        if (!validateTextTitle()) return
         firebase
             .firestore()
             .collection('Users')
@@ -58,7 +57,9 @@ export function ListCreator(props) {
             .collection('Lists')
             .add({
                  title: textContent,
+                 expanded: false,
                  myList: [...myArray]
+
             }).then(() => {
             enqueueSnackbar('Lista została dodana', { variant: 'success' })
             clearForm()
@@ -93,7 +94,7 @@ export function ListCreator(props) {
         return
         var title = listContent
         console.log(title)
-        myArray.push({id: productID, title: title, boxstate: state, parentID: 0})
+        myArray.push({id: productID, title: title, boxstate: false, parentID: 0})
         setProductID(productID+1)
         console.log(myArray)
         setMyArray(Array.from(myArray))
@@ -105,15 +106,12 @@ export function ListCreator(props) {
 
           <MoreContent>
 
-            {/* TODO: MAP  */}
             <MyTextInput value={textContent} placeholder="Dodaj tytuł"  color='#9C9083'onChange={e => { handleTextChange(e.target.value); }}></MyTextInput>
-          {/* {myArray} */}
             {myArray.map((index)=>
               <CheckBoxBtn onClick={ChangeCheckbox}>
               <Checkbox checked={index.boxstate.checked} style={{color: '#323232'}}/>
               <CheckBoxText>{index.title}</CheckBoxText>
-            </CheckBoxBtn>)
-            }
+            </CheckBoxBtn>)}
             <MoreIconContainerTop>
                 <CheckIcon onClick={pushToFirestore}/>
             </MoreIconContainerTop>
@@ -121,7 +119,6 @@ export function ListCreator(props) {
                 <Checkbox style={{color: '#323232'}}/>
                 <MyTextField value={listContent} placeholder="Dodaj notatke" color="#FFFAF5"  onChange={e => { handleListChange(e.target.value); }} onKeyDown={addToArray}/> 
             </CheckBoxBtn>
-            {/* <MyTextField value={listContent} placeholder="Dodaj notatke"  onChange={e => { handleListChange(e.target.value); }} onKeyDown={addToArray}/>  */}
           </MoreContent>
     </Container>
   )

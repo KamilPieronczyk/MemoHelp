@@ -36,12 +36,6 @@ export function ListCard(props) {
   const [myArray, setMyArray] = useState(new Array());
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const {user}=useUser();
-  const [state, setState] = useState({
-    isOpen: false
-  });
-  const [stateBox, setStateBox] = useState({
-    checked: false
-  });
   const updateFirestore = (index) => {
     firebase
         .firestore()
@@ -52,32 +46,46 @@ export function ListCard(props) {
         .update({
             myList: props.myArray})
         .then(() => {
-        enqueueSnackbar('Lista została zmieniona', { variant: 'success' })
+        //enqueueSnackbar('Lista została zmieniona', { variant: 'success' })
     }).catch(() => {
-        enqueueSnackbar('blad updateu listy', { variant: 'error' })
-    })
+        //enqueueSnackbar('blad updateu listy', { variant: 'error' })
+    })}
+    const updateFirestoreExpand = (myID,myBool) => {
+      firebase
+          .firestore()
+          .collection('Users')
+          .doc(user.uid)
+          .collection('Lists')
+          .doc(myID)
+          .update({
+              expanded: myBool})
+          .then(() => {
+          //enqueueSnackbar('Lista została zmieniona', { variant: 'success' })
+      }).catch(() => {
+          //enqueueSnackbar('blad updateu listy', { variant: 'error' })
+      })
 }
   const ChangeCheckbox = (index) => {
-    console.log('todlugie',props.myMap.get(props.myArray[index].parentID).values[index].boxstate)
-
     props.myMap.get(props.myArray[index].parentID).values[index].boxstate=!props.myMap.get(props.myArray[index].parentID).values[index].boxstate
-    console.log('mapa',props.myMap)
-
     setMyArray(Array.from(myArray))
     props.setMyMap(new Map([...props.myMap]))
     updateFirestore(index)
   }
 
-  const ExpandLessInfo = (e) => {
+  const ExpandLessInfo = (myID) => {
+    props.myMap.get(myID).expanded=false
+    props.setMyMap(new Map([...props.myMap]))
     console.log("Show less");
-    setState({ ...state, isOpen: false});
+
+    updateFirestoreExpand(myID,false)
   }
 
-  const ExpandMoreInfo = (e) => {
+  const ExpandMoreInfo = (myID) => {
+    props.myMap.get(myID).expanded=true
+    props.setMyMap(new Map([...props.myMap]))
     console.log("Show more");
-    // setMyArray(props.myArray)
-    // console.log(props.myArray)
-    setState({ ...state, isOpen: true});
+
+    updateFirestoreExpand(myID,true)
   }
   const DeleteList = (e) => {
     props.listRef.delete()
@@ -88,27 +96,23 @@ export function ListCard(props) {
     <Container key={props.id}>
       <Header>
         <span>{props.title}</span><DeleteIconContainer onClick={DeleteList}> </DeleteIconContainer>
-        { state.isOpen === true &&
-          <ExpandLessIconContainer onClick={ExpandLessInfo}> 
+        { props.myExpanded  === true &&
+          <ExpandLessIconContainer onClick={()=>ExpandLessInfo(props.myID)}> 
           </ExpandLessIconContainer>
         }
-        { state.isOpen === false &&
-          <ExpandMoreIconContainer onClick={ExpandMoreInfo}>
+        { props.myExpanded === false &&
+          <ExpandMoreIconContainer onClick={()=>ExpandMoreInfo(props.myID)}>
           </ExpandMoreIconContainer>
         }
       </Header>
       
-      <Collapse in={state.isOpen} timeout={"auto"} style={{minWidth: '100%', margin: 0, padding: 0}}>
+      <Collapse in={props.myExpanded} timeout={"auto"} style={{minWidth: '100%', margin: 0, padding: 0}}>
           <MoreContent>
             {props.myArray.map((element,index)=>
               <CheckBoxBtn onClick={()=>ChangeCheckbox(index)}>
               <Checkbox checked={element.boxstate} style={{color: '#323232'}}/>
               <CheckBoxText>{element.title}</CheckBoxText>
             </CheckBoxBtn>)}
-            {/* TODO: MAP  */}
-            {/* {myArray} */}
-            {/* <ListCardBtn text="BTN 1" name="btn1" /> */}
-
           </MoreContent>
       </Collapse>
     </Container>
@@ -184,7 +188,7 @@ const Container = styled.div`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `
 
-const Header = styled.div` 
+const Header = styled.div`
   color: #73909C;
   display: flex;
   flex-direction: row;
