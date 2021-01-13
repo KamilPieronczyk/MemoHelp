@@ -1,11 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import {NotificationsList} from './NotificationsList/NotificationsList'
-import {InvitationList} from './InvitationList/InvitationList'
-import {ListContainer} from './List/List'
-import {StickyNotes} from './StickyNotes/StickyNotes'
-import {NewNotificationForm} from './NewNotificationForm/NewNotificationForm'
-import {atom} from 'recoil'
+import {Adsense} from '@ctrl/react-adsense';
+import { NotificationsList } from './NotificationsList/NotificationsList'
+import { InvitationList } from './InvitationList/InvitationList'
+import { ListContainer } from './List/List'
+import { StickyNotes } from './StickyNotes/StickyNotes'
+import { NewNotificationForm } from './NewNotificationForm/NewNotificationForm'
+import { atom } from 'recoil'
+
 export default function Home() {
   return (
     <Container>
