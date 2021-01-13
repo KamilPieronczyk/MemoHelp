@@ -6,16 +6,17 @@ import styled from 'styled-components';
 import firebase from 'firebase';
 import { useSnackbar } from 'notistack';
 import validator from 'validator';
+import {useUser} from '../../utils';
 
 
 function Settings() {
 
    
 
-    const user = {
-        userName: 'Jan',
-        imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
-    };
+    // const user = {
+    //     userName: 'Jan',
+    //     imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
+    // };
 
     
     
@@ -25,18 +26,18 @@ function Settings() {
         passwdWarning: false,
         push: true,
         email: true,
-        imgUri: user.imgUri
+        // imgUri: user.imgUri
     });
     
-    const general = {
-        name: 'Ogólne',
-        elements: [
-            {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'},
-            {id: 'email', name: "Zmień email", fun: updateEmail, warningState: state.emailWarning, warning: 'Na nowy email został wysłany link aktywacyjny'},
-            {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'}
+    // const general = {
+    //     name: 'Ogólne',
+    //     elements: [
+    //         {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'},
+    //         {id: 'email', name: "Zmień email", fun: updateEmail, warningState: state.emailWarning, warning: 'Na nowy email został wysłany link aktywacyjny'},
+    //         {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'}
          
-        ]
-    };
+    //     ]
+    // };
 
     const notify = {
         name: 'Powiadomienia',
@@ -51,7 +52,7 @@ function Settings() {
     const [ password2, setPassword2 ] = useState('');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [ name, setName ] = useState('');
-
+    const {user}=useUser();
     
 
     const apply = () => {
@@ -115,9 +116,9 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: email,
                         userName: userName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                         enqueueSnackbar('Adres email został zaktualizowany', {variant: 'success'});
-                    })
+                    });
                   }).catch(function(error) {
                     // An error happened.
                     enqueueSnackbar('Wystąpił błąd', { variant: 'error' });
@@ -147,7 +148,12 @@ function Settings() {
                     user.updatePassword(newPass).then(function() {
                         // Update successful.
                         console.log("haslo zaktualizowane");
-                        enqueueSnackbar('Hasło i email zostały zaktualizowane', {variant: 'success'});
+                        firebase.firestore().collection('Users').doc(user.uid).set({
+                            email: email,
+                            userName: userName
+                        },{merge: true}).then(function(){
+                            enqueueSnackbar('Hasło i email zostały zaktualizowane', {variant: 'success'});
+                        });
                       }).catch(function(error) {
                         // An error happened.
                         console.log("blad zmiany hasla");
@@ -182,7 +188,7 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: email,
                         userName: newName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                         enqueueSnackbar('Adres email i nazwa zostały zaktualizowane', {variant: 'success'});
                     })
                   }).catch(function(error) {
@@ -218,7 +224,7 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: email,
                         userName: newName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                     user.updatePassword(newPass).then(function() {
                         // Update successful.
                         console.log("haslo zaktualizowane");
@@ -266,7 +272,7 @@ function Settings() {
                     firebase.firestore().collection('Users').doc(user.uid).set({
                         email: oldMail,
                         userName: newName
-                    }).then(function(){
+                    },{merge: true}).then(function(){
                         enqueueSnackbar('Dane zostały zaktualizowane', {variant: 'success'});
                     });
                   }).catch(function(error) {
@@ -293,7 +299,7 @@ function Settings() {
                 firebase.firestore().collection('Users').doc(user.uid).set({
                     email: oldMail,
                     userName: newName
-                }).then(function(){
+                },{merge: true}).then(function(){
                     enqueueSnackbar('Nazwa użytkownika została zaktualizowana', {variant: 'success'});
                 });
               }).catch(function(error) {
@@ -333,6 +339,126 @@ function Settings() {
             });
         
     };
+
+    const gApply = () => {
+        var newName = name;
+        if (!validator.isLength(newName,{min:4, max:30})){
+            enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
+            return;
+        }
+        firebase.firestore().collection('Users').doc(user.uid).set({
+            userName: newName
+        },{merge: true}).then(function(){
+            enqueueSnackbar('Nazwa użytkownika została zaktualizowana', {variant: 'success'});
+        });
+    }
+
+    const gDeleteUser = () => {
+        var user = firebase.auth().currentUser;
+        user.delete().then(function() {
+            // User deleted.
+          }).catch(function(error) {
+            // An error happened.
+            enqueueSnackbar('Wymagana autoryzacja - zaloguj się ponownie, by usunąć konto', {variant: 'error'});
+          });
+    }
+    //console.log(user.userName);
+
+    if(user.loggedByGoogle == true) {
+        //console.log('zalogowane z googla');
+        return (
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <div className={styles.header}>
+                        {/* <div style={{backgroundImage: `url(${state.imgUri})`}}>
+                            <label htmlFor="image">
+                                <span aria-hidden="true">Zmień avatar</span>
+                                <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
+                            </label>
+                        </div> */}
+                        <div style={{fontSize: 48}}>
+                            <span>{user.userName}</span>
+                        </div>
+                    </div>
+                    <div className={styles.settings}>
+                        <div>
+                            <div style={{fontSize: 20}}>
+                                <span>Ogólne</span>
+                            </div>
+                            <div className={styles.settingsContentBox}>
+                                {/* {general.elements.map(item => {
+                                    return (
+                                        <div key={item.name}>
+                                            <div className={styles.settingsOption}>
+                                                <div style={{width: '25%'}}>
+                                                    <label htmlFor={item.id}>{item.name}</label>
+                                                </div>
+                                                <div className={styles.htmlType} onChange={item.fun}> 
+                                                    <input style={{width: '100%'}} type="text" name={item.id} />
+                                                </div>
+                                            </div>
+                                            {item.warningState === true &&
+                                                <div className={styles.warning}>
+                                                    <span>{item.warning}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    )
+                                })} */}
+                                <MyInput type="text" id="nname" name="nname" placeholder="zmień pseudonim" onChange={(n) => setName(n.target.value)} />
+                                
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{fontSize: 20, marginTop: 12}}>
+                                <span>{notify.name}</span>
+                            </div>
+                            <div className={styles.settingsContentBox}>
+                                {notify.elements.map(item => {
+                                    return(
+                                        <div className={styles.settingsOption} key={item.name}>
+                                            <div style={{width: '25%'}}>
+                                                <label>{item.name}</label>
+                                            </div>
+                                            <div className={styles.generalUserValue}>
+                                                <Switch
+                                                    id={item.id}
+                                                    checked={item.state}
+                                                    onChange={notifySwitch}
+                                                    color="primary"
+                                                    name={item.name}
+                                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                /> 
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={styles.buttons}>
+                        <Button text={"Zamknij konto"} onClick={gDeleteUser} 
+                        type='outlined'
+                        color="#73909C"
+                        style={{
+                            width: '35%',
+                            color: '#73909C',
+                        }}
+                        />
+                        <Button text={"Zatwierdź zmiany"} onClick={gApply} 
+                        type='contained'
+                        color="#73909C"
+                        style={{
+                            width: '60%',
+                            color: '#FFF',
+                        }}
+                        />
+                    </div>
+                </div>
+            </div>
+            )
+    }
+
     return (
     <div className={styles.container}>
         <div className={styles.content}>
@@ -343,12 +469,14 @@ function Settings() {
                         <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
                     </label>
                 </div> */}
-                <span>{user.userName}</span>
+                <div style={{fontSize: 48}}>
+                    <span>{user.userName}</span>
+                </div>
             </div>
             <div className={styles.settings}>
                 <div>
                     <div style={{fontSize: 20}}>
-                        <span>{general.name}</span>
+                        <span>Ogólne</span>
                     </div>
                     <div className={styles.settingsContentBox}>
                         {/* {general.elements.map(item => {
@@ -428,45 +556,60 @@ function Settings() {
     function notifySwitch(event) {
         console.log(`${event.target.id} ${event.target.checked}`);
         setState({ ...state, [event.target.id]: event.target.checked });
+        var user = firebase.auth().currentUser;
+        if (event.target.id=='email')
+        {
+            console.log('email notification');
+            firebase.firestore().collection('Users').doc(user.uid).set({
+                emailNotification: event.target.checked
+            },{merge:true});
+        }
+        if (event.target.id=='push')
+        {
+            console.log('push notification');
+            firebase.firestore().collection('Users').doc(user.uid).set({
+                pushNotification: event.target.checked
+            },{merge: true});
+        }
     };
 
-    function changeAvatar(event) {
-        console.log(`Avatar path: ${event.target.value}`);
-        setState({...state, imgUri: `https://avatarfiles.alphacoders.com/126/thumb-126644.gif`});
-    }
+//     function changeAvatar(event) {
+//         console.log(`Avatar path: ${event.target.value}`);
+//         setState({...state, imgUri: `https://avatarfiles.alphacoders.com/126/thumb-126644.gif`});
+//     }
 
-    function updateEmail(event) {
-        console.log(`Update email: ${event.target.value}`);
-        if(event.target.value !== "")
-            setState({...state, emailWarning: true});
-        else setState({...state, emailWarning: false});
-    }
+//     function updateEmail(event) {
+//         console.log(`Update email: ${event.target.value}`);
+//         if(event.target.value !== "")
+//             setState({...state, emailWarning: true});
+//         else setState({...state, emailWarning: false});
+//     }
 
-    function updatePasswd(event) {
-        console.log(`Update password: ${event.target.value}`);
-        if(event.target.value !== "")
-            setState({...state, newPasswdWarning: true});
-        else setState({...state, newPasswdWarning: false});
-    }
+//     function updatePasswd(event) {
+//         console.log(`Update password: ${event.target.value}`);
+//         if(event.target.value !== "")
+//             setState({...state, newPasswdWarning: true});
+//         else setState({...state, newPasswdWarning: false});
+//     }
 
-    function passwd(event) {
-        console.log(`Current password: ${event.target.value}`);
-        if(event.target.value !== "")
-            setState({...state, passwdWarning: true});
-        else setState({...state, passwdWarning: false});
-    }
+//     function passwd(event) {
+//         console.log(`Current password: ${event.target.value}`);
+//         if(event.target.value !== "")
+//             setState({...state, passwdWarning: true});
+//         else setState({...state, passwdWarning: false});
+//     }
 
-    function updateLang(event) {
-        console.log(`Update language: ${event.target.value}`);
-    }
+//     function updateLang(event) {
+//         console.log(`Update language: ${event.target.value}`);
+//     }
 
-    function applySettings() {
-        console.log("Click: save new settings");
-    }
+//     function applySettings() {
+//         console.log("Click: save new settings");
+//     }
 
-    function closeAccount() {
-        console.log("Click: close account");
-    }
+//     function closeAccount() {
+//         console.log("Click: close account");
+//     }
 
 }
 

@@ -18,6 +18,8 @@ import { Reminder, textContentState, dateState, timeState, weekDaysState, freque
 import {useSnackbar} from 'notistack'
 import {isFormOpened} from '../Home'
 
+const daysNumbers = {'mon': 1, 'thi': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6, 'sun': 7}
+
 const useStyles = makeStyles((theme) => ({
 		openedContainer: {
 			gridColumn: 'span 2'
@@ -158,7 +160,31 @@ export function NewNotificationForm() {
 			enqueueSnackbar('Data nie może odnosić się do przeszłości', {variant: 'error'})
 			return false
 		}
+		prepareDate()
 		return true
+	}
+
+	const prepareDate = () => {
+		if(type != Reminder.reminderTypes.special) return;
+		let date = new Date(selectedDate)
+		for (let i = 0; i < weekDaysArr.length; i++) {
+			if(date.getDay() == daysNumbers[weekDaysArr[i]]){
+				if(date.getTime() < Date.now()) {
+					date.setDate(date.getDate() + 7)
+					reminder.date = datePickerVersion ? date : time;
+					handleDateChange(date)
+				}
+				return;
+			}
+		}
+		date.setDate(date.getDate() + 1)
+		for (let i = 0; i < 6; i++) {
+			let exists = weekDaysArr.find(day => date.getDay() == daysNumbers[day])
+			if(exists != undefined) break;
+			date.setDate(date.getDate() + 1)
+		}
+		reminder.date = datePickerVersion ? date : time;
+		handleDateChange(date)
 	}
 
 	async function clearForm() {

@@ -63,7 +63,10 @@ export function Register(props) {
             console.log("moj nick: ", userName);
             firebase.firestore().collection('Users').doc(user.uid).set({
                 email: email,
-                userName: userName
+                userName: userName,
+                emailNotification: false,
+                pushNotification: false,
+                loggedByGoogle: false
             }).then(function(){
                 // Create empty collection of Groups with 2 doc (Admins and Members) that contains data = [];
                 firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Admins").set({
