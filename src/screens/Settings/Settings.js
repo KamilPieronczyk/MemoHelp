@@ -6,16 +6,17 @@ import styled from 'styled-components';
 import firebase from 'firebase';
 import { useSnackbar } from 'notistack';
 import validator from 'validator';
+import {useUser} from '../../utils';
 
 
 function Settings() {
 
    
 
-    const user = {
-        userName: 'Jan',
-        imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
-    };
+    // const user = {
+    //     userName: 'Jan',
+    //     imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
+    // };
 
     
     
@@ -25,7 +26,7 @@ function Settings() {
         passwdWarning: false,
         push: true,
         email: true,
-        imgUri: user.imgUri
+        // imgUri: user.imgUri
     });
     
     // const general = {
@@ -51,7 +52,7 @@ function Settings() {
     const [ password2, setPassword2 ] = useState('');
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const [ name, setName ] = useState('');
-
+    const {user}=useUser();
     
 
     const apply = () => {
@@ -128,7 +129,7 @@ function Settings() {
                 enqueueSnackbar('Podaj poprawne hasło', { variant: 'error' });
             });
         }
-        //MAIL AND PASSWORD UWAGA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //MAIL AND PASSWORD
         if((email) && oldPass && (newPass) && (!newName))
         {
             user.reauthenticateWithCredential(credential).then(function() {
@@ -339,13 +340,124 @@ function Settings() {
         
     };
 
-    // const checkNotifications = () => {
-    //     var user = firebase.auth().currentUser;
-    //     if (email==true)
-    //     {
+    const gApply = () => {
+        var newName = name;
+        if (!validator.isLength(newName,{min:4, max:30})){
+            enqueueSnackbar('Zbyt krótka nazwa użytkownika', {variant: 'error'});
+            return;
+        }
+        firebase.firestore().collection('Users').doc(user.uid).set({
+            userName: newName
+        },{merge: true}).then(function(){
+            enqueueSnackbar('Nazwa użytkownika została zaktualizowana', {variant: 'success'});
+        });
+    }
 
-    //     }
-    // };
+    const gDeleteUser = () => {
+        var user = firebase.auth().currentUser;
+        user.delete().then(function() {
+            // User deleted.
+          }).catch(function(error) {
+            // An error happened.
+            enqueueSnackbar('Wymagana autoryzacja - zaloguj się ponownie, by usunąć konto', {variant: 'error'});
+          });
+    }
+    //console.log(user.userName);
+
+    if(user.loggedByGoogle == true) {
+        //console.log('zalogowane z googla');
+        return (
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <div className={styles.header}>
+                        {/* <div style={{backgroundImage: `url(${state.imgUri})`}}>
+                            <label htmlFor="image">
+                                <span aria-hidden="true">Zmień avatar</span>
+                                <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
+                            </label>
+                        </div> */}
+                        <div style={{fontSize: 48}}>
+                            <span>{user.userName}</span>
+                        </div>
+                    </div>
+                    <div className={styles.settings}>
+                        <div>
+                            <div style={{fontSize: 20}}>
+                                <span>Ogólne</span>
+                            </div>
+                            <div className={styles.settingsContentBox}>
+                                {/* {general.elements.map(item => {
+                                    return (
+                                        <div key={item.name}>
+                                            <div className={styles.settingsOption}>
+                                                <div style={{width: '25%'}}>
+                                                    <label htmlFor={item.id}>{item.name}</label>
+                                                </div>
+                                                <div className={styles.htmlType} onChange={item.fun}> 
+                                                    <input style={{width: '100%'}} type="text" name={item.id} />
+                                                </div>
+                                            </div>
+                                            {item.warningState === true &&
+                                                <div className={styles.warning}>
+                                                    <span>{item.warning}</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    )
+                                })} */}
+                                <MyInput type="text" id="nname" name="nname" placeholder="zmień pseudonim" onChange={(n) => setName(n.target.value)} />
+                                
+                            </div>
+                        </div>
+                        <div>
+                            <div style={{fontSize: 20, marginTop: 12}}>
+                                <span>{notify.name}</span>
+                            </div>
+                            <div className={styles.settingsContentBox}>
+                                {notify.elements.map(item => {
+                                    return(
+                                        <div className={styles.settingsOption} key={item.name}>
+                                            <div style={{width: '25%'}}>
+                                                <label>{item.name}</label>
+                                            </div>
+                                            <div className={styles.generalUserValue}>
+                                                <Switch
+                                                    id={item.id}
+                                                    checked={item.state}
+                                                    onChange={notifySwitch}
+                                                    color="primary"
+                                                    name={item.name}
+                                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                /> 
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={styles.buttons}>
+                        <Button text={"Zamknij konto"} onClick={gDeleteUser} 
+                        type='outlined'
+                        color="#73909C"
+                        style={{
+                            width: '35%',
+                            color: '#73909C',
+                        }}
+                        />
+                        <Button text={"Zatwierdź zmiany"} onClick={gApply} 
+                        type='contained'
+                        color="#73909C"
+                        style={{
+                            width: '60%',
+                            color: '#FFF',
+                        }}
+                        />
+                    </div>
+                </div>
+            </div>
+            )
+    }
 
     return (
     <div className={styles.container}>
@@ -394,7 +506,7 @@ function Settings() {
                 </div>
                 <div>
                     <div style={{fontSize: 20, marginTop: 12}}>
-                        <span>Powiadomienia</span>
+                        <span>{notify.name}</span>
                     </div>
                     <div className={styles.settingsContentBox}>
                         {notify.elements.map(item => {
