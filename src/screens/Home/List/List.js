@@ -1,18 +1,61 @@
-import React, { useState } from 'react'
+import React,{useState,useEffect} from 'react';
 import styled from 'styled-components'
 import {ListCard} from './ListCard'
+import {ListCreator} from './ListCreator'
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import {isFormOpened} from '../Home'
 import {useRecoilValue} from 'recoil'
+import firebase from 'firebase'
+import { useUser } from '../../../utils';
 
-export function ListContainer() {
+
+
+export function ListContainer(props) {
+  const [list, setList] = useState(new Array())
+  const [tableID, setTableID] = useState(0);
+  const [myArray, setMyArray] = useState(new Array());
+  const [myArrayName, setMyArrayName] = useState(" ");
+  const [myMap, setMyMap] = useState(new Map());
+  const {user}=useUser();
+
+  //const [myArrayName, setMyArrayName] = useState(" ");
+  useEffect(() => {
+    const List = firebase.firestore().collection('Users').doc(user.uid).collection('Lists')
+    const query = List
+    const stickyNoteSubscription = query.onSnapshot(snapshot => {
+      myMap.clear()
+      setMyMap(myMap)
+      if(!snapshot.empty)
+        renderList(snapshot)
+    })
+    return () => {
+      stickyNoteSubscription()
+    }
+  }, [])
+  
+  const renderList = (snapshot) => {
+  
+    snapshot.forEach(element => {
+      let data = {
+          text: element.data().title,
+          myList: element.data().myList,
+          ref: element.ref
+      }
+      Array.from(data.myList).forEach(tempElement =>{
+        tempElement.parentID=element.id
+      })
+      myMap.set(element.id, {title: data.text, ref: data.ref, elementID:element.id, values: Array.from(data.myList)})
+      setMyMap(new Map([...myMap]))
+    })
+  }
+
   const isReminderFormOpened = useRecoilValue(isFormOpened)
   const Add = () => {
     console.log("Click add");
   }
 
-  const Delete = () => {
+  const Delete = (props) => {
     console.log("Click remove");
   }
 
@@ -27,8 +70,8 @@ export function ListContainer() {
         </div>
       </Header>
       <List>
-        <ListCard title="Lista1" id="1"/>
-        <ListCard title="Lista2" id="2"/>
+        <ListCreator >dupa123</ListCreator>
+        {Array.from(myMap).map(([key,values]) => (<ListCard title={values.title} myArray={values.values} listRef={values.ref} myMap={myMap} setMyMap={setMyMap}/>))}
       </List>
     </Container>
   )

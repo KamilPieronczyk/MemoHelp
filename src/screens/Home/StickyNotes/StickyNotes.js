@@ -2,14 +2,17 @@ import React,{useState,useEffect} from 'react';
 import styled from 'styled-components'
 import {StickyNote} from './StickyNote'
 import {StickyNoteCreator} from './StickyNoteCreator'
+import { useUser } from '../../../utils';
+
 import firebase from 'firebase'
 
 export function StickyNotes(props) {
   const [list, setList] = useState(new Array())
+  const {user}=useUser();
 
   useEffect(() => {
-    const stickyNote = firebase.firestore().collection('Users').doc('sQpA99mVpXQnvC0D1IcmNNhlPyr2').collection('StickyNotes')
-    const query = stickyNote.limit(5)
+    const stickyNote = firebase.firestore().collection('Users').doc(user.uid).collection('StickyNotes')
+    const query = stickyNote
     const stickyNoteSubscription = query.onSnapshot(snapshot => {
       renderList(snapshot)
     })

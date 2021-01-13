@@ -45,9 +45,40 @@ export class Reminder {
 				date       : this.date,
 				frequency  : this.frequency,
 				weekDays   : this.weekDays,
+				admin      : firebase.auth().currentUser.uid,
 				usersGroup : groupID
 			})
-			.then(() => resolve())
+			.then(async doc => {
+				let reminderId = doc.id;
+				await firebase.firestore().collection('Groups').doc(groupID).get().then(async doc => {
+					if(doc.exists) {
+						var membersId = doc.data().members;
+						var adminsId = doc.data().admin;
+						var usersIdArray = [...adminsId, ...membersId]
+						console.log("Group reminder users", reminderId, usersIdArray);
+						for(let i = 0; i < usersIdArray.length; i++) {
+							let userId = usersIdArray[i];
+							console.log(reminderId, userId);
+							await firebase
+								.firestore()
+								.collection('Users')
+								.doc(userId)
+								.collection('Reminders')
+								.doc(reminderId)
+								.set({
+									text      : this.textContent,
+									date      : this.date,
+									frequency : this.frequency,
+									weekDays  : this.weekDays,
+									type      : this.type,
+									group	  : groupID,
+									admin     : firebase.auth().currentUser.uid,
+								}).then(() => {}).catch(e => console.log(e))
+						}
+					}
+				});
+				resolve()
+			})
 			.catch(() => reject());
 		});
 	}
@@ -92,7 +123,6 @@ export async function getAllGroups() {
 
 	if(firebase.auth().currentUser === null) return data;
 
-	// TOOD let id
 	let userId = firebase.auth().currentUser.uid;
 
 	var docRefAdmin = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Admins");
@@ -144,4 +174,44 @@ export async function getAllGroups() {
 	}
 	
     return data;
+}
+
+/**
+ * Function get all users groups id
+ * @return array of id
+ */
+export async function getGroupsIds() {
+ 
+	if(firebase.auth().currentUser === null) return [];
+
+	let userId = firebase.auth().currentUser.uid;
+
+	var docRefAdmin = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Admins");
+	var docRefMember = firebase.firestore().collection("Users").doc(userId).collection("Groups").doc("Members");
+    
+    try {
+
+		// Getting all arrays of groups id
+		var docGroupsAdmin = await docRefAdmin.get();
+		var docGroupsMember = await docRefMember.get();
+		let adminGroupsId;
+		let memberGroupsId;
+
+		if (docGroupsAdmin.exists) {
+			adminGroupsId = docGroupsAdmin.data().data;
+		}
+
+		if(docGroupsMember.exists) {
+			memberGroupsId = docGroupsMember.data().data;
+		}	
+		
+		var groupsIdArray = [...adminGroupsId, ...memberGroupsId]
+
+		return groupsIdArray;
+
+    } catch(e) {
+		console.log(e);
+		return new Array();
+	}
+	
 }
