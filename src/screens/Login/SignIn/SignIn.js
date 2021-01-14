@@ -4,7 +4,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import validator from 'validator';
 import firebase from 'firebase';
-import history from '../../../history';
 import { Link } from 'react-router-dom';
 import { Button } from '../../../components';
 import { useSnackbar } from 'notistack';
@@ -146,10 +145,6 @@ export function LoginForm() {
 				/>
 			</EmptyBox>
 			<Buttonscontainer>
-				{/* <Google>
-                    <ImgG src="/assets/1004px-Google__G__Logo.svg.webp"></ImgG>
-                    <span style={{ paddingTop: 16, paddingBottom: 16, paddingLeft: 20 }}>Zaloguj się</span>
-                </Google> */}
 				<Button
 					color="#fff"
 					type="contained"
@@ -184,15 +179,12 @@ export function LoginForm() {
 }
 
 const LoginContainer = styled.div`
-	//min-height: 300px;
 	min-width: 417px;
-	//background-color: #dfdfdf;
 	flex-direction: column;
 	display: flex;
 `;
 const MyInput = styled.input`
 	border: 2px solid #73909c;
-	//min-height:50px;
 	margin: 10px;
 	font-family: 'Roboto', sans-serif;
 	color: #73909c;
@@ -212,28 +204,10 @@ const MyInput = styled.input`
 	}
 `;
 const EmptyBox = styled.div`
-	//min-height:50px;
-	//min-width:417px;
 	margin: 10px;
 	display: flex;
 	flex-direction: row;
-	//text-align:center;
 	color: #73909c;
-`;
-const Google = styled.div`
-	height: 48px;
-	flex-direction: row;
-	display: flex;
-	background-color: #ffffff;
-	text-align: center;
-	font-size: 16px;
-	border-radius: 12px;
-	color: black;
-	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-	align-content: center;
-	align-items: center;
-	padding-left: 20px;
-	padding-right: 40px;
 `;
 const Buttonscontainer = styled(EmptyBox)`
     flex-direction:row;
@@ -241,11 +215,6 @@ const Buttonscontainer = styled(EmptyBox)`
     flex-grow: 0;
 `;
 
-const ImgG = styled.img`
-	object-fit: scale-down;
-	height: 34px;
-	width: 34px;
-`;
 const MyLink = styled(Link)`
 color: ${(props) =>
 
@@ -255,7 +224,6 @@ text-decoration: none;
 display: flex;
 flex-direction: row;
 align-content: center;
-//padding-left: 15px;
 &:hover{color: #9C9083};
 font-weight: bold;
 font-size: 14px;

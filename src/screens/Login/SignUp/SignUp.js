@@ -4,12 +4,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import validator from 'validator';
 import firebase from 'firebase';
-import history from '../../../history';
 import {
     Link
   } from "react-router-dom";
 import {Button} from '../../../components';
-import { min } from 'date-fns';
 import {useSnackbar} from 'notistack'
 
 export function Register(props) {
@@ -55,7 +53,6 @@ export function Register(props) {
             return false;
         }
         firebase.auth().createUserWithEmailAndPassword(mail, password).then(({user})=>{
-            //uploadData();
             console.log(user);
             var email = mail;
             var userName = name;
@@ -140,7 +137,6 @@ const LoginContainer = styled.div`
 `
 const MyInput = styled.input`
     border: 2px solid #73909C;
-    //min-height:50px;
     margin: 10px;
     font-family: 'Roboto', sans-serif;
     color: #73909C;
@@ -163,13 +159,10 @@ const EmptyBox = styled.div`
     margin: 10px;
     display: flex;
     flex-direction: row;
-    //text-align:center;
     color: #73909C;
 `
 const Buttonscontainer = styled(EmptyBox)`
     flex-direction:row;
-    //display:flex;
-    //margin: 10px;
     justify-content: space-evenly;
 `
 

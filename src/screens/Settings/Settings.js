@@ -9,35 +9,15 @@ import validator from 'validator';
 import {useUser} from '../../utils';
 
 
-function Settings() {
-
-   
-
-    // const user = {
-    //     userName: 'Jan',
-    //     imgUri: "https://www.pecetowicz.pl/uploads/monthly_2018_07/images.thumb.jpg.3728ccb69a0144c0e5196794a5541bfe.jpg"
-    // };
-
-    
-    
+function Settings() {   
     const [state, setState] = useState({
         emailWarning: false,
         newPasswdWarning: false,
         passwdWarning: false,
         push: true,
         email: true,
-        // imgUri: user.imgUri
     });
-    
-    // const general = {
-    //     name: 'Ogólne',
-    //     elements: [
-    //         {id: 'passwd', name: "Podaj hasło", fun: passwd, warningState: state.passwdWarning, warning: 'Podałeś nieprawidłowe hasło'},
-    //         {id: 'email', name: "Zmień email", fun: updateEmail, warningState: state.emailWarning, warning: 'Na nowy email został wysłany link aktywacyjny'},
-    //         {id: 'new-passwd', name: "Nowe hasło", fun: updatePasswd, warningState: state.newPasswdWarning, warning: 'Nowe hasło nie może być krótsze niż 5 znaków'}
-         
-    //     ]
-    // };
+ 
 
     const notify = {
         name: 'Powiadomienia',
@@ -67,10 +47,7 @@ function Settings() {
         );
         var userName = user.userName;
         var oldMail = user.email;
-        // TODO please refactor this piece of code DO NOT USE POLISH, DO NOT COMMENT CODE THIS WAY
-        /////////////////////////////////////
-        //PRZEPISANE NA NOWO
-        /////////////////////////////////////
+        
         if(!(email || oldPass || newPass || newName))
         {
             console.log("puste pola");
@@ -363,20 +340,12 @@ function Settings() {
             enqueueSnackbar('Wymagana autoryzacja - zaloguj się ponownie, by usunąć konto', {variant: 'error'});
           });
     }
-    //console.log(user.userName);
 
     if(user.loggedByGoogle == true) {
-        //console.log('zalogowane z googla');
         return (
             <div className={styles.container}>
                 <div className={styles.content}>
                     <div className={styles.header}>
-                        {/* <div style={{backgroundImage: `url(${state.imgUri})`}}>
-                            <label htmlFor="image">
-                                <span aria-hidden="true">Zmień avatar</span>
-                                <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
-                            </label>
-                        </div> */}
                         <div style={{fontSize: 48}}>
                             <span>{user.userName}</span>
                         </div>
@@ -387,27 +356,7 @@ function Settings() {
                                 <span>Ogólne</span>
                             </div>
                             <div className={styles.settingsContentBox}>
-                                {/* {general.elements.map(item => {
-                                    return (
-                                        <div key={item.name}>
-                                            <div className={styles.settingsOption}>
-                                                <div style={{width: '25%'}}>
-                                                    <label htmlFor={item.id}>{item.name}</label>
-                                                </div>
-                                                <div className={styles.htmlType} onChange={item.fun}> 
-                                                    <input style={{width: '100%'}} type="text" name={item.id} />
-                                                </div>
-                                            </div>
-                                            {item.warningState === true &&
-                                                <div className={styles.warning}>
-                                                    <span>{item.warning}</span>
-                                                </div>
-                                            }
-                                        </div>
-                                    )
-                                })} */}
-                                <MyInput type="text" id="nname" name="nname" placeholder="zmień pseudonim" onChange={(n) => setName(n.target.value)} />
-                                
+                                <MyInput type="text" id="nname" name="nname" placeholder="zmień pseudonim" onChange={(n) => setName(n.target.value)} />  
                             </div>
                         </div>
                         <div>
@@ -464,12 +413,6 @@ function Settings() {
     <div className={styles.container}>
         <div className={styles.content}>
             <div className={styles.header}>
-                {/* <div style={{backgroundImage: `url(${state.imgUri})`}}>
-                    <label htmlFor="image">
-                        <span aria-hidden="true">Zmień avatar</span>
-                        <input type="file" id="image" style={{display: 'none'}} onChange={changeAvatar}></input>
-                    </label>
-                </div> */}
                 <div style={{fontSize: 48}}>
                     <span>{user.userName}</span>
                 </div>
@@ -480,25 +423,6 @@ function Settings() {
                         <span>Ogólne</span>
                     </div>
                     <div className={styles.settingsContentBox}>
-                        {/* {general.elements.map(item => {
-                            return (
-                                <div key={item.name}>
-                                    <div className={styles.settingsOption}>
-                                        <div style={{width: '25%'}}>
-                                            <label htmlFor={item.id}>{item.name}</label>
-                                        </div>
-                                        <div className={styles.htmlType} onChange={item.fun}> 
-                                            <input style={{width: '100%'}} type="text" name={item.id} />
-                                        </div>
-                                    </div>
-                                    {item.warningState === true &&
-                                        <div className={styles.warning}>
-                                            <span>{item.warning}</span>
-                                        </div>
-                                    }
-                                </div>
-                            )
-                        })} */}
                         <MyInput type="text" id="nname" name="nname" placeholder="podaj nowy pseudonim" onChange={(n) => setName(n.target.value)} />
                         <MyInput type="email" id="fname" name="fname" placeholder="podaj nowy adres email" onChange={(e) => setMail(e.target.value)} />
                         <MyInput type="password" id="pname2" name="pname2" placeholder="podaj nowe hasło" onChange={(p2) => setPassword2(p2.target.value)} />
@@ -574,43 +498,7 @@ function Settings() {
         }
     };
 
-//     function changeAvatar(event) {
-//         console.log(`Avatar path: ${event.target.value}`);
-//         setState({...state, imgUri: `https://avatarfiles.alphacoders.com/126/thumb-126644.gif`});
-//     }
 
-//     function updateEmail(event) {
-//         console.log(`Update email: ${event.target.value}`);
-//         if(event.target.value !== "")
-//             setState({...state, emailWarning: true});
-//         else setState({...state, emailWarning: false});
-//     }
-
-//     function updatePasswd(event) {
-//         console.log(`Update password: ${event.target.value}`);
-//         if(event.target.value !== "")
-//             setState({...state, newPasswdWarning: true});
-//         else setState({...state, newPasswdWarning: false});
-//     }
-
-//     function passwd(event) {
-//         console.log(`Current password: ${event.target.value}`);
-//         if(event.target.value !== "")
-//             setState({...state, passwdWarning: true});
-//         else setState({...state, passwdWarning: false});
-//     }
-
-//     function updateLang(event) {
-//         console.log(`Update language: ${event.target.value}`);
-//     }
-
-//     function applySettings() {
-//         console.log("Click: save new settings");
-//     }
-
-//     function closeAccount() {
-//         console.log("Click: close account");
-//     }
 
 }
 
