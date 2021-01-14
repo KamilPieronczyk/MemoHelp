@@ -47,6 +47,7 @@ export function ListContainer(props) {
       Array.from(data.myList).forEach(tempElement =>{
         tempElement.parentID=element.id
       })
+      // TODO please refactor this piece of code
       myMap.set(element.id, {title: data.text, ref: data.ref, elementID:element.id, myExpanded: data.myExpanded, values: Array.from(data.myList)})
       setMyMap(new Map([...myMap]))
     })
@@ -73,6 +74,7 @@ export function ListContainer(props) {
       </Header>
       <List>
         <ListCreator >dupa123</ListCreator>
+        // TODO please refactor this piece of code
         {Array.from(myMap).map(([key,values]) => (<ListCard title={values.title} myArray={values.values} listRef={values.ref} myMap={myMap} myExpanded={values.myExpanded} myID={values.elementID} setMyMap={setMyMap}/>))}
       </List>
     </Container>

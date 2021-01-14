@@ -2,9 +2,12 @@ import React, { useEffect, useRef, useState } from "react"
 import styled from 'styled-components'
 import firebase from 'firebase';
 import { useSetRecoilState } from "recoil";
+import { ColorizeOutlined } from "@material-ui/icons";
 
 const dayNames = ['pon', 'wto', 'śro', 'czw', 'pią', 'sob', 'nie'];
-const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj',
+                    'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień',
+                    'Październik', 'Listopad', 'Grudzień'];
 var now = new Date();
 
 var wheelListener = false;
@@ -19,7 +22,8 @@ var monthReminders = new Array();
 async function LoadReminders(currentMonth, callback) {
     if (remindersList.length == 0) {
         const db = firebase.firestore();
-        const remindersCollection = db.collection('Users').doc(firebase.auth().currentUser.uid).collection("Reminders");
+        const remindersCollection = db.collection('Users')
+                                    .doc(firebase.auth().currentUser.uid).collection("Reminders");
         const snapshot = await remindersCollection.get();
 
         if (!remindersCollection.empty) {
@@ -101,7 +105,8 @@ class PrepareCalendarDays extends React.Component {
             for (var j = 0; j < remindersList.length; j++) {
                 switch(remindersList[j].type){
                     case "DEFAULT":
-                        if (calendarStartingDate.getMonth() + 1 == remindersList[j].month && monthDays[i] == remindersList[j].day) {
+                        if (calendarStartingDate.getMonth() + 1 == remindersList[j].month 
+                            && monthDays[i] == remindersList[j].day) {
                             // console.error("reminder: ", remindersList[j]);
                             reminders.push(
                                 remindersList[j]
@@ -173,8 +178,21 @@ function CalendarDay(props) {
     var reminds = [];
     // console.log("props: ",props);
     props.reminds.forEach((remind) => {
+        var color;
+        switch(remind.type){
+            case "DEFAULT":
+                color='#B593C9';
+                break;
+            case "CYCLICAL":
+                color='#32A852';
+                break;
+            case "SPECIAL":
+                color='#D6854F"';
+                break;
+        }
+
         reminds.push(
-            <ReminderLabel>
+            <ReminderLabel color='#D6854F'>
                 <ReminderTime>
                     {remind.time}
                 </ReminderTime>
@@ -187,7 +205,12 @@ function CalendarDay(props) {
 
     return (
         <GridItem>
-            {props.i <= 7 ? <p style={{ textAlign: "center", color: "gray", fontSize: 14, fontWeight: 'Medium', marginTop: -3, marginBottom: 1 }}>{dayNames[props.i - 1]}</p> : null}
+            {props.i <= 7 ? <p style={{ textAlign: "center", 
+            color: "gray", 
+            fontSize: 14, 
+            fontWeight: 'Medium', 
+            marginTop: -3, 
+            marginBottom: 1 }}>{dayNames[props.i - 1]}</p> : null}
             <DayNumber>
                 {props.dayNumber}
             </DayNumber>
@@ -240,7 +263,7 @@ const ReminderLabel = styled.div`
     flex-grow: 0;
     justify-content: left;
     align-items: center;
-    background-color: #B593C9;
+    /* background-color: #000000; */
     vertical-align: middle;
     border-radius: 12px;
 `

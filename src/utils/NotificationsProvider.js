@@ -17,6 +17,7 @@ export const NotificationsProvider = () => {
           console.log(error)
         }
       } else {
+        // TODO please refactor this piece of code DELETE COMMENTS
         // Show permission request.
         console.log('No registration token available. Request permission to generate one.');
         // Show permission UI.

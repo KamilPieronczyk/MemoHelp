@@ -67,6 +67,7 @@ function Settings() {
         );
         var userName = user.userName;
         var oldMail = user.email;
+        // TODO please refactor this piece of code DO NOT USE POLISH, DO NOT COMMENT CODE THIS WAY
         /////////////////////////////////////
         //PRZEPISANE NA NOWO
         /////////////////////////////////////

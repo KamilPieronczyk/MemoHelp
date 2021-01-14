@@ -105,7 +105,7 @@ export function ListCreator(props) {
     <Container key={props.id}>
 
           <MoreContent>
-
+  // TODO please refactor this piece of code
             <MyTextInput value={textContent} placeholder="Dodaj tytuł"  color='#9C9083'onChange={e => { handleTextChange(e.target.value); }}></MyTextInput>
             {myArray.map((index)=>
               <CheckBoxBtn onClick={ChangeCheckbox}>
@@ -117,6 +117,7 @@ export function ListCreator(props) {
             </MoreIconContainerTop>
             <CheckBoxBtn onClick={ChangeCheckbox}>
                 <Checkbox style={{color: '#323232'}}/>
+  // TODO please refactor this piece of code
                 <MyTextField value={listContent} placeholder="Dodaj notatke" color="#FFFAF5"  onChange={e => { handleListChange(e.target.value); }} onKeyDown={addToArray}/> 
             </CheckBoxBtn>
           </MoreContent>

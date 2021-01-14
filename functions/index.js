@@ -127,22 +127,26 @@ function handleCyclicalReminder(reminder, userId){
         case "everyDay":
             var newDate = reminder.data().date.toDate();
             newDate.setDate(newDate.getDate() + 1);
-            addReminder(userId, reminder, newDate).catch(() => console.log('handleCyclicalReminder exception'));
+            addReminder(userId, reminder, newDate).catch(() => 
+                    console.log('handleCyclicalReminder exception'));
             break;
         case "everyWeek":
             var newDate = reminder.data().date.toDate();
             newDate.setDate(newDate.getDate() + 7);
-            addReminder(userId, reminder, newDate).catch(() => console.log('handleCyclicalReminder exception'));
+            addReminder(userId, reminder, newDate).catch(() => 
+                    console.log('handleCyclicalReminder exception'));
             break;
         case "everyMonth":
             var newDate = reminder.data().date.toDate();
             newDate.setDate(newDate.getMonth() + 1);
-            addReminder(userId, reminder, newDate).catch(() => console.log('handleCyclicalReminder exception'));
+            addReminder(userId, reminder, newDate).catch(() => 
+                    console.log('handleCyclicalReminder exception'));
             break;
         case "everyYear":
             var newDate = reminder.data().date.toDate();
             newDate.setDate(newDate.getFullYear() + 1);
-            addReminder(userId, reminder, newDate).catch(() => console.log('handleCyclicalReminder exception'));
+            addReminder(userId, reminder, newDate).catch(() => 
+                    console.log('handleCyclicalReminder exception'));
             break;
         default:
             throw("handleCyclicalReminder");
@@ -172,7 +176,8 @@ function addReminder(userId, reminder, date){
 
 function deleteReminder(userId,reminderId){
 console.log("Deleting reminder");
-admin.firestore().collection('Users').doc(userId).collection('Reminders').doc(reminderId).delete()
+admin.firestore().collection('Users').doc(userId)
+    .collection('Reminders').doc(reminderId).delete()
 }
 
 function showNotification(token, title, message) {

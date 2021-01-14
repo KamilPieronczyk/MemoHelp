@@ -200,8 +200,10 @@ export function NewNotificationForm() {
 			<Container>
 				<div className={styles.firstColumn}>
 					<Typography variant="subtitle2">Utwórz przypomnienie</Typography>
+					// TODO please refactor this piece of code DONT WRITE 290-CHARACTERS LINES
 					<ContentInput value={textContent} type="text" className={textInputState ? styles.successTextInput : styles.errorTextInput} placeholder="O czym Ci przypomnieć?" onInput={autoGrowContentInput} onChange={e => {handleTextChange(e.target.value); setTextInputState(true)}} />
 					<TimePickersContainer>
+					// TODO please refactor this piece of code
 						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} onClick={()=>setDatePickerVersion(true)} className={datePickerVersion ? styles.opacity100 : styles.opacity40}>
 							<Timer style={{ marginRight: 5 }} />
 							<MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -220,6 +222,7 @@ export function NewNotificationForm() {
 								}
 							</MuiPickersUtilsProvider>
 						</span>
+						// TODO please refactor this piece of code
 						<span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: 100, marginLeft: 15 }} className={datePickerVersion ? styles.opacity40 : styles.opacity100} onClick={()=>setDatePickerVersion(false)}>
 							<Timelapse style={{ marginRight: 5 }} />
 							<span style={{ marginRight: 5 }}>za</span>

@@ -66,6 +66,7 @@ export function ListCard(props) {
       })
 }
   const ChangeCheckbox = (index) => {
+    // TODO please refactor this piece of code
     props.myMap.get(props.myArray[index].parentID).values[index].boxstate=!props.myMap.get(props.myArray[index].parentID).values[index].boxstate
     setMyArray(Array.from(myArray))
     props.setMyMap(new Map([...props.myMap]))

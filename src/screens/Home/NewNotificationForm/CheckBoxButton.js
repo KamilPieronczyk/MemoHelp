@@ -79,6 +79,7 @@ export function CheckBoxButton() {
   return (
     <div>
       {
+        // TODO please refactor this piece of code
         weekDays.map((day) => <MyButton variant={getVariant(day[0])} className={classes[getVariant(day[0])]} onClick={()=>toggle(day[0])}>{day[1]}</MyButton>)
       }
     </div>

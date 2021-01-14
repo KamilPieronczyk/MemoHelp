@@ -8,6 +8,7 @@ export function InvitationList() {
 
   useEffect(async () => {
     if(firebase.auth().currentUser !== null) {
+      // TODO please refactor this piece of code
       const invitations = firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection("GroupsInvitations");
       const invitationsSubscription = invitations.onSnapshot(snapshot => {
         renderList(snapshot)
