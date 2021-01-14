@@ -187,12 +187,12 @@ function CalendarDay(props) {
                 color='#32A852';
                 break;
             case "SPECIAL":
-                color='#D6854F"';
+                color='#D6854F';
                 break;
         }
 
         reminds.push(
-            <ReminderLabel color='#D6854F'>
+            <ReminderLabel style={{backgroundColor:color}}>
                 <ReminderTime>
                     {remind.time}
                 </ReminderTime>
@@ -263,7 +263,6 @@ const ReminderLabel = styled.div`
     flex-grow: 0;
     justify-content: left;
     align-items: center;
-    /* background-color: #000000; */
     vertical-align: middle;
     border-radius: 12px;
 `
