@@ -42,8 +42,12 @@ export function StickyNoteCreator(props) {
     }
     return (
         <Container>
-            // TODO please refactor this piece of code
-            <MyTextInput value={textContent} placeholder="Dodaj notatke" color='#9C9083' onChange={e => { handleTextChange(e.target.value); }}></MyTextInput>
+            <MyTextInput 
+                value={textContent} 
+                placeholder="Dodaj notatke" 
+                color='#9C9083' 
+                onChange={e => { handleTextChange(e.target.value); }}>
+            </MyTextInput>
             <MoreIconContainer>
                 <AddIcon onClick={pushToFirestore} />
             </MoreIconContainer>

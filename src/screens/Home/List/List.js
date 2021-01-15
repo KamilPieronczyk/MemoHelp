@@ -19,7 +19,6 @@ export function ListContainer(props) {
   const [myMap, setMyMap] = useState(new Map());
   const {user}=useUser();
 
-  //const [myArrayName, setMyArrayName] = useState(" ");
   useEffect(() => {
     const List = firebase.firestore().collection('Users').doc(user.uid).collection('Lists')
     const query = List
@@ -47,8 +46,12 @@ export function ListContainer(props) {
       Array.from(data.myList).forEach(tempElement =>{
         tempElement.parentID=element.id
       })
-      // TODO please refactor this piece of code
-      myMap.set(element.id, {title: data.text, ref: data.ref, elementID:element.id, myExpanded: data.myExpanded, values: Array.from(data.myList)})
+      myMap.set(element.id, {
+        title: data.text, 
+        ref: data.ref, 
+        elementID:element.id, 
+        myExpanded: data.myExpanded,
+        values: Array.from(data.myList)})
       setMyMap(new Map([...myMap]))
     })
   }
@@ -67,21 +70,31 @@ export function ListContainer(props) {
   return (
     <Container>
       <Header>
-        <div>
-          <AddIcon style={{marginRight: 10, cursor: 'pointer'}} onClick={Add} />
-          <DeleteIcon style={{cursor: 'pointer'}} onClick={Delete} />
-        </div>
+        <HeaderText>LISTY</HeaderText>
       </Header>
       <List>
         <ListCreator >dupa123</ListCreator>
-        // TODO please refactor this piece of code
-        {Array.from(myMap).map(([key,values]) => (<ListCard title={values.title} myArray={values.values} listRef={values.ref} myMap={myMap} myExpanded={values.myExpanded} myID={values.elementID} setMyMap={setMyMap}/>))}
+        {Array.from(myMap).map(([key,values]) => (
+          <ListCard 
+            title={values.title} 
+            myArray={values.values} 
+            listRef={values.ref} 
+            myMap={myMap} 
+            myExpanded={values.myExpanded} 
+            myID={values.elementID} 
+            setMyMap={setMyMap}/>))}
       </List>
     </Container>
   )
 }
 
-
+const HeaderText = styled.p`
+  color: rgba(255,255,255,.83);
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+  font-size: 16;
+`
 const Container = styled.div`
   //grid-Column: 3 / 4;
   min-height: 400px;
