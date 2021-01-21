@@ -53,6 +53,8 @@ async function LoadReminders(currentMonth, callback) {
 }
 
 
+
+
 export function Calendar() {
     const calendarDivRef = useRef();
     const [month, setMonth] = useState(now.getMonth());
@@ -79,7 +81,7 @@ export function Calendar() {
 
     return (
         <CalendarDiv ref={calendarDivRef}>
-            <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold' }}>
+            <p style={{ color: "black", fontSize: 24, fontWeight: 'Bold', marginTop: -40}}>
                 {monthNames[now.getMonth()]} {now.getFullYear()}
             </p>
             <Wrapper>
@@ -94,6 +96,15 @@ export function Calendar() {
 }
 
 class PrepareCalendarDays extends React.Component {
+
+    // componentWillUnmount() {
+    //     console.log("Component Calendar has been unmounted");
+    //   }
+        
+    // async componentDidMount() {
+    //     LoadReminders(now.getMonth());
+    // }
+
     render() {
         const days = [];
         var monthDays = [];
@@ -223,6 +234,7 @@ const CalendarDiv = styled.div`
 display: flex;
 flex-grow: 1;
 flex-direction: column;
+height: 100vh;
 `
 
 const GridContainer = styled.div`
