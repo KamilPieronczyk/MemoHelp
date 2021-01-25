@@ -73,16 +73,16 @@ exports.handleReminderAction = functions.https.onRequest(async (req, res) => {
         const subject = 'Memohelper przypomnienie';
         const message = await reminder.data().text;
         
-        console.log("Checking email notification permission: " + reminder.data().emailNotification );
-        if(reminder.data().emailNotification == undefined || reminder.data().emailNotification){
+        console.log("Checking email notification permission: " + user.data().emailNotification );
+        if(user.data().emailNotification == undefined || user.data().emailNotification){
             await sendMail(userMail, subject, message, res);
         }
             
 
         const userToken = user.data().token;
         if (userToken != undefined) {
-            console.log("Checking push notification permission: " + reminder.data().pushNotification );
-            if(reminder.data().pushNotification == undefined || reminder.data().pushNotification){
+            console.log("Checking push notification permission: " + user.data().pushNotification );
+            if(user.data().pushNotification == undefined || user.data().pushNotification){
                 console.log("Sending push notification");
                 await showNotification(userToken, subject, message);
             }
@@ -222,8 +222,11 @@ function sendMail(destination, subject, msg, res) {
     // returning result
     return transporter.sendMail(mailOptions, (erro, info) => {
         if (erro) {
+            console.log('Sending email failed');
+            console.log(erro.toString());
             return res.send(erro.toString());
         }
+        console.log('Sending email succeed!');
         return res.send('Sended email');
     });
 
