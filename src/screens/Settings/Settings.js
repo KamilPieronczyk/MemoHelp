@@ -10,12 +10,23 @@ import {useUser} from '../../utils';
 
 
 function Settings() {   
+    
+
+    const [ mail, setMail ] = useState('');
+    const [ password, setPassword ] = useState('');
+    const [ password2, setPassword2 ] = useState('');
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const [ name, setName ] = useState('');
+    const {user}=useUser();
+    console.log('user', user)
     const [state, setState] = useState({
         emailWarning: false,
         newPasswdWarning: false,
         passwdWarning: false,
         push: true,
         email: true,
+        notifyEmail: user.emailNotification == undefined ? true : user.emailNotification,
+        notifyPush: user.pushNotification == undefined ? true : user.pushNotification,
     });
  
 
@@ -27,12 +38,7 @@ function Settings() {
         ]
     };
 
-    const [ mail, setMail ] = useState('');
-    const [ password, setPassword ] = useState('');
-    const [ password2, setPassword2 ] = useState('');
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const [ name, setName ] = useState('');
-    const {user}=useUser();
+    console.log('notify', notify)
     
 
     const apply = () => {
@@ -443,7 +449,7 @@ function Settings() {
                                     <div className={styles.generalUserValue}>
                                         <Switch
                                             id={item.id}
-                                            checked={item.state}
+                                            defaultChecked={item.state}
                                             onChange={notifySwitch}
                                             color="primary"
                                             name={item.name}
@@ -480,7 +486,6 @@ function Settings() {
 
     function notifySwitch(event) {
         console.log(`${event.target.id} ${event.target.checked}`);
-        setState({ ...state, [event.target.id]: event.target.checked });
         var user = firebase.auth().currentUser;
         if (event.target.id=='email')
         {
@@ -496,6 +501,7 @@ function Settings() {
                 pushNotification: event.target.checked
             },{merge: true});
         }
+        //setState({ ...state, [event.target.id]: event.target.checked });
     };
 
 
