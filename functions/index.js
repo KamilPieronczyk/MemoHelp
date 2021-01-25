@@ -73,11 +73,19 @@ exports.handleReminderAction = functions.https.onRequest(async (req, res) => {
         const subject = 'Memohelper przypomnienie';
         const message = await reminder.data().text;
         
-        await sendMail(userMail, subject, message, res);
+        console.log("Checking email notification permission: " + reminder.data().emailNotification );
+        if(reminder.data().emailNotification == undefined || reminder.data().emailNotification){
+            await sendMail(userMail, subject, message, res);
+        }
+            
 
         const userToken = user.data().token;
         if (userToken != undefined) {
-            await showNotification(userToken, subject, message);
+            console.log("Checking push notification permission: " + reminder.data().pushNotification );
+            if(reminder.data().pushNotification == undefined || reminder.data().pushNotification){
+                console.log("Sending push notification");
+                await showNotification(userToken, subject, message);
+            }
         }
 
        manageReminderType(reminder, userId);
@@ -181,7 +189,7 @@ admin.firestore().collection('Users').doc(userId)
 }
 
 function showNotification(token, title, message) {
-    console.log("Showing notification");
+    console.log("Showing psuh notification");
     var payload = {
         notification: {
             title: title,
@@ -207,7 +215,7 @@ function sendMail(destination, subject, msg, res) {
         subject: title, // email subject
         html: `<p style="font-size: 16px;">${message}</p>
                <br />
-               <img src="https://i.iplsc.com/-/0002S287OT3XHLK1-C411.jpg" />
+               <img src="https://regiodom.pl/portal/sites/regiodom/files/imagecache/755x/images/regiodompl/5/niezapominajki-kwiatki-z-bajki.jpg?p8rcjw" />
            ` // email content in HTML
     };
     
@@ -216,7 +224,7 @@ function sendMail(destination, subject, msg, res) {
         if (erro) {
             return res.send(erro.toString());
         }
-        return res.send('Sended');
+        return res.send('Sended email');
     });
 
 
