@@ -37,7 +37,8 @@ async function LoadReminders(currentMonth, callback) {
                     day: date.getDate(),
                     month: date.getMonth() + 1,
                     year: date.getFullYear(),
-                    time: date.getHours() + ':' + date.getMinutes(),
+                    time: date.getHours() + ':' 
+                    + (date.getMinutes()<10 ? '0' + date.getMinutes() : date.getMinutes()<10),
                     text: doc.data().text,
                     frequency: doc.data().frequency,
                     type: doc.data().type,
@@ -96,15 +97,6 @@ export function Calendar() {
 }
 
 class PrepareCalendarDays extends React.Component {
-
-    // componentWillUnmount() {
-    //     console.log("Component Calendar has been unmounted");
-    //   }
-        
-    // async componentDidMount() {
-    //     LoadReminders(now.getMonth());
-    // }
-
     render() {
         const days = [];
         var monthDays = [];
