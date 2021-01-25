@@ -104,10 +104,8 @@ export function LoginForm() {
 					.set({
 						email    : email,
 						userName : userName,
-						emailNotification: false,
-                		pushNotification: false,
 						loggedByGoogle: true
-					})
+					}, {merge: true})
 					.then(function() {
 						firebase.firestore().collection("Users").doc(user.uid).collection("Groups").doc("Admins").set({
 							data: []
